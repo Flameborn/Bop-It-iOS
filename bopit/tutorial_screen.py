@@ -1,11 +1,11 @@
 """The tutorial for one command (TutorialMode and GameViewController's tutorial view).
 
-Top to bottom: the description, then Back, Help and Try side by side. Try starts practice:
+Top to bottom: the description, then Back, Demo and Try side by side. Try starts practice:
 the game calls only this command, over and over, with the game music; mistakes do not end
 it. While practicing, every key goes to the game and the pause key stops, like the
-original's Try button turning into Stop. Help stops any practice and shows the
-demonstration again; here, as the demonstration was only an animation, it reads the
-description again. None of these buttons made a sound.
+original's Try button turning into Stop. Demo (the question mark button, labelled "demo")
+stops any practice and shows the demonstration again; here, as the demonstration was only
+an animation, it reads the description again. None of these buttons made a sound.
 """
 
 from bopit.engine.game import tutorial_rules
@@ -27,7 +27,7 @@ class TutorialScreen:
         self._menu = Menu(self.title, [
             Button(self._text, lambda: None),
             Button("Back", self._back),
-            Button("Help", self._again),
+            Button("Demo", self._again),
             self._try,
         ], on_back=self._back)
         self._now = 0.0

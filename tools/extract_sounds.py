@@ -13,7 +13,17 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from bopit.config import ORIGINAL_APP_DIR, ORIGINAL_LANG_DIR, SOUNDS_DIR  # noqa: E402
+from bopit.config import (LANGUAGE_SOUNDS_DIR, ORIGINAL_APP_DIR, ORIGINAL_LANG_DIR,  # noqa: E402
+                          SOUNDS_DIR)
+
+# The other languages' own recordings, all voice lines, from each language's folder.
+LANGUAGE_FOLDERS = {"de": "de.lproj", "es": "es.lproj", "fr": "fr.lproj", "it": "it.lproj"}
+# Recordings 1.1.9 lacked but its code asked for, taken from a later version of the app that
+# the developer supplied (see docs/DEVIATIONS.md). German banter line 7 is in the German
+# list, but 1.1.9 had no recording, so it played nothing. The later version's folder was
+# deleted once the file was copied; the copy in sounds/languages/de is the one kept.
+LATER_VERSION = SOUNDS_DIR / "extra voices"
+FROM_LATER_VERSION = {"de": ("VO_Banter_07.wav",)}
 
 COMMANDS = "Bop|Brush|Crank|Flick|Nail|Pass|Poke|Pull|Shake|Shout|Spin|Squeeze|Twist"
 
@@ -62,6 +72,24 @@ def main() -> None:
     for folder in sorted(counts):
         print(f"{folder}: {counts[folder]}")
     print(f"Total: {len(plan)} sounds copied to {SOUNDS_DIR}")
+    copy_languages()
+
+
+def copy_languages() -> None:
+    for code, folder in LANGUAGE_FOLDERS.items():
+        target = LANGUAGE_SOUNDS_DIR / code
+        target.mkdir(parents=True, exist_ok=True)
+        sources = sorted((ORIGINAL_APP_DIR / folder).glob("*.wav"))
+        for name in FROM_LATER_VERSION.get(code, ()):
+            source = LATER_VERSION / code / name
+            if source.exists():
+                sources.append(source)
+            elif not (target / name).exists():
+                sys.exit(f"Missing {source}, and no copy of it in {target}")
+            # Otherwise the copy made earlier, now in sounds/languages, is kept.
+        for source in sources:
+            shutil.copy2(source, target / source.name)
+        print(f"languages/{code}: {len(sources)}")
 
 
 if __name__ == "__main__":

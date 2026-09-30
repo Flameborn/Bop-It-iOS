@@ -17,7 +17,7 @@ os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
 from bopit.app import App
 from bopit.audio import Audio
-from bopit.config import SOUNDS_DIR, load_settings
+from bopit.config import LANGUAGE_SOUNDS_DIR, SOUNDS_DIR, UNLOADED_SOUND_DIRS, load_settings
 from bopit.debug.event_log import EventLog
 from bopit.debug.options import add_arguments, from_arguments
 from bopit.logging_setup import setup_logging
@@ -41,7 +41,10 @@ def main() -> None:
     audio = Audio(lambda message: speech.speak(message, interrupt=True),
                   settings.master_volume, settings.sfx_volume / 100, settings.music_volume / 100)
     started = time.perf_counter()
-    count = audio.load_directory(SOUNDS_DIR)
+    count = audio.load_directory(SOUNDS_DIR, skip=UNLOADED_SOUND_DIRS)
+    if LANGUAGE_SOUNDS_DIR.is_dir():
+        for folder in sorted(p for p in LANGUAGE_SOUNDS_DIR.iterdir() if p.is_dir()):
+            count += audio.load_language(folder.name, folder)
     log.info("Decoded %d sounds in %.0f ms", count, (time.perf_counter() - started) * 1000)
     audio.open()
     event_log = None

@@ -12,6 +12,12 @@ ORIGINAL_APP_DIR = PROJECT_ROOT / "BopIt.app"
 ORIGINAL_LANG_DIR = ORIGINAL_APP_DIR / "English.lproj"
 SOUNDS_DIR = PROJECT_ROOT / "sounds"
 VENDOR_DIR = PROJECT_ROOT / "vendor"
+# Each language's own recordings, in a folder named by its code (de, es, fr, it). English is
+# the rest of SOUNDS_DIR.
+LANGUAGE_SOUNDS_DIR = SOUNDS_DIR / "languages"
+# Folders under SOUNDS_DIR that are not loaded with the English sounds: the languages are
+# loaded separately.
+UNLOADED_SOUND_DIRS = ("languages",)
 LOG_DIR = PROJECT_ROOT / "logs"
 SETTINGS_PATH = PROJECT_ROOT / "settings.json"
 KEYS_PATH = PROJECT_ROOT / "keys.json"
@@ -38,6 +44,8 @@ class Settings:
     # Commands last picked in the multiplayer command picker. Empty means its defaults.
     picked: list[str] = field(default_factory=list)
     # Our additions.
+    # The language, a code from i18n.LANGUAGES. Empty until the first run picks Windows's.
+    language: str = ""
     # Shout It X-Move through the microphone (the original's "shout Yeah!" move).
     microphone: bool = True
     master_volume: float = 1.0

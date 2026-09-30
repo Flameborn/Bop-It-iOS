@@ -74,6 +74,7 @@ class Audio:
         """notify is called with short spoken messages about device problems. Volumes are 0 to 1."""
         self._notify = notify
         self._sounds: dict[str, DecodedSound] = {}
+        self._language = "en"
         self._buffers: dict[str, object] = {}
         self._sources: list[object] = []
         self._generations: dict[int, int] = {}
@@ -90,9 +91,12 @@ class Audio:
 
     # Loading
 
-    def load_directory(self, directory: Path, pattern: str = "*.wav") -> int:
-        """Decode every matching file in the tree, keyed by file stem so folders can change freely."""
-        paths = sorted(directory.rglob(pattern))
+    def load_directory(self, directory: Path, pattern: str = "*.wav",
+                       skip: tuple[str, ...] = ()) -> int:
+        """Decode every matching file in the tree, keyed by file stem so folders can change
+        freely. Top level folders named in skip are left out."""
+        paths = sorted(p for p in directory.rglob(pattern)
+                       if p.relative_to(directory).parts[0] not in skip)
         seen: dict[str, Path] = {}
         for path in paths:
             if path.stem in seen:
@@ -109,6 +113,32 @@ class Audio:
                 log.exception("Could not decode %s", path)
         if self._connected:
             self._upload_buffers()
+
+    def load_language(self, code: str, directory: Path) -> int:
+        """Decode one language's recordings. They play in place of the sounds with the same
+        names while that language is chosen."""
+        paths = sorted(directory.glob("*.wav"))
+        for path in paths:
+            try:
+                self._sounds[f"{code}/{path.stem}"] = decode_wav(path)
+            except Exception:
+                log.exception("Could not decode %s", path)
+        if self._connected:
+            self._upload_buffers()
+        return len(paths)
+
+    def set_language(self, code: str) -> None:
+        """Play this language's recordings where it has them. As with the original's
+        localized folders, anything a language does not have (like the Halloween and
+        Christmas death lines) is the shared sound."""
+        self._language = code
+
+    def _localized(self, name: str) -> str:
+        if self._language != "en":
+            key = f"{self._language}/{name}"
+            if key in self._sounds:
+                return key
+        return name
 
     @property
     def sound_names(self) -> list[str]:
@@ -206,6 +236,7 @@ class Audio:
 
         Returns None when the sound is unknown or there is no device.
         """
+        name = self._localized(name)
         if name not in self._sounds:
             log.error("Unknown sound: %s", name)
             return None

@@ -159,6 +159,8 @@ class Options:
     picked: tuple[str, ...] = ()
     # Blitz Challenge: how many players take a turn.
     players: int = 2
+    # The language code; only the banter lists depend on it.
+    language: str = "en"
 
 
 class State(Enum):
@@ -208,7 +210,7 @@ class Game:
         self.rules = rules
         self.options = options
         self._rng = rng
-        self._banter = Banter(rng)
+        self._banter = Banter(rng, english=options.language == "en")
         self._master = (("Bop",) + options.picked) if rules.uses_picked else all_commands(options.shout_it)
         self._pitch_frequency = rules.pitch_shift_frequency
         self._turn_to_pass = 0

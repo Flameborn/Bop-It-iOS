@@ -2,12 +2,18 @@
 
 import random
 
-# Lines 50 and up were only used when the device language was English, which this port is.
+# Lines 50 and up were only used when the device language was English; they were only
+# recorded in English (GameController::setUpBanterArray).
 GENERAL = tuple(f"VO_Banter_{n:02d}" for n in
                 (1, 3, 4, 5, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 24, 28, 30, 32, 36, 40, 41, 50, 57, 58))
 LOW_SCORE = tuple(f"VO_Banter_{n:02d}" for n in (8, 14, 25, 27, 33, 35, 51, 52, 53, 55, 56))
 HIGH_SCORE = tuple(f"VO_Banter_{n:02d}" for n in
                    (2, 7, 20, 21, 26, 29, 31, 34, 37, 38, 39, 54, 59, 60))
+ENGLISH_ONLY_FROM = 50
+
+
+def _not_english(lines: tuple[str, ...]) -> tuple[str, ...]:
+    return tuple(line for line in lines if int(line[-2:]) < ENGLISH_ONLY_FROM)
 HIGH_SCORE_THRESHOLD = 50
 
 
@@ -31,11 +37,12 @@ class Banter:
     """Draws from the general pool plus the low or high score pool, without repeats until
     the general pool runs out. Lives as long as a game controller did in the original."""
 
-    def __init__(self, rng: random.Random) -> None:
+    def __init__(self, rng: random.Random, english: bool = True) -> None:
         self._rng = rng
-        self._general = _Bag(GENERAL)
-        self._low = _Bag(LOW_SCORE)
-        self._high = _Bag(HIGH_SCORE)
+        pick = (lambda lines: lines) if english else _not_english
+        self._general = _Bag(pick(GENERAL))
+        self._low = _Bag(pick(LOW_SCORE))
+        self._high = _Bag(pick(HIGH_SCORE))
 
     def pick(self, score: int) -> str:
         # The original always drew over general plus low counts, even above the threshold.

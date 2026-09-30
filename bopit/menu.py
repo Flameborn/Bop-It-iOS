@@ -8,6 +8,8 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Protocol
 
+from bopit.i18n import tr
+
 
 class Nav(Enum):
     UP = auto()
@@ -96,17 +98,19 @@ class Menu:
     def describe(self, index: int | None = None) -> str:
         index = self.focus if index is None else index
         item = self.items[index]
-        parts = [item.label]
+        # Labels and states are spoken in the chosen language where the original had them.
+        parts = [tr(item.label)]
         state = item.state()
         if state is not None:
-            parts.append(state)
+            parts.append(tr(state))
         parts.append(f"{index + 1} of {len(self.items)}")
         return ", ".join(parts)
 
     def enter(self, speaker: Speaker) -> None:
         # A title that already ends a sentence, like a question, gets no extra full stop.
-        separator = " " if self.title[-1:] in ".?!" else ". "
-        speaker.speak(f"{self.title}{separator}{self.describe()}", interrupt=True)
+        title = tr(self.title)
+        separator = " " if title[-1:] in ".?!" else ". "
+        speaker.speak(f"{title}{separator}{self.describe()}", interrupt=True)
 
     def handle(self, nav: Nav, speaker: Speaker, play: Callable[[str], None],
                now: float = 0.0) -> None:
@@ -167,7 +171,7 @@ class Menu:
 
     def _change(self, item: Choice | Slider, delta: int, speaker: Speaker) -> None:
         item.step(delta)
-        speaker.speak(item.state() or "", interrupt=True)
+        speaker.speak(tr(item.state() or ""), interrupt=True)
 
     @staticmethod
     def _play(play: Callable[[str], None], name: str | None) -> None:

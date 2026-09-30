@@ -110,6 +110,16 @@ The original stopped the music and the success's "b" part at the passing success
 
 The original was played by touch. Here the game keys (every command, the score key, pause and the Head 2 Head keys) are read from keys.json in the game folder, written with the defaults on first run. A missing or broken entry uses its default, and every problem is logged, printed and summed up in speech. Menu keys are fixed so a broken file cannot lock anyone out. Help has a third item, Keys, after Overview and Tutorials, listing the keys in use. Reason: keyboard play, and the developer asked for keys a player can change. Approved 2026-09-30.
 
+## Language setting
+
+The original followed the device's language and had no setting. Here Options>Settings has a Language item, with each language named in its own language (English, Deutsch, Español, Français, Italiano). The first run picks Windows's display language if it is one of the five, otherwise English; after that the setting wins, so a player can choose a language different from Windows's. Reason: players may want the game in a language other than their computer's. Approved 2026-09-30.
+
+Text the original showed comes from the original's own translations (bopit/lang, made by tools/extract_texts.py). Text only this port has, such as spoken states, positions like "1 of 5", the Keys page and the reworded Help lines, stays in English. Reason: those texts have no original translation, and machine translations could not be checked. Approved 2026-09-30.
+
+## German banter line 7 from a later version
+
+1.1.9's German banter list includes line 7, but 1.1.9 had no German recording of it, so that slot played nothing. The port uses the German line 7 from a later version of the app, supplied by the developer. Reason: fills an accidental gap. Approved 2026-09-30.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

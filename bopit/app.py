@@ -8,6 +8,7 @@ import pygame
 
 from bopit import screens
 from bopit.audio import Audio, Voice
+from bopit import i18n
 from bopit.config import Settings, save_settings
 from bopit.debug.event_log import EventLog
 from bopit.debug.options import DebugOptions
@@ -34,6 +35,9 @@ MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EX
                                "Pass It Extreme": PASS_IT_EXTREME,
                                "Blitz Challenge": BLITZ_CHALLENGE,
                                "Head 2 Head": HEAD_TO_HEAD}
+# The launch voice (LandingPage::setInitialPositions).
+LAUNCH_VOICE_POSITION = 0.35
+LAUNCH_VOICE = "VO_Miscellaneous_Bop It [Intro]"
 # Multiplayer modes that go through the command picker first.
 PICKER_MODES = {"Pass It Basic", "Pass It Extreme", "Head 2 Head"}
 
@@ -77,6 +81,12 @@ class App:
     def __init__(self, speech: Speech, audio: Audio, settings: Settings,
                  debug: DebugOptions | None = None, event_log: EventLog | None = None) -> None:
         self.speech = speech
+        if not settings.language:
+            # The first run takes Windows's language, as the original took the phone's.
+            settings.language = i18n.system_language()
+        i18n.set_language(settings.language)
+        if hasattr(audio, "set_language"):
+            audio.set_language(settings.language)
         self.debug = debug
         self.event_log = event_log
         self.audio = audio
@@ -230,6 +240,11 @@ class App:
             self.times_called.clear()
         save_settings(self.settings)
 
+    def language_changed(self) -> None:
+        i18n.set_language(self.settings.language)
+        self.audio.set_language(self.settings.language)
+        self.settings_changed()
+
     def play(self, name: str) -> None:
         self.audio.play(name)
 
@@ -239,6 +254,17 @@ class App:
     def play_themed(self, name: str) -> None:
         """For sounds the original passed through GetSkinFilename, like menu buttons."""
         self.audio.play(themed(name, self.settings.theme))
+
+    def play_launch_voice(self) -> None:
+        """LandingPage::setInitialPositions, the first time the main menu appears (not when a
+        saved game resumes): in English, VO_Bop from 0.35 seconds in; in the other languages,
+        their "Bop It" intro recording. At the effects volume, whatever the Commands setting."""
+        if self.settings.language == "en":
+            voice = self.audio.play("VO_Bop")
+            if voice is not None:
+                voice.seek(LAUNCH_VOICE_POSITION)
+        else:
+            self.audio.play(LAUNCH_VOICE)
 
     def start_menu_music(self) -> None:
         if self._menu_music is not None and self._menu_music.playing:
@@ -266,6 +292,8 @@ class App:
         if self.saved_game.exists():
             # Bop_ItAppDelegate::doFinishLaunching: a saved game resumes at launch, paused.
             self.play_pressed()
+        else:
+            self.play_launch_voice()
         self._running = True
         while self._running:
             for event in pygame.event.get():

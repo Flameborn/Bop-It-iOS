@@ -283,6 +283,19 @@ Source: MultiPlayerChallengeMode, Command_Bop::checkMove, GameController::gotTou
 - Total wins belong to the mode object: Play Again and Restart keep them, a new game from the menu starts them at 0. The saved game keeps the points and the total wins.
 - Pausing (its own pauseGame) works even between a fail and the next turn, and always cuts off the queued callout.
 
+### Languages
+
+Source: the app's English, de, es, fr and it folders (.lproj), GameController::setUpBanterArray, LandingPage::setInitialPositions, and the other functions that read NSLocale preferredLanguages.
+
+- Five languages: English, German, Spanish, French and Italian. The game used the device's first preferred language; there was no setting.
+- Each language folder has its own text (Localizable.strings), its own copy of every screen (nibs), its own images with text in them, and its own recordings of the commands (VO_Bop and the rest, VO_Pass), the four death lines and the banter. The Halloween and Christmas death lines, the command sound effects and the music are shared, so they are the same in every language.
+- Banter: lines 50 to 60 were recorded only in English and are only in the lists when the language is English. The other languages draw from lines 1 to 41 in the same three lists (general, low score, high score). The German folder in 1.1.9 has no line 7, although it is in the high score list, so that slot played nothing.
+- The first time the main menu appears after launch (not when a saved game resumes), a voice plays at the effects volume: in English, VO_Bop from 0.35 seconds in (read from the machine code); in the other languages, "VO_Miscellaneous_Bop It [Intro]". The port had missed this in English too until languages were built.
+- The other language checks (About, the command picker, the Play button) only change font sizes.
+- The original's multi-word buttons were built from separate pieces of text, like "quick" over "play". The translations split their words differently, for example German "Schnelles" over "Spiel".
+- Some text the original never translated: "Bop It to Start" and "You Win!" are English in every language, and German kept "Moves".
+- A later version of the app, supplied by the developer, has the same recordings as 1.1.9 except: German banter line 7 (missing in 1.1.9), Spanish banter line 6 (never used by the 1.1.9 code), a second copy of each language's intro recording, an "English" intro that is byte for byte the French one, and English banter line 25 re-encoded (the same take).
+
 ### Tutorials
 
 Source: Help (tutorialObjectButtonPressed, enterTutorial, tutorialButtonPressed), TutorialMode, GameViewController (tutorialBackPressed, tutorialPlayPressed, tutorialTryPressed, errorHelpPressed, errorBackPressed, displayError, saveScores), TutorialPopUp, GameSettings (modeToReturnFromTutorial, releaseModeString), each Command's tutorialText, and English.lproj/Localizable.strings.

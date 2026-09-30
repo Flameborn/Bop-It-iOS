@@ -8,7 +8,7 @@ for Play and game modes, SFX_Back for back, SFX_SettingsSelect for Banter and Sh
 from collections.abc import Callable, Sequence
 from typing import Protocol
 
-from bopit import input_map, port_texts, texts
+from bopit import i18n, input_map, port_texts, texts
 from bopit.config import SELECTABLE_COMMAND_MODES, Settings
 from bopit.menu import Button, Choice, Menu, Slider
 from bopit.progress import Progress
@@ -54,6 +54,8 @@ class Navigator(Protocol):
     def open_tutorial(self, command: str) -> None: ...
 
     def settings_changed(self) -> None: ...
+
+    def language_changed(self) -> None: ...
 
     def play(self, name: str) -> None:
         """Play a sound as named, with no theme variant."""
@@ -231,8 +233,8 @@ def player_select_menu(nav: Navigator, on_go: Callable[[], None]) -> Menu:
 def high_score_text(mode: str, best: Entry) -> str:
     """As GameModeIntro showed it: moves and points, or for Blitz a time to 4 places."""
     if mode == "Blitz":
-        return f"High Score: {best.score:.4f} seconds"
-    return f"High Score: {best.moves} moves, {int(best.score):,} points"
+        return f"{i18n.tr('High Score')}: {best.score:.4f} seconds"
+    return f"{i18n.tr('High Score')}: {best.moves} moves, {int(best.score):,} points"
 
 
 def intro_menu(nav: Navigator, mode: str, best: Entry | None, on_start: Callable[[], None]) -> Menu:
@@ -446,6 +448,14 @@ def settings_menu(nav: Navigator) -> Menu:
         nav.settings_changed()
         nav.play(SETTINGS_SELECT)
 
+    codes = tuple(i18n.LANGUAGES)
+
+    def set_language(i: int) -> None:
+        # Our addition. Each language is named in its own language.
+        s.language = codes[i]
+        nav.language_changed()
+        nav.play(SETTINGS_SELECT)
+
     def set_sfx(v: int) -> None:
         # Settings::sfxValueChange previews with SFX_Bop_R, except in Silent.
         s.sfx_volume = v
@@ -461,4 +471,6 @@ def settings_menu(nav: Navigator) -> Menu:
         Slider("Music", lambda: s.music_volume, set_music),
         Slider("SFX", lambda: s.sfx_volume, set_sfx),
         Choice("Microphone", ON_OFF, lambda: 0 if s.microphone else 1, set_microphone),
+        Choice("Language", tuple(i18n.LANGUAGES.values()),
+               lambda: codes.index(s.language) if s.language in codes else 0, set_language),
     ])

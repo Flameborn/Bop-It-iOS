@@ -14,6 +14,7 @@ from bopit.debug.autoplay import Action, Bot
 from bopit.debug.event_log import EventLog
 from bopit.debug.options import DebugOptions
 from bopit.engine import events as ev
+from bopit.i18n import tr, trf
 from bopit.engine.game import PLAYER_NAMES, Game, ModeRules, Options
 from bopit.input_map import (game_command_for, h2h_key_name, h2h_slot_for, is_h2h_score_key,
                              is_pause_key, is_score_key, key_name_for, menu_nav_for)
@@ -119,7 +120,8 @@ class GameScreen:
         self.seed = seed
         self._bot = Bot(self._debug) if self._debug is not None and self._debug.bot else None
         self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
-                                         self.picked, getattr(host, "blitz_players", 2)),
+                                         self.picked, getattr(host, "blitz_players", 2),
+                                         s.language or "en"),
                           random.Random(seed),
                           host.times_called if times_called is None else times_called)
         self._announce_start = announce_start
@@ -218,20 +220,20 @@ class GameScreen:
             g = self._game
             if g.rules.pass_it:
                 # Multiplayer showed only the moves (displayMPScore).
-                self._host.speech.speak(f"Moves {g.moves}.", interrupt=True)
+                self._host.speech.speak(f"{tr('Moves')} {g.moves}.", interrupt=True)
                 return
             if g.rules.challenge_target is not None:
                 seconds = int(g.blitz_elapsed(now))
                 self._host.speech.speak(
-                    f"Player {g.current_player + 1}. Moves {g.moves}. Time {seconds} seconds.",
+                    f"{trf('Player %i', g.current_player + 1)}. {tr('Moves')} {g.moves}. {tr('Time')} {seconds} seconds.",
                     interrupt=True)
                 return
             if g.rules.blitz_target is not None:
                 # The original showed whole seconds during Blitz.
                 seconds = int(g.blitz_elapsed(now))
-                self._host.speech.speak(f"Moves {g.moves}. Time {seconds} seconds.", interrupt=True)
+                self._host.speech.speak(f"{tr('Moves')} {g.moves}. {tr('Time')} {seconds} seconds.", interrupt=True)
                 return
-            text = f"Moves {g.moves}. Points {_grouped(g.moves + g.bonus)}."
+            text = f"{tr('Moves')} {g.moves}. {tr('Points')} {_grouped(g.moves + g.bonus)}."
             if self._last_grade is not None:
                 text += f" Last move {self._last_grade}."
             self._host.speech.speak(text, interrupt=True)
@@ -271,7 +273,7 @@ class GameScreen:
 
     def _h2h_score_text(self) -> str:
         scores = self._game.h2h_scores
-        return f"{PLAYER_NAMES[0]} {scores[0]}, {PLAYER_NAMES[1]} {scores[1]}."
+        return f"{tr(PLAYER_NAMES[0])} {scores[0]}, {tr(PLAYER_NAMES[1])} {scores[1]}."
 
     def _h2h_keys_text(self) -> str:
         """Which key does what for each player. Our addition, as the keys are ours."""
@@ -280,7 +282,7 @@ class GameScreen:
             keys = [f"Bop on {h2h_key_name(player, None)}"]
             keys += [f"{command} on {h2h_key_name(player, i)}"
                      for i, command in enumerate(self._game.commands_of(player))]
-            parts.append(f"{name}: " + ", ".join(keys) + ".")
+            parts.append(f"{tr(name)}: " + ", ".join(keys) + ".")
         return " ".join(parts)
 
     def update(self, now: float) -> None:
@@ -387,7 +389,7 @@ class GameScreen:
                 speech.speak("Bop it to start.", interrupt=True)
             case ev.PointScored(player, scores):
                 # The original animated the scorer's points; see docs/DEVIATIONS.md.
-                speech.speak(f"{PLAYER_NAMES[player]} {scores[player]}.", interrupt=True)
+                speech.speak(f"{tr(PLAYER_NAMES[player])} {scores[player]}.", interrupt=True)
             case ev.HeadToHeadWon():
                 self._host.replace(HeadToHeadEndScreen(self._host, self._rules, event,
                                                        self.picked))
@@ -405,7 +407,8 @@ class GameScreen:
                     self._new_trophy = True
             case ev.CommandIntroduced(command):
                 # A first ever unlock gets the original's message instead.
-                speech.speak(self._unlock_message or f"{command} added.")
+                speech.speak(tr(self._unlock_message) if self._unlock_message
+                             else f"{tr(command)} added.")
                 self._unlock_message = None
             case ev.HelpNeeded(command):
                 self._host.push(HelpPopupScreen(self._host, self, command))
@@ -527,7 +530,7 @@ class _EndScreenBase:
     def _show_tip(self) -> None:
         tip = self._host.tips.maybe_tip()
         if tip is not None:
-            self._host.speech.speak(tip, protect=True)
+            self._host.speech.speak(tr(tip), protect=True)
 
     def _play_again(self) -> None:
         self._host.replace(GameScreen(self._host, self._rules, start_now=True))
@@ -553,7 +556,7 @@ class EndScreen(_EndScreenBase):
 
         def scores() -> None:
             play("SFX_BonusScore")
-            speech.speak(f"Moves {r.moves}. Points {_grouped(r.moves + r.bonus)}.", protect=True)
+            speech.speak(f"{tr('Moves')} {r.moves}. {tr('Points')} {_grouped(r.moves + r.bonus)}.", protect=True)
             # doShowScores: without a new best, a trophy shows now (after its animation).
             if not self._new_best and self._new_trophy:
                 self._timeline.at(self._timeline.now + TROPHY_DELAY, self._show_trophy)
@@ -562,7 +565,7 @@ class EndScreen(_EndScreenBase):
         if self._rules.rhythm_graded:
             def bonus() -> None:
                 play("SFX_BonusScore")
-                speech.speak(f"Bonus {_grouped(r.end_bonus)}.", protect=True)
+                speech.speak(f"{tr('Bonus')} {_grouped(r.end_bonus)}.", protect=True)
 
             def total() -> None:
                 if r.total == 0:
@@ -571,7 +574,7 @@ class EndScreen(_EndScreenBase):
                     play("SFX_ScoreAnimation")
 
             def tallied() -> None:
-                speech.speak(f"Points {_grouped(r.total)}.", protect=True)
+                speech.speak(f"{tr('Points')} {_grouped(r.total)}.", protect=True)
 
             tally_at = t + END_BONUS_DELAY + END_TOTAL_DELAY
             tally_end = tally_at + _tally_seconds(r)
@@ -671,7 +674,7 @@ class PassItEndScreen:
 
         def moves() -> None:
             self._host.audio.play("SFX_BonusScore")
-            self._host.speech.speak(f"Moves {self._result.moves}.", protect=True)
+            self._host.speech.speak(f"{tr('Moves')} {self._result.moves}.", protect=True)
 
         self._timeline.at(now + PASS_IT_SCORES_DELAY, moves)
 
@@ -712,7 +715,7 @@ class BlitzEndScreen(_EndScreenBase):
             audio.play("MUSIC_PayoffLoopShort", music=True)
 
         def time_shown() -> None:
-            speech.speak(f"Time {self._result.time:.3f} seconds.", protect=True)
+            speech.speak(f"{tr('Time')} {self._result.time:.3f} seconds.", protect=True)
 
         def high_score() -> None:
             audio.play("SFX_HighScore")
@@ -748,7 +751,7 @@ class ChallengeBreakScreen:
         self._now = now
         self._entered_at = now
         self._host.audio.play("MUSIC_PayoffLoopShort", music=True)
-        self._host.speech.speak(f"Player {self._player} time, {self._time:.3f} seconds.",
+        self._host.speech.speak(f"{trf('Player %i Time', self._player)}, {self._time:.3f} seconds.",
                                 interrupt=True, protect=True)
         self._host.speech.speak(self._menu.describe(), protect=True)
 
@@ -794,7 +797,7 @@ class HeadToHeadEndScreen:
     def enter(self, now: float) -> None:
         r = self._result
         speech = self._host.speech
-        speech.speak(f"{PLAYER_NAMES[r.player]} wins, {r.scores[r.player]} to "
+        speech.speak(f"{tr(PLAYER_NAMES[r.player])} wins, {r.scores[r.player]} to "
                      f"{r.scores[1 - r.player]}.", interrupt=True, protect=True)
         self._buttons_at = now + H2H_BUTTONS_DELAY
 
@@ -802,7 +805,7 @@ class HeadToHeadEndScreen:
             self._host.audio.play("MUSIC_PayoffLoop", music=True)
 
         def results() -> None:
-            speech.speak(f"Wins: {PLAYER_NAMES[0]} {r.wins[0]}, {PLAYER_NAMES[1]} {r.wins[1]}.",
+            speech.speak(f"Wins: {tr(PLAYER_NAMES[0])} {r.wins[0]}, {tr(PLAYER_NAMES[1])} {r.wins[1]}.",
                          protect=True)
 
         self._timeline.at(now + H2H_PAYOFF_DELAY, payoff)
@@ -855,9 +858,9 @@ class ChallengeEndScreen:
 
         def results() -> None:
             winner = self._ranking[0][0]
-            rows = " ".join(f"Player {player}, {time:.3f} seconds."
+            rows = " ".join(f"{trf('Player %i', player)}, {time:.3f} seconds."
                             for player, time in self._ranking[:CHALLENGE_RANKED])
-            self._host.speech.speak(f"Player {winner} wins. {rows}", interrupt=True, protect=True)
+            self._host.speech.speak(f"{trf('Player %i', winner)} wins. {rows}", interrupt=True, protect=True)
 
         self._timeline.at(now + CHALLENGE_RESULTS_DELAY, results)
 
