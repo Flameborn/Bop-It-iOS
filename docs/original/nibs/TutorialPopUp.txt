@@ -1,0 +1,15 @@
+Nib: TutorialPopUp.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image 21-InGameTutorial.jpg, center 160, 240, size 320, 480, HIDDEN, not interactive
+depth 1: UIImageView #18, image soloInGame_popupScreen.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIButton #23, image soloInGame_resume.png, center 207, 284.5, size 100, 100
+depth 1: UIButton #43, image soloInGame_noBtn.png, center 104, 284.5, size 104, 89
+depth 1: FontLabel #51, text "yes", center 207, 289, size 126, 50, not interactive
+depth 1: FontLabel #61, text "no", center 104, 289, size 126, 50, not interactive
+depth 1: FontLabel #67, text "Would you like to see the tutorials and try the moves before playing?", center 160, 105.5, size 246, 135, not interactive
+depth 1: FontLabel #75, text "access tutorials any time in options>help", center 160, 426.5, size 270, 27, not interactive
+Connections:
+action noButtonPressed: sent by UIButton #43, image soloInGame_noBtn.png, center 104, 284.5, size 104, 89
+action yesButtonPressed: sent by UIButton #23, image soloInGame_resume.png, center 207, 284.5, size 100, 100
+outlet view is UIView #7, center 160, 240, size 320, 480

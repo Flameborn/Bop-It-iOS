@@ -1,0 +1,38 @@
+Nib: OptionsPage.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image options_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: TreeNode #18, center 160.5, 202.5, size 115, 115
+depth 2: UIImageView #22, image options_options.png, center 56.5, 58, size 91, 92, not interactive
+depth 2: FontLabel #27, text "options", center 56.5, 62.5, size 133, 49, not interactive
+depth 1: TreeNode #44, center 63.5, 122.5, size 115, 115
+depth 2: UIButton #48, title "settings", image options_allButtons.png, center 58, 57, size 110, 110
+depth 2: FontLabel #70, text "settings", center 58, 63.5, size 156, 53, not interactive
+depth 1: TreeNode #78, center 221.5, 81.5, size 115, 115
+depth 2: UIButton #82, title "help", image options_allButtons.png, center 55.5, 58, size 111, 108
+depth 2: FontLabel #92, text "help", center 55.5, 69, size 133, 82, not interactive
+depth 1: TreeNode #100, center 251.5, 285.5, size 115, 115
+depth 2: UIButton #104, title "credits", image options_allButtons.png, center 58, 58, size 110, 108
+depth 2: FontLabel #114, text "credits", center 57.5, 66, size 151, 60, not interactive
+depth 1: TreeNode #122, center 80.5, 320.5, size 115, 115
+depth 2: UIButton #126, title "about", image options_allButtons.png, center 57.5, 57.5, size 107, 107
+depth 2: FontLabel #137, text "about", center 57, 66.5, size 156, 73, not interactive
+depth 1: TreeNode #145, center 53, 432.5, size 72, 71
+depth 2: UIButton #149, title "back", image options_back.png, center 36, 36, size 72, 68
+depth 2: FontLabel #161, text "back", center 35.5, 39, size 79, 40, not interactive
+depth 1: ProgressViewController #169, center 160, 240, size 768, 1024, HIDDEN
+Connections:
+action aboutButtonPressed: sent by UIButton #126, title "about", image options_allButtons.png, center 57.5, 57.5, size 107, 107
+action backButtonPressed: sent by UIButton #149, title "back", image options_back.png, center 36, 36, size 72, 68
+action creditsButtonPressed: sent by UIButton #104, title "credits", image options_allButtons.png, center 58, 58, size 110, 108
+action helpButtonPressed: sent by UIButton #82, title "help", image options_allButtons.png, center 55.5, 58, size 111, 108
+action settingsButtonPressed: sent by UIButton #48, title "settings", image options_allButtons.png, center 58, 57, size 110, 110
+outlet aboutNode is TreeNode #122, center 80.5, 320.5, size 115, 115
+outlet backNode is TreeNode #145, center 53, 432.5, size 72, 71
+outlet backgroundImage is UIImageView #11, image options_background.png, center 160, 240, size 320, 480, not interactive
+outlet creditsNode is TreeNode #100, center 251.5, 285.5, size 115, 115
+outlet helpNode is TreeNode #78, center 221.5, 81.5, size 115, 115
+outlet optionsNode is TreeNode #18, center 160.5, 202.5, size 115, 115
+outlet progressView is ProgressViewController #169, center 160, 240, size 768, 1024, HIDDEN
+outlet settingsNode is TreeNode #44, center 63.5, 122.5, size 115, 115
+outlet view is UIView #7, center 160, 240, size 320, 480

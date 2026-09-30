@@ -1,0 +1,9 @@
+Nib: ThreeColumnScoreRow.nib
+Views:
+depth 0: UITableViewCell #7, center 134, 16.5, size 268, 33
+depth 1: UITableViewCellContentView #11, center 134, 16.5, size 268, 33
+depth 2: FontLabel #15, text "Points", center 222.5, 18.5, size 77, 29, not interactive, tag 3
+depth 2: FontLabel #28, text "Moves", center 144.5, 18.5, size 65, 29, not interactive, tag 2
+depth 2: FontLabel #34, text "Name", center 55.5, 18.5, size 97, 29, not interactive, tag 1
+Connections:
+outlet threeScoreCell is UITableViewCell #7, center 134, 16.5, size 268, 33

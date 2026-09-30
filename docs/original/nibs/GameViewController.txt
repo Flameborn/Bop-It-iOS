@@ -1,0 +1,126 @@
+Nib: GameViewController.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #18, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #21, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+depth 1: CommandView #24, center 108, 171, size 216, 278, not interactive
+depth 2: UIImageView #28, center 80, 120, size 160, 240, not interactive
+depth 1: CommandView #37, center 214.5, 171, size 211, 278, not interactive
+depth 2: UIImageView #41, center 80, 120, size 160, 240, not interactive
+depth 1: CommandView #46, center 108, 343, size 216, 274, not interactive
+depth 2: UIImageView #50, center 80, 120, size 160, 240, not interactive
+depth 1: CommandView #55, center 214.5, 343, size 211, 274, not interactive
+depth 2: UIImageView #59, center 80, 120, size 160, 240, not interactive
+depth 1: CommandView #65, center 160, 257, size 320, 240, not interactive
+depth 2: UIImageView #69, image Poke320X480_0.png, center 161, 120, size 320, 140, not interactive
+depth 1: CommandView #76, center 160, 240, size 320, 480, not interactive
+depth 2: UIImageView #80, center 160, 258, size 200, 200, not interactive
+depth 1: UIView #84, center 222.5, 41, size 195, 76, HIDDEN
+depth 2: UIImageView #88, image soloInGame_scoreBoxRight.png, center 101, 33.5, size 178, 81, not interactive
+depth 2: FontLabel #93, text "points", center 97.5, 35.5, size 81, 57, not interactive
+depth 2: FontLabel #104, text "0", center 153, 36.5, size 56, 57, not interactive
+depth 1: UIView #111, center 222.5, 41, size 195, 76, HIDDEN
+depth 2: UIImageView #115, image soloInGame_scoreBoxRight.png, center 101, 33, size 178, 82, not interactive
+depth 2: FontLabel #118, text "time", center 95.5, 36.5, size 67, 57, not interactive
+depth 2: FontLabel #124, text "10", center 155, 36.5, size 40, 57, not interactive
+depth 1: UILabel #132, text "Bop It to Start", center 160, 120.5, size 250, 43, HIDDEN, not interactive
+depth 1: UIView #141, center 170, 238.5, size 180, 469, HIDDEN
+depth 2: UIImageView #145, image h2hInGame_scoreCircle2.png, center 80.5, 40, size 93, 74, not interactive
+depth 2: FontLabel #150, text "0", center 81.5, 34.5, size 47, 59, not interactive
+depth 2: UIImageView #157, image h2hInGame_scoreCircle1.png, center 80.5, 432, size 165, 74, not interactive
+depth 2: FontLabel #162, text "0", center 80.5, 438, size 47, 52, not interactive
+depth 1: UIView #169, center 158.5, 52.5, size 317, 105, HIDDEN
+depth 2: UIImageView #173, image passitInGame_scoreBox.png, center 168.5, 45, size 317, 86, not interactive
+depth 2: UILabel #178, text "0", center 204, 42.5, size 64, 57, not interactive
+depth 1: UIView #184, center 158.5, 40, size 317, 80
+depth 2: UIImageView #188, image soloInGame_scoreBoxLeft.png, center 92.5, 35.5, size 183, 69, not interactive
+depth 2: FontLabel #193, text "0", center 41, 39.5, size 52, 57, not interactive
+depth 2: FontLabel #198, text "moves", center 124.5, 38.5, size 89, 57, not interactive
+depth 1: UIButton #204, image soloInGame_pauseBtn.png, center 161, 8.5, size 72, 37
+depth 1: UIView #221, center 160, 240, size 320, 480
+depth 2: UIImageView #225, image Error_Default_01.png, center 160, 240, size 320, 480
+depth 2: FontLabel #230, text "", center 160.5, 85, size 261, 132, not interactive
+depth 2: UIButton #238, image soloEndGame_continueBtn.png, center 102, 382, size 122, 116
+depth 2: FontLabel #246, text "continue", center 101.5, 386.5, size 167, 37, not interactive
+depth 2: UIButton #252, image soloEndGame_tryitBtn.png, center 211, 383, size 98, 90
+depth 2: FontLabel #260, text "try it", center 211.5, 385.5, size 99, 43, not interactive
+depth 2: FontLabel #268, text "tap continue to see your score", center 160, 450, size 418, 36, not interactive
+depth 2: CommandView #276, center 160, 228, size 320, 480, not interactive
+depth 3: UIImageView #280, center 160, 258, size 200, 200, not interactive
+depth 1: UIImageView #284, image passitInGame_passitCallout.png, center 161, 240.5, size 262, 139, HIDDEN, not interactive
+depth 1: UIView #289, center 160, 240, size 314, 480
+depth 2: UILabel #293, text "You Win!", center 159.5, 221, size 195, 58, not interactive
+depth 1: UIView #299, center 164, 232.5, size 306, 289, HIDDEN
+depth 2: UIImageView #303, image h2hInGame_greenWins.png, center 149, 55, size 306, 144, not interactive
+depth 2: UIImageView #308, image h2hInGame_greenWins.png, center 151, 238, size 306, 144, not interactive
+depth 1: UIView #311, center 158.5, 235, size 281, 462, HIDDEN
+depth 2: FontLabel #315, text "Label", center 142.5, 81, size 273, 172, not interactive
+depth 2: UIButton #321, image help_back.png, center 46.5, 399, size 75, 70
+depth 2: FontLabel #329, text "back", center 47, 402, size 68, 38, not interactive
+depth 2: UIButton #335, image help_help.png, center 142, 398.5, size 104, 99
+depth 2: FontLabel #343, text "demo", center 141, 404, size 104, 62, not interactive
+depth 2: UIButton #351, image help_popupTryItbtn.png, center 238.5, 399.5, size 71, 73
+depth 2: FontLabel #359, text "try", center 238.5, 403.5, size 83, 43, not interactive
+depth 1: UIImageView #365, center 164.5, 68.5, size 159, 135, HIDDEN, not interactive
+depth 1: UIImageView #368, image soloInGame_payoffX-move.png, center 165, 105.5, size 94, 73, HIDDEN, not interactive
+depth 1: UIImageView #373, center 164.5, 412.5, size 159, 135, HIDDEN, not interactive
+depth 1: UIImageView #376, center 0.5, 0.5, size 1, 1, not interactive
+Connections:
+action errorBackPressed: sent by UIButton #238, image soloEndGame_continueBtn.png, center 102, 382, size 122, 116
+action errorHelpPressed: sent by UIButton #252, image soloEndGame_tryitBtn.png, center 211, 383, size 98, 90
+action pauseButtonPress: sent by UIButton #204, image soloInGame_pauseBtn.png, center 161, 8.5, size 72, 37
+action tutorialBackPressed sent by UIButton #321, image help_back.png, center 46.5, 399, size 75, 70
+action tutorialPlayPressed sent by UIButton #335, image help_help.png, center 142, 398.5, size 104, 99
+action tutorialTryPressed: sent by UIButton #351, image help_popupTryItbtn.png, center 238.5, 399.5, size 71, 73
+outlet animationDummyView is UIImageView #376, center 0.5, 0.5, size 1, 1, not interactive
+outlet backgroundImage1 is UIImageView #21, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+outlet backgroundImage2 is UIImageView #18, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+outlet backgroundPlaceHolder is UIImageView #11, image help_popupbackground2.png, center 160, 240, size 320, 480, not interactive
+outlet blitzTimeView is UIView #111, center 222.5, 41, size 195, 76, HIDDEN
+outlet bonusDisplayLabel is FontLabel #104, text "0", center 153, 36.5, size 56, 57, not interactive
+outlet bonusView is UIView #84, center 222.5, 41, size 195, 76, HIDDEN
+outlet bopItToStartDisplay is UILabel #132, text "Bop It to Start", center 160, 120.5, size 250, 43, HIDDEN, not interactive
+outlet bottomLeftView is CommandView #46, center 108, 343, size 216, 274, not interactive
+outlet bottomPlayerBackgroundImage is UIImageView #157, image h2hInGame_scoreCircle1.png, center 80.5, 432, size 165, 74, not interactive
+outlet bottomRightView is CommandView #55, center 214.5, 343, size 211, 274, not interactive
+outlet errorImageView is UIImageView #225, image Error_Default_01.png, center 160, 240, size 320, 480
+outlet errorLabel is FontLabel #230, text "", center 160.5, 85, size 261, 132, not interactive
+outlet errorPopUpContinue is UIButton #238, image soloEndGame_continueBtn.png, center 102, 382, size 122, 116
+outlet errorPopUpTryIt is UIButton #252, image soloEndGame_tryitBtn.png, center 211, 383, size 98, 90
+outlet errorView is UIView #221, center 160, 240, size 320, 480
+outlet feedBackImageView is UIImageView #365, center 164.5, 68.5, size 159, 135, HIDDEN, not interactive
+outlet h2hOneScoreLabel is FontLabel #162, text "0", center 80.5, 438, size 47, 52, not interactive
+outlet h2hScoreImage2 is UIImageView #145, image h2hInGame_scoreCircle2.png, center 80.5, 40, size 93, 74, not interactive
+outlet h2hScoreView is UIView #141, center 170, 238.5, size 180, 469, HIDDEN
+outlet h2hSilentCallout is UIImageView #373, center 164.5, 412.5, size 159, 135, HIDDEN, not interactive
+outlet h2hWinnerImage1 is UIImageView #308, image h2hInGame_greenWins.png, center 151, 238, size 306, 144, not interactive
+outlet h2hWinnerImage2 is UIImageView #303, image h2hInGame_greenWins.png, center 149, 55, size 306, 144, not interactive
+outlet h2hWinnerView is UIView #299, center 164, 232.5, size 306, 289, HIDDEN
+outlet imageView is UIImageView #80, center 160, 258, size 200, 200, not interactive
+outlet imageView is UIImageView #69, image Poke320X480_0.png, center 161, 120, size 320, 140, not interactive
+outlet imageView is UIImageView #59, center 80, 120, size 160, 240, not interactive
+outlet imageView is UIImageView #50, center 80, 120, size 160, 240, not interactive
+outlet imageView is UIImageView #41, center 80, 120, size 160, 240, not interactive
+outlet imageView is UIImageView #28, center 80, 120, size 160, 240, not interactive
+outlet imageView is UIImageView #280, center 160, 258, size 200, 200, not interactive
+outlet middleView is CommandView #76, center 160, 240, size 320, 480, not interactive
+outlet mpScoreDispalyLabel is UILabel #178, text "0", center 204, 42.5, size 64, 57, not interactive
+outlet passItImage is UIImageView #284, image passitInGame_passitCallout.png, center 161, 240.5, size 262, 139, HIDDEN, not interactive
+outlet passItScoreView is UIView #169, center 158.5, 52.5, size 317, 105, HIDDEN
+outlet pauseButton is UIButton #204, image soloInGame_pauseBtn.png, center 161, 8.5, size 72, 37
+outlet scoreDisplayLabel is FontLabel #193, text "0", center 41, 39.5, size 52, 57, not interactive
+outlet scorePlayerTwoLabel is FontLabel #150, text "0", center 81.5, 34.5, size 47, 59, not interactive
+outlet scoreView is UIView #184, center 158.5, 40, size 317, 80
+outlet sidesView is CommandView #65, center 160, 257, size 320, 240, not interactive
+outlet timeDisplayIntLabel is FontLabel #124, text "10", center 155, 36.5, size 40, 57, not interactive
+outlet topLeftView is CommandView #24, center 108, 171, size 216, 278, not interactive
+outlet topRightView is CommandView #37, center 214.5, 171, size 211, 278, not interactive
+outlet tutorialCommandView is CommandView #276, center 160, 228, size 320, 480, not interactive
+outlet tutorialDescriptionLabel is FontLabel #315, text "Label", center 142.5, 81, size 273, 172, not interactive
+outlet tutorialTryLabel is FontLabel #359, text "try", center 238.5, 403.5, size 83, 43, not interactive
+outlet tutorialView is UIView #311, center 158.5, 235, size 281, 462, HIDDEN
+outlet view is UIView #7, center 160, 240, size 320, 480
+outlet xMoveImage is UIImageView #368, image soloInGame_payoffX-move.png, center 165, 105.5, size 94, 73, HIDDEN, not interactive
+outlet youWinLabel is UILabel #293, text "You Win!", center 159.5, 221, size 195, 58, not interactive
+outlet youWinView is UIView #289, center 160, 240, size 314, 480

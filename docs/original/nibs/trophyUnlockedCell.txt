@@ -1,0 +1,8 @@
+Nib: trophyUnlockedCell.nib
+Views:
+depth 0: UITableViewCell #7, center 134.5, 27.5, size 269, 55
+depth 1: UITableViewCellContentView #11, center 134.5, 27.5, size 269, 55
+depth 2: FontLabel #15, text "Trophy 1", center 85.5, 27, size 155, 50, not interactive, tag 1
+depth 2: UIImageView #28, image trophies_silverTrophy.png, center 216.5, 33, size 91, 62, not interactive, tag 2
+Connections:
+outlet unlockedCell is UITableViewCell #7, center 134.5, 27.5, size 269, 55

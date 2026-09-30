@@ -1,0 +1,23 @@
+Nib: MPPassitEndGame.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image 22-EndGame_MPPassItGames.jpg, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #18, image passitEndGame_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #23, image soloEndGame_bopitLogo.png, center 100, 59.5, size 200, 113, not interactive
+depth 1: UIImageView #28, image passitEndGame_movesArea.png, center 160, 185, size 280, 80, not interactive
+depth 1: FontLabel #33, text "Moves", center 104.5, 187.5, size 121, 49, not interactive
+depth 1: UIButton #46, image blitzChallengeEndGame_playAgain.png, center 214.5, 403, size 125, 120
+depth 1: UIButton #63, image blitzChallengeEndGame_mainMenu.png, center 99, 410, size 98, 100
+depth 1: FontLabel #71, text "78", center 229.5, 187.5, size 89, 49, not interactive
+depth 1: UIImageView #77, image passitEndGame_highScore.png, center 160, 267, size 240, 128, HIDDEN, not interactive
+depth 1: FontLabel #82, text "menu", center 99.5, 410, size 111, 52, not interactive
+depth 1: FontLabel #90, text "play", center 214.5, 393, size 101, 54, not interactive
+depth 1: FontLabel #98, text "again", center 214, 426, size 106, 54, not interactive
+Connections:
+action menuButtonPressed: sent by UIButton #63, image blitzChallengeEndGame_mainMenu.png, center 99, 410, size 98, 100
+action playAgainButtonPressed: sent by UIButton #46, image blitzChallengeEndGame_playAgain.png, center 214.5, 403, size 125, 120
+outlet backgroundImage is UIImageView #18, image passitEndGame_background.png, center 160, 240, size 320, 480, not interactive
+outlet bopItLogo is UIImageView #23, image soloEndGame_bopitLogo.png, center 100, 59.5, size 200, 113, not interactive
+outlet highScoreImage is UIImageView #77, image passitEndGame_highScore.png, center 160, 267, size 240, 128, HIDDEN, not interactive
+outlet totalMovesLabel is FontLabel #71, text "78", center 229.5, 187.5, size 89, 49, not interactive
+outlet view is UIView #7, center 160, 240, size 320, 480

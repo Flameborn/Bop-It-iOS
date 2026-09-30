@@ -1,0 +1,31 @@
+Nib: MPBlitzEndGame.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image blitzChallengeEndGame_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #18, image blitzChallengeEndGame_bopitLogo.png, center 100.5, 59.5, size 197, 117, not interactive
+depth 1: UIImageView #23, image blitzChallengeEndGame_topScoresBox.png, center 160.5, 255, size 289, 178, not interactive
+depth 1: UIButton #28, image blitzChallengeEndGame_mainMenu.png, center 100, 410, size 100, 98
+depth 1: UIButton #48, image blitzChallengeEndGame_playAgain.png, center 214.5, 406, size 119, 122
+depth 1: UIImageView #56, image blitzChallengeEndGame_player5Wins.png, center 164.5, 138.5, size 289, 181, not interactive
+depth 1: FontLabel #61, text "23.1234s", center 225, 212.5, size 98, 57, not interactive
+depth 1: FontLabel #71, text "23.1234s", center 225, 258.5, size 98, 57, not interactive
+depth 1: FontLabel #76, text "23.1234s", center 225, 303.5, size 98, 57, not interactive
+depth 1: FontLabel #81, text "Label", center 81.5, 258.5, size 89, 43, not interactive
+depth 1: FontLabel #87, text "Label", center 81.5, 303.5, size 89, 43, not interactive
+depth 1: FontLabel #92, text "Label", center 81.5, 214.5, size 89, 43, not interactive
+depth 1: FontLabel #97, text "menu", center 100.5, 411, size 111, 52, not interactive
+depth 1: FontLabel #105, text "play", center 214.5, 391, size 101, 54, not interactive
+depth 1: FontLabel #113, text "again", center 214, 424, size 106, 54, not interactive
+Connections:
+action menuButtonPressed: sent by UIButton #28, image blitzChallengeEndGame_mainMenu.png, center 100, 410, size 100, 98
+action playAgainButtonPressed: sent by UIButton #48, image blitzChallengeEndGame_playAgain.png, center 214.5, 406, size 119, 122
+outlet backgroundImage is UIImageView #11, image blitzChallengeEndGame_background.png, center 160, 240, size 320, 480, not interactive
+outlet bopItLogo is UIImageView #18, image blitzChallengeEndGame_bopitLogo.png, center 100.5, 59.5, size 197, 117, not interactive
+outlet topPlayer1 is FontLabel #92, text "Label", center 81.5, 214.5, size 89, 43, not interactive
+outlet topPlayer2 is FontLabel #81, text "Label", center 81.5, 258.5, size 89, 43, not interactive
+outlet topPlayer3 is FontLabel #87, text "Label", center 81.5, 303.5, size 89, 43, not interactive
+outlet topScore1 is FontLabel #61, text "23.1234s", center 225, 212.5, size 98, 57, not interactive
+outlet topScore2 is FontLabel #71, text "23.1234s", center 225, 258.5, size 98, 57, not interactive
+outlet topScore3 is FontLabel #76, text "23.1234s", center 225, 303.5, size 98, 57, not interactive
+outlet view is UIView #7, center 160, 240, size 320, 480
+outlet winningPlayerImage is UIImageView #56, image blitzChallengeEndGame_player5Wins.png, center 164.5, 138.5, size 289, 181, not interactive

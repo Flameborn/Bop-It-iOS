@@ -1,0 +1,9 @@
+Nib: MainWindow.nib
+Views:
+depth 0: Bop_ItAppDelegate #7
+depth 0: Bop_ItViewController #11
+depth 0: UIWindow #14, center 160, 240, size 320, 480
+Connections:
+outlet delegate is Bop_ItAppDelegate #7
+outlet viewController is Bop_ItViewController #11
+outlet window is UIWindow #14, center 160, 240, size 320, 480

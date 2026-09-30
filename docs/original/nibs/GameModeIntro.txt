@@ -1,0 +1,24 @@
+Nib: GameModeIntro.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image StartGameScreenTextRevision.jpg, center 160, 240, size 320, 480, HIDDEN, not interactive
+depth 1: UIImageView #18, image soloInGame_popupScreen.png, center 160, 240, size 320, 480, not interactive
+depth 1: FontLabel #23, text "Extreme", center 157, 44, size 166, 50, not interactive
+depth 1: UIButton #36, image soloInGame_back.png, center 99, 394.5, size 72, 79
+depth 1: FontLabel #54, text "back", center 99, 397, size 68, 38, not interactive
+depth 1: PulseImageAnimation #62, center 202.5, 394, size 107, 110
+depth 2: UIButton #66, image soloInGame_start.png, center 53.5, 54, size 123, 116
+depth 2: FontLabel #74, text "START", center 53, 61, size 132, 42, not interactive
+depth 1: FontLabel #86, text "With as many 6 Bopjects on screen at once, even a Bop Master will think this is Extreme! Get Rhythm Bonus points for completing moves on the beat. Use X-Moves for additional bonus points.", center 160, 140, size 268, 142, not interactive
+depth 1: FontLabel #94, text "High Score", center 160.5, 231.5, size 191, 43, not interactive
+depth 1: FontLabel #103, text "57 Moves", center 160.5, 266, size 109, 30, not interactive
+depth 1: FontLabel #111, text "57 Points", center 160, 295, size 142, 30, not interactive
+Connections:
+action backButtonPressed sent by UIButton #36, image soloInGame_back.png, center 99, 394.5, size 72, 79
+action goButtonPressed sent by UIButton #66, image soloInGame_start.png, center 53.5, 54, size 123, 116
+outlet gameModeDescriptionLabel is FontLabel #86, text "With as many 6 Bopjects on screen at once, even a Bop Master will think this is Extreme! Get Rhythm Bonus points for completing moves on the beat. Use X-Moves for additional bonus points.", center 160, 140, size 268, 142, not interactive
+outlet gameModeLabel is FontLabel #23, text "Extreme", center 157, 44, size 166, 50, not interactive
+outlet highMovesLabel is FontLabel #103, text "57 Moves", center 160.5, 266, size 109, 30, not interactive
+outlet highScoreLabel is FontLabel #111, text "57 Points", center 160, 295, size 142, 30, not interactive
+outlet highScoresStaticLabel is FontLabel #94, text "High Score", center 160.5, 231.5, size 191, 43, not interactive
+outlet view is UIView #7, center 160, 240, size 320, 480

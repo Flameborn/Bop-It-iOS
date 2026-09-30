@@ -1,0 +1,27 @@
+Nib: MPH2HEndGame.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image h2hEndGame_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #18, image h2hEndGame_blueWins.png, center 161.5, 162, size 287, 176, not interactive
+depth 1: UIImageView #23, image h2hEndGame_greenWins.png, center 161, 162.5, size 292, 167, not interactive
+depth 1: UIImageView #28, image h2hEndGame_bopitLogo.png, center 100.5, 58.5, size 197, 117, not interactive
+depth 1: UIButton #33, image h2hEndGame_playAgain.png, center 214.5, 406.5, size 119, 121
+depth 1: UIButton #53, image h2hEndGame_mainMenu.png, center 98.5, 408.5, size 97, 107
+depth 1: UIImageView #61, image h2hEndGame_winsArea.png, center 162, 270, size 300, 128, not interactive
+depth 1: FontLabel #66, text "2", center 231.5, 297, size 59, 42, not interactive
+depth 1: FontLabel #76, text "Green", center 102, 254, size 98, 42, not interactive
+depth 1: FontLabel #82, text "1", center 231.5, 253, size 59, 42, not interactive
+depth 1: FontLabel #88, text "Blue", center 88.5, 297, size 71, 42, not interactive
+depth 1: FontLabel #94, text "menu", center 98.5, 413, size 111, 52, not interactive
+depth 1: FontLabel #102, text "play", center 214.5, 394, size 101, 54, not interactive
+depth 1: FontLabel #110, text "again", center 214, 427, size 106, 54, not interactive
+Connections:
+action menuButtonPressed: sent by UIButton #53, image h2hEndGame_mainMenu.png, center 98.5, 408.5, size 97, 107
+action playAgainButtonPressed: sent by UIButton #33, image h2hEndGame_playAgain.png, center 214.5, 406.5, size 119, 121
+outlet backgroundImage is UIImageView #11, image h2hEndGame_background.png, center 160, 240, size 320, 480, not interactive
+outlet bopItLogo is UIImageView #28, image h2hEndGame_bopitLogo.png, center 100.5, 58.5, size 197, 117, not interactive
+outlet player1Score is FontLabel #82, text "1", center 231.5, 253, size 59, 42, not interactive
+outlet player1WinsImage is UIImageView #23, image h2hEndGame_greenWins.png, center 161, 162.5, size 292, 167, not interactive
+outlet player2Score is FontLabel #66, text "2", center 231.5, 297, size 59, 42, not interactive
+outlet player2WinsImage is UIImageView #18, image h2hEndGame_blueWins.png, center 161.5, 162, size 287, 176, not interactive
+outlet view is UIView #7, center 160, 240, size 320, 480

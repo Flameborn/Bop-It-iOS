@@ -1,0 +1,14 @@
+Nib: MPBlitzBreak.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image soloInGame_popupScreen.png, center 160, 240, size 320, 480, not interactive
+depth 1: FontLabel #18, text "Player 1 Time", center 162.5, 151.5, size 383, 103, not interactive
+depth 1: FontLabel #31, text "23.527", center 159.5, 239.5, size 297, 103, not interactive
+depth 1: UIButton #39, image blitzChallengeInGame_resume.png, center 162.5, 363, size 109, 110, HIDDEN
+depth 1: FontLabel #57, text "next", center 162.5, 365.5, size 297, 103, not interactive
+Connections:
+action goButtonPressed: sent by UIButton #39, image blitzChallengeInGame_resume.png, center 162.5, 363, size 109, 110, HIDDEN
+outlet goButton is UIButton #39, image blitzChallengeInGame_resume.png, center 162.5, 363, size 109, 110, HIDDEN
+outlet playerTimeLabel is FontLabel #31, text "23.527", center 159.5, 239.5, size 297, 103, not interactive
+outlet view is UIView #7, center 160, 240, size 320, 480
+outlet whichPlayerLabel is FontLabel #18, text "Player 1 Time", center 162.5, 151.5, size 383, 103, not interactive

@@ -1,0 +1,42 @@
+Nib: About.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image about_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: TreeNode #18, center 253, 55.5, size 104, 97
+depth 2: UIImageView #22, image settings_options.png, center 51.5, 48.5, size 71, 69, not interactive
+depth 2: FontLabel #27, text "options", center 51.5, 50.5, size 91, 59, not interactive
+depth 1: TreeNode #44, center 66, 61.5, size 104, 97
+depth 2: UIImageView #48, image help_help.png, center 53, 48.5, size 96, 97, not interactive
+depth 2: FontLabel #53, text "about", center 52.5, 51.5, size 125, 59, not interactive
+depth 1: TreeNode #62, center 53, 434, size 76, 72
+depth 2: UIButton #66, image about_back.png, center 38, 36, size 72, 74
+depth 2: FontLabel #83, text "back", center 38, 38.5, size 88, 61, not interactive
+depth 1: TreeNode #92, center 159.5, 254.5, size 289, 289
+depth 2: UIImageView #96, image about_greyPanel.png, center 145, 143.5, size 280, 279, not interactive
+depth 2: UIScrollView #101, center 145, 146, size 270, 256
+depth 3: FontLabel #105, text "© KID Group LLC 2011. All rights reserved.
+
+vVERSION_NUM
+
+BOP IT for iPhone and iPod Touch is created by the original inventor of the smash hit handheld electronic game from Hasbro
+BOP IT is a trademark of Hasbro and is used with permission. © 2011 Hasbro.
+Customer Service: Send email to help@eamobile.com 
+
+By purchasing and/or using this app, you agree to the terms of EA's End User License Agreement, Privacy Policy and Terms of Service", center 135, 230, size 260, 460, not interactive
+Connections:
+action backButtonPressed: sent by UIButton #66, image about_back.png, center 38, 36, size 72, 74
+outlet aboutLabel is FontLabel #105, text "© KID Group LLC 2011. All rights reserved.
+
+vVERSION_NUM
+
+BOP IT for iPhone and iPod Touch is created by the original inventor of the smash hit handheld electronic game from Hasbro
+BOP IT is a trademark of Hasbro and is used with permission. © 2011 Hasbro.
+Customer Service: Send email to help@eamobile.com 
+
+By purchasing and/or using this app, you agree to the terms of EA's End User License Agreement, Privacy Policy and Terms of Service", center 135, 230, size 260, 460, not interactive
+outlet aboutNode is TreeNode #44, center 66, 61.5, size 104, 97
+outlet backgroundImage is UIImageView #11, image about_background.png, center 160, 240, size 320, 480, not interactive
+outlet mainNode is TreeNode #92, center 159.5, 254.5, size 289, 289
+outlet optionsNode is TreeNode #18, center 253, 55.5, size 104, 97
+outlet scrollView is UIScrollView #101, center 145, 146, size 270, 256
+outlet view is UIView #7, center 160, 240, size 320, 480

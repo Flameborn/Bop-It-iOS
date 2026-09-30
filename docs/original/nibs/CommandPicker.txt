@@ -1,0 +1,88 @@
+Nib: CommandPicker.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image multiGameCustom_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: TreeNode #18, center 160, 199.5, size 286, 377
+depth 2: UIImageView #22, image multiGameCustom_greyBase.png, center 142, 234, size 282, 260, not interactive
+depth 2: UIImageView #27, image multiGameCustom_greenBase.png, center 142.5, 235, size 281, 366, not interactive
+depth 2: UIButton #32, title "Bop It (X)", image multiGameCustom_selectedTopLeftCorner.png, center 53, 141.5, size 90, 63
+depth 2: UIImageView #57, image multiGameCustom_bopjectBopIt.png, center 54, 142, size 90, 64, not interactive
+depth 2: UIButton #62, title "Twist", image multiGameCustom_selectedTopMiddle.png, center 143, 141.5, size 90, 63
+depth 2: UIImageView #73, image multiGameCustom_bopjectTwistIt.png, center 142, 143, size 90, 64, not interactive
+depth 2: UIButton #78, title "Pull", image multiGameCustom_selectedTopRightCorner.png, center 232, 141.5, size 90, 63
+depth 2: UIImageView #88, image multiGameCustom_bopjectPullIt.png, center 232, 143, size 90, 64, not interactive
+depth 2: UIButton #93, title "Spin", image multiGameCustom_selectedCenterTopLeftEdge.png, center 53, 204.5, size 90, 63
+depth 2: UIImageView #103, image multiGameCustom_bopjectSpinIt.png, center 54, 204, size 90, 64, not interactive
+depth 2: UIButton #108, title "Flick", image multiGameCustom_selectedCenterTopMiddle.png, center 143, 204.5, size 90, 63
+depth 2: UIImageView #118, image multiGameCustom_bopjectFlickIt.png, center 143, 204, size 90, 64, not interactive
+depth 2: UIButton #123, title "Shout", image multiGameCustom_selectedCenterTopRightEdge.png, center 232, 204.5, size 90, 63
+depth 2: UIImageView #133, image multiGameCustom_bopjectShoutIt.png, center 232, 204, size 90, 64, not interactive
+depth 2: UIButton #138, title "Squeeze", image multiGameCustom_selectedCenterBottomLeftEdge.png, center 53, 266.5, size 90, 63
+depth 2: UIImageView #148, image multiGameCustom_bopjectSqueezeIt.png, center 54, 267, size 90, 64, not interactive
+depth 2: UIButton #153, title "Crank", image multiGameCustom_selectedCenterBottomMiddle.png, center 143, 266.5, size 90, 63
+depth 2: UIImageView #163, image multiGameCustom_bopjectCrankIt.png, center 144, 267, size 90, 64, not interactive
+depth 2: UIButton #168, title "Shake", image multiGameCustom_selectedCenterBottomRightEdge.png, center 232, 266.5, size 90, 63
+depth 2: UIImageView #178, image multiGameCustom_bopjectShakeIt.png, center 232, 267, size 90, 64, not interactive
+depth 2: UIButton #183, title "Poke", image multiGameCustom_selectedBottomLeftCorner.png, center 232, 329.5, size 90, 63
+depth 2: UIImageView #193, image multiGameCustom_bopjectPokeIt.png, center 232, 329, size 90, 64, not interactive
+depth 2: UIButton #198, title "Nail", image multiGameCustom_selectedBottomMiddle.png, center 54, 329.5, size 90, 63
+depth 2: UIImageView #209, image multiGameCustom_bopjectNailIt.png, center 53, 328, size 90, 64, not interactive
+depth 2: UIButton #214, title "Brush", image multiGameCustom_selectedBottomRightCorner.png, center 142, 329.5, size 90, 63
+depth 2: UIImageView #225, image multiGameCustom_bopjectBrushIt.png, center 142, 328, size 90, 64, not interactive
+depth 2: UIImageView #230, image multiGameCustom_grid.png, center 143, 235, size 284, 268, not interactive
+depth 1: TreeNode #239, center 69, 58.5, size 106, 101
+depth 2: UIImageView #243, image multiGameCustom_customizeGame.png, center 51.5, 51.5, size 87, 87, not interactive
+depth 2: FontLabel #248, text "customize game", center 52, 56.5, size 80, 57, not interactive
+depth 1: TreeNode #258, center 254, 56.5, size 78, 73
+depth 2: UIImageView #262, image multiGameCustom_games.png, center 38, 36, size 60, 60, not interactive
+depth 2: FontLabel #267, text "games", center 38.5, 38.5, size 91, 43, not interactive
+depth 1: UIButton #276, title "back", image multiGameCustom_back.png, center 53, 434, size 72, 68
+depth 1: TreeNode #286, center 267, 432.5, size 72, 73
+depth 2: UIButton #290, title "GO", image multiGameCustom_go.png, center 36, 36.5, size 72, 73
+depth 2: FontLabel #302, text "GO", center 36.5, 45.5, size 81, 61, not interactive
+depth 1: FontLabel #310, text "back", center 53, 437, size 68, 38, not interactive
+depth 1: FontLabel #317, text "Add 2-4 BopJects to Bop It", center 160.5, 391.5, size 261, 27, not interactive
+Connections:
+action backButtonPressed: sent by UIButton #276, title "back", image multiGameCustom_back.png, center 53, 434, size 72, 68
+action commandButtonPressed: sent by UIButton #78, title "Pull", image multiGameCustom_selectedTopRightCorner.png, center 232, 141.5, size 90, 63
+action commandButtonPressed: sent by UIButton #93, title "Spin", image multiGameCustom_selectedCenterTopLeftEdge.png, center 53, 204.5, size 90, 63
+action commandButtonPressed: sent by UIButton #108, title "Flick", image multiGameCustom_selectedCenterTopMiddle.png, center 143, 204.5, size 90, 63
+action commandButtonPressed: sent by UIButton #123, title "Shout", image multiGameCustom_selectedCenterTopRightEdge.png, center 232, 204.5, size 90, 63
+action commandButtonPressed: sent by UIButton #138, title "Squeeze", image multiGameCustom_selectedCenterBottomLeftEdge.png, center 53, 266.5, size 90, 63
+action commandButtonPressed: sent by UIButton #153, title "Crank", image multiGameCustom_selectedCenterBottomMiddle.png, center 143, 266.5, size 90, 63
+action commandButtonPressed: sent by UIButton #168, title "Shake", image multiGameCustom_selectedCenterBottomRightEdge.png, center 232, 266.5, size 90, 63
+action commandButtonPressed: sent by UIButton #183, title "Poke", image multiGameCustom_selectedBottomLeftCorner.png, center 232, 329.5, size 90, 63
+action commandButtonPressed: sent by UIButton #198, title "Nail", image multiGameCustom_selectedBottomMiddle.png, center 54, 329.5, size 90, 63
+action commandButtonPressed: sent by UIButton #62, title "Twist", image multiGameCustom_selectedTopMiddle.png, center 143, 141.5, size 90, 63
+action commandButtonPressed: sent by UIButton #214, title "Brush", image multiGameCustom_selectedBottomRightCorner.png, center 142, 329.5, size 90, 63
+action goButtonPressed: sent by UIButton #290, title "GO", image multiGameCustom_go.png, center 36, 36.5, size 72, 73
+outlet backButton is UIButton #276, title "back", image multiGameCustom_back.png, center 53, 434, size 72, 68
+outlet backgroundImage is UIImageView #11, image multiGameCustom_background.png, center 160, 240, size 320, 480, not interactive
+outlet bopitButtonImage is UIImageView #57, image multiGameCustom_bopjectBopIt.png, center 54, 142, size 90, 64, not interactive
+outlet brushButton is UIButton #214, title "Brush", image multiGameCustom_selectedBottomRightCorner.png, center 142, 329.5, size 90, 63
+outlet brushImage is UIImageView #225, image multiGameCustom_bopjectBrushIt.png, center 142, 328, size 90, 64, not interactive
+outlet buttonsNode is TreeNode #18, center 160, 199.5, size 286, 377
+outlet chooseBopjectsLabel is FontLabel #317, text "Add 2-4 BopJects to Bop It", center 160.5, 391.5, size 261, 27, not interactive
+outlet crankButton is UIButton #153, title "Crank", image multiGameCustom_selectedCenterBottomMiddle.png, center 143, 266.5, size 90, 63
+outlet crankImage is UIImageView #163, image multiGameCustom_bopjectCrankIt.png, center 144, 267, size 90, 64, not interactive
+outlet customNode is TreeNode #239, center 69, 58.5, size 106, 101
+outlet flickButton is UIButton #108, title "Flick", image multiGameCustom_selectedCenterTopMiddle.png, center 143, 204.5, size 90, 63
+outlet flickImage is UIImageView #118, image multiGameCustom_bopjectFlickIt.png, center 143, 204, size 90, 64, not interactive
+outlet gamesNode is TreeNode #258, center 254, 56.5, size 78, 73
+outlet goButton is UIButton #290, title "GO", image multiGameCustom_go.png, center 36, 36.5, size 72, 73
+outlet goNode is TreeNode #286, center 267, 432.5, size 72, 73
+outlet nailButton is UIButton #198, title "Nail", image multiGameCustom_selectedBottomMiddle.png, center 54, 329.5, size 90, 63
+outlet nailImage is UIImageView #209, image multiGameCustom_bopjectNailIt.png, center 53, 328, size 90, 64, not interactive
+outlet pokeButton is UIButton #183, title "Poke", image multiGameCustom_selectedBottomLeftCorner.png, center 232, 329.5, size 90, 63
+outlet pokeImage is UIImageView #193, image multiGameCustom_bopjectPokeIt.png, center 232, 329, size 90, 64, not interactive
+outlet pullButton is UIButton #78, title "Pull", image multiGameCustom_selectedTopRightCorner.png, center 232, 141.5, size 90, 63
+outlet shakeButton is UIButton #168, title "Shake", image multiGameCustom_selectedCenterBottomRightEdge.png, center 232, 266.5, size 90, 63
+outlet shakeImage is UIImageView #178, image multiGameCustom_bopjectShakeIt.png, center 232, 267, size 90, 64, not interactive
+outlet shoutButton is UIButton #123, title "Shout", image multiGameCustom_selectedCenterTopRightEdge.png, center 232, 204.5, size 90, 63
+outlet shoutImage is UIImageView #133, image multiGameCustom_bopjectShoutIt.png, center 232, 204, size 90, 64, not interactive
+outlet spinButton is UIButton #93, title "Spin", image multiGameCustom_selectedCenterTopLeftEdge.png, center 53, 204.5, size 90, 63
+outlet spinImage is UIImageView #103, image multiGameCustom_bopjectSpinIt.png, center 54, 204, size 90, 64, not interactive
+outlet squeezeButton is UIButton #138, title "Squeeze", image multiGameCustom_selectedCenterBottomLeftEdge.png, center 53, 266.5, size 90, 63
+outlet squeezeImage is UIImageView #148, image multiGameCustom_bopjectSqueezeIt.png, center 54, 267, size 90, 64, not interactive
+outlet twistButton is UIButton #62, title "Twist", image multiGameCustom_selectedTopMiddle.png, center 143, 141.5, size 90, 63
+outlet view is UIView #7, center 160, 240, size 320, 480

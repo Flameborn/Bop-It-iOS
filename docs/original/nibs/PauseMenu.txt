@@ -1,0 +1,18 @@
+Nib: PauseMenu.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image soloInGame_popupScreen.png, center 160.5, 241.5, size 331, 485, not interactive
+depth 1: FontLabel #18, text "Paused", center 161, 155.5, size 306, 105, not interactive
+depth 1: UIButton #31, title "Exit", image soloInGame_exit.png, center 61, 280, size 86, 86
+depth 1: FontLabel #50, text "menu", center 61, 285.5, size 64, 49, not interactive
+depth 1: PulseImageAnimation #58, center 168.5, 278, size 111, 108
+depth 2: UIButton #62, title "Resume", image soloInGame_resume.png, center 50.5, 54.5, size 111, 109
+depth 2: FontLabel #71, text "resume", center 50.5, 60.5, size 137, 49, not interactive
+depth 1: FontLabel #81, text "game progress saved", center 160, 364.5, size 402, 37, not interactive
+depth 1: UIButton #89, title "Exit", image soloInGame_restart.png, center 263, 280, size 86, 86
+depth 1: FontLabel #97, text "restart", center 262.5, 285.5, size 103, 49, not interactive
+Connections:
+action exitButtonPressed: sent by UIButton #31, title "Exit", image soloInGame_exit.png, center 61, 280, size 86, 86
+action restartButtonPressed: sent by UIButton #89, title "Exit", image soloInGame_restart.png, center 263, 280, size 86, 86
+action resumeButtonPressed: sent by UIButton #62, title "Resume", image soloInGame_resume.png, center 50.5, 54.5, size 111, 109
+outlet view is UIView #7, center 160, 240, size 320, 480

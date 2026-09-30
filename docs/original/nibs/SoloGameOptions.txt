@@ -1,0 +1,55 @@
+Nib: SoloGameOptions.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image soloGameOptions_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: TreeNode #18, center 173, 202, size 68, 68
+depth 2: UIImageView #22, image soloGameOptions_solo.png, center 34, 34, size 68, 68, not interactive
+depth 2: FontLabel #27, text "solo", center 34, 38.5, size 88, 61, not interactive
+depth 1: TreeNode #44, center 234.5, 52.5, size 99, 95
+depth 2: UIImageView #48, image soloGameOptions_games.png, center 50.5, 48, size 85, 84, not interactive
+depth 2: FontLabel #53, text "games", center 51, 50.5, size 124, 61, not interactive
+depth 1: TreeNode #62, center 118.5, 111.5, size 133, 125
+depth 2: UIButton #66, title "classic", image soloGameOptions_classic.png, center 69.5, 64.5, size 131, 125
+depth 2: FontLabel #88, text "classic", center 69.5, 69.5, size 151, 61, not interactive
+depth 1: TreeNode #96, center 69, 219.5, size 118, 123
+depth 2: UIButton #100, title "basic", image soloGameOptions_basic.png, center 56.5, 61, size 123, 124
+depth 2: FontLabel #110, text "basic", center 56, 66.5, size 120, 61, not interactive
+depth 1: TreeNode #118, center 123, 327.5, size 128, 129
+depth 2: UIButton #122, title "extreme", image soloGameOptions_extreme.png, center 64, 64, size 128, 128
+depth 2: FontLabel #132, text "extreme", center 64.5, 68.5, size 145, 61, not interactive
+depth 1: TreeNode #140, center 239, 297, size 124, 126
+depth 2: UIButton #144, title "blitz", image soloGameOptions_blitz.png, center 63.5, 61, size 129, 124
+depth 2: FontLabel #154, text "blitz", center 63.5, 66.5, size 91, 61, not interactive
+depth 1: TreeNode #160, center 54, 434, size 68, 68
+depth 2: UIButton #164, title "back", image soloGameOptions_back.png, center 33.5, 34, size 71, 68
+depth 2: FontLabel #173, text "back", center 33, 37.5, size 88, 61, not interactive
+depth 1: UIView #181, center 160, 240, size 320, 460, HIDDEN
+depth 2: UIImageView #185, image soloGameOptions_popupScreen.png, center 160, 230, size 322, 480, not interactive
+depth 2: FontLabel #190, text "press and hold any game mode button to make it your Quick Play game", center 160.5, 179.5, size 303, 155, not interactive
+depth 2: UIButton #198, image blitzChallengeInGame_back.png, center 160, 309.5, size 72, 71
+depth 2: FontLabel #206, text "close", center 160, 312, size 68, 38, not interactive
+Connections:
+action backButtonPressed: sent by UIButton #164, title "back", image soloGameOptions_back.png, center 33.5, 34, size 71, 68
+action basicButtonDown: sent by UIButton #100, title "basic", image soloGameOptions_basic.png, center 56.5, 61, size 123, 124
+action basicButtonPressed: sent by UIButton #100, title "basic", image soloGameOptions_basic.png, center 56.5, 61, size 123, 124
+action blitzButtonDown: sent by UIButton #144, title "blitz", image soloGameOptions_blitz.png, center 63.5, 61, size 129, 124
+action blitzButtonPressed: sent by UIButton #144, title "blitz", image soloGameOptions_blitz.png, center 63.5, 61, size 129, 124
+action classicButtonDown: sent by UIButton #66, title "classic", image soloGameOptions_classic.png, center 69.5, 64.5, size 131, 125
+action classicButtonPressed: sent by UIButton #66, title "classic", image soloGameOptions_classic.png, center 69.5, 64.5, size 131, 125
+action extremeButtonDown: sent by UIButton #122, title "extreme", image soloGameOptions_extreme.png, center 64, 64, size 128, 128
+action extremeButtonPressed: sent by UIButton #122, title "extreme", image soloGameOptions_extreme.png, center 64, 64, size 128, 128
+action popUpBackPressed: sent by UIButton #198, image blitzChallengeInGame_back.png, center 160, 309.5, size 72, 71
+outlet backNode is TreeNode #160, center 54, 434, size 68, 68
+outlet backgroundImage is UIImageView #11, image soloGameOptions_background.png, center 160, 240, size 320, 480, not interactive
+outlet basicButton is UIButton #100, title "basic", image soloGameOptions_basic.png, center 56.5, 61, size 123, 124
+outlet basicNode is TreeNode #96, center 69, 219.5, size 118, 123
+outlet blitzButton is UIButton #144, title "blitz", image soloGameOptions_blitz.png, center 63.5, 61, size 129, 124
+outlet blitzNode is TreeNode #140, center 239, 297, size 124, 126
+outlet classicButton is UIButton #66, title "classic", image soloGameOptions_classic.png, center 69.5, 64.5, size 131, 125
+outlet classicNode is TreeNode #62, center 118.5, 111.5, size 133, 125
+outlet extremeButton is UIButton #122, title "extreme", image soloGameOptions_extreme.png, center 64, 64, size 128, 128
+outlet extremeNode is TreeNode #118, center 123, 327.5, size 128, 129
+outlet gamesNode is TreeNode #44, center 234.5, 52.5, size 99, 95
+outlet popUpView is UIView #181, center 160, 240, size 320, 460, HIDDEN
+outlet soloNode is TreeNode #18, center 173, 202, size 68, 68
+outlet view is UIView #7, center 160, 240, size 320, 480

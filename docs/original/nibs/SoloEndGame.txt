@@ -1,0 +1,46 @@
+Nib: SoloEndGame.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image soloEndGame_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: UIImageView #18, image soloEndGame_bopitLogo.png, center 101, 59, size 240, 128, not interactive
+depth 1: UIImageView #23, image soloEndGame_pointsArea.png, center 160.5, 233.5, size 291, 263, not interactive
+depth 1: FontLabel #28, text "Moves", center 85.5, 142.5, size 101, 43, not interactive
+depth 1: FontLabel #41, text "1,531", center 235, 235.5, size 82, 43, not interactive
+depth 1: FontLabel #49, text "Bonus", center 83.5, 187.5, size 97, 43, not interactive
+depth 1: FontLabel #55, text "1,453", center 234, 189.5, size 80, 43, not interactive
+depth 1: FontLabel #61, text "Points", center 82.5, 233.5, size 95, 43, not interactive
+depth 1: FontLabel #67, text "78", center 215, 144.5, size 42, 43, not interactive
+depth 1: UIButton #73, image soloEndGame_menu.png, center 59, 418, size 82, 82
+depth 1: FontLabel #90, text "menu", center 59, 419.5, size 96, 45, not interactive
+depth 1: UIView #98, center 159.5, 415, size 109, 108
+depth 2: UIButton #102, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108
+depth 2: FontLabel #110, text "play", center 54.5, 40, size 101, 54, not interactive
+depth 2: FontLabel #118, text "again", center 54, 73, size 106, 54, not interactive
+depth 1: UIButton #127, image soloEndGame_submitScore.png, center 260, 418, size 82, 82
+depth 1: FontLabel #135, text "submit", center 259, 407, size 90, 42, not interactive
+depth 1: UIView #143, center 163.5, 237, size 269, 236
+depth 2: PulseImageAnimation #147, image soloEndGame_trophiesAchieved.png, center 128, 179, size 268, 90, HIDDEN, not interactive
+depth 2: UIImageView #154, image soloEndGame_highScore.png, center 132, 175.5, size 268, 99, HIDDEN, not interactive
+depth 2: UIButton #159, center 128, 176, size 256, 58, HIDDEN
+depth 2: FontLabel #165, text "", center 134.5, 181, size 275, 124, not interactive
+depth 1: UIImageView #173, image soloEndGame_facebook.png, center 259.5, 453.5, size 71, 41, not interactive
+depth 1: FontLabel #178, text "score", center 259, 430, size 90, 42, not interactive
+Connections:
+action menuButtonPressed: sent by UIButton #73, image soloEndGame_menu.png, center 59, 418, size 82, 82
+action playAgainButtonPressed: sent by UIButton #102, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108
+action submitScoreButtonPress: sent by UIButton #127, image soloEndGame_submitScore.png, center 260, 418, size 82, 82
+action trophiesButtonPress: sent by UIButton #159, center 128, 176, size 256, 58, HIDDEN
+outlet backgroundImage is UIImageView #11, image soloEndGame_background.png, center 160, 240, size 320, 480, not interactive
+outlet bonusPointsLabel is FontLabel #55, text "1,453", center 234, 189.5, size 80, 43, not interactive
+outlet bopItLogo is UIImageView #18, image soloEndGame_bopitLogo.png, center 101, 59, size 240, 128, not interactive
+outlet gameplayTip is FontLabel #165, text "", center 134.5, 181, size 275, 124, not interactive
+outlet highScoreImage is UIImageView #154, image soloEndGame_highScore.png, center 132, 175.5, size 268, 99, HIDDEN, not interactive
+outlet menuButton is UIButton #73, image soloEndGame_menu.png, center 59, 418, size 82, 82
+outlet playAgainButton is UIButton #102, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108
+outlet submitScoreButton is UIButton #127, image soloEndGame_submitScore.png, center 260, 418, size 82, 82
+outlet totalMovesLabel is FontLabel #67, text "78", center 215, 144.5, size 42, 43, not interactive
+outlet totalPointsLabel is FontLabel #41, text "1,531", center 235, 235.5, size 82, 43, not interactive
+outlet trophyButton is UIButton #159, center 128, 176, size 256, 58, HIDDEN
+outlet trophyImage is PulseImageAnimation #147, image soloEndGame_trophiesAchieved.png, center 128, 179, size 268, 90, HIDDEN, not interactive
+outlet trophyView is UIView #143, center 163.5, 237, size 269, 236
+outlet view is UIView #7, center 160, 240, size 320, 480

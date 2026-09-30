@@ -1,0 +1,37 @@
+Nib: GamesPage.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UIImageView #11, image gameOptions_background.png, center 160, 240, size 320, 480, not interactive
+depth 1: TreeNode #18, center 215, 196, size 110, 110
+depth 2: UIImageView #22, image soloGameOptions_games.png, center 55, 55, size 110, 110, not interactive
+depth 2: FontLabel #29, text "games", center 55.5, 56.5, size 145, 57, not interactive
+depth 1: TreeNode #45, center 85.5, 222.5, size 125, 127
+depth 2: UIButton #49, title "multiplayer", image gameOptions_multiplayer.png, center 62.5, 66.5, size 125, 121
+depth 2: FontLabel #67, text "multi", center 62.5, 52, size 117, 54, not interactive
+depth 2: FontLabel #73, text "player", center 62.5, 90.5, size 131, 57, not interactive
+depth 1: TreeNode #80, center 122.5, 356, size 117, 116
+depth 2: UIButton #84, title "scores", image gameOptions_scores.png, center 58.5, 58.5, size 117, 115
+depth 2: FontLabel #97, text "scores", center 58, 61.5, size 142, 61, not interactive
+depth 1: TreeNode #103, center 244.5, 321, size 111, 112
+depth 2: UIButton #107, title "trophies", image gameOptions_trophies.png, center 56, 55.5, size 112, 115
+depth 2: FontLabel #116, text "trophies", center 56.5, 60.5, size 171, 61, not interactive
+depth 1: TreeNode #124, center 135.5, 88, size 133, 136
+depth 2: UIButton #128, title "solo", image gameOptions_solo.png, center 66.5, 70, size 133, 132
+depth 2: FontLabel #137, text "solo", center 66.5, 77.5, size 147, 93, not interactive
+depth 1: TreeNode #145, center 53.5, 433.5, size 71, 69
+depth 2: UIButton #149, title "back", image gameOptions_back.png, center 35.5, 35, size 71, 68
+depth 2: FontLabel #158, text "back", center 35, 38.5, size 88, 61, not interactive
+Connections:
+action backButtonPressed: sent by UIButton #149, title "back", image gameOptions_back.png, center 35.5, 35, size 71, 68
+action multiPlayerButtonPressed: sent by UIButton #49, title "multiplayer", image gameOptions_multiplayer.png, center 62.5, 66.5, size 125, 121
+action scoresButtonPressed: sent by UIButton #84, title "scores", image gameOptions_scores.png, center 58.5, 58.5, size 117, 115
+action soloButtonPressed: sent by UIButton #128, title "solo", image gameOptions_solo.png, center 66.5, 70, size 133, 132
+action trophiesButtonPressed: sent by UIButton #107, title "trophies", image gameOptions_trophies.png, center 56, 55.5, size 112, 115
+outlet backNode is TreeNode #145, center 53.5, 433.5, size 71, 69
+outlet backgroundImage is UIImageView #11, image gameOptions_background.png, center 160, 240, size 320, 480, not interactive
+outlet gamesNode is TreeNode #18, center 215, 196, size 110, 110
+outlet multiNode is TreeNode #45, center 85.5, 222.5, size 125, 127
+outlet scoresNode is TreeNode #80, center 122.5, 356, size 117, 116
+outlet soloNode is TreeNode #124, center 135.5, 88, size 133, 136
+outlet trophiesNode is TreeNode #103, center 244.5, 321, size 111, 112
+outlet view is UIView #7, center 160, 240, size 320, 480

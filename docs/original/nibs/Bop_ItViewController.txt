@@ -1,0 +1,7 @@
+Nib: Bop_ItViewController.nib
+Views:
+depth 0: UIView #7, center 160, 240, size 320, 480
+depth 1: UISwitch #11, center 261, 124.5, size 94, 27, HIDDEN
+Connections:
+outlet cheatEnabled is UISwitch #11, center 261, 124.5, size 94, 27, HIDDEN
+outlet view is UIView #7, center 160, 240, size 320, 480

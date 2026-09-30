@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 ORIGINAL_APP_DIR = PROJECT_ROOT / "BopIt.app"
 ORIGINAL_LANG_DIR = ORIGINAL_APP_DIR / "English.lproj"
+SOUNDS_DIR = PROJECT_ROOT / "sounds"
 VENDOR_DIR = PROJECT_ROOT / "vendor"
 LOG_DIR = PROJECT_ROOT / "logs"
 SETTINGS_PATH = PROJECT_ROOT / "settings.json"
