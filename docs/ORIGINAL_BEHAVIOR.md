@@ -131,6 +131,7 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - Each command has a callout sound and a response sound. Callout: VO_<Name> in VOX mode, SFX_<Name>_C otherwise. Response: SFX_<Name>_R (Command_Bop::init shown; the others follow the same pattern, still to be checked one by one).
 - In Silent mode the command sounds are not preloaded (GameSettings::preloadSounds), so no callout plays; the original showed the command as a picture (silentCallOutImage).
 - Callouts and responses play at the SFX volume and at the current pitch.
+- Every callout file (VO_ and SFX_*_C, and VO_Pass) starts with about 0.813 seconds of silence, one beat (measured from the files). So a callout played at a success is heard as the next turn opens, one beat later. When a turn opens at once, as when the next player starts after a pass, the original starts the callout 0.805 seconds in (GameController::playCommandCalloutSoundNow), skipping the lead-in so the voice still lands as the turn opens.
 
 ### A game
 
@@ -232,6 +233,29 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - The mode intro's Start plays SFX_Select, then the "Bop It to start" screen appears. The intro's Back plays nothing.
 - The intro's Back and the end screen's Menu both return to the main menu, not the mode list, and restart the menu music (GameController::returnToMenu).
 - The end screen's Play Again goes straight into a new game without the "Bop It to start" screen (SoloEndGame::playAgainButtonPressed calls prepBopItToStart then startGame). On screen, Play Again is just above Menu and Submit Score.
+
+### Multiplayer: the command picker
+
+Source: CommandPicker, Bop_ItViewController pressedBeginMulti*.
+
+- Pass It Basic, Pass It Extreme and Head 2 Head open the command picker ("customize game") before their intro; Blitz Challenge opens a player count picker instead.
+- On screen: GO at the top left, the title, then buttons in rows of three (Bop It, Twist, Pull; Spin, Flick, Shout; Squeeze, Crank, Shake; Nail, Brush, Poke), then "Add 2-4 BopJects to Bop It".
+- Bop It is always selected ("Bop It (X)"). Up to 4 more can be picked; a picked button's title gains "(X)". Picking plays SFX_SettingsSelect, unpicking SFX_BackButtonOLD, and at 4 picked a further pick does nothing. GO needs at least 2 picks and plays SFX_Select; Back plays SFX_Back.
+- Unavailable: commands never yet unlocked in Basic or Extreme (Command isCommandUnlocked reads the unlock flag; Twist and Pull are always available), Shout when Shout It is off, and Poke in Head 2 Head.
+- Defaults (CommandPicker::defaultCommands): Twist and Pull, plus Spin and Flick if unlocked. Picks are remembered for next time.
+- The game's command list becomes Bop plus the picks, added in the order Twist, Pull, Spin, Flick, Shout, Squeeze, Crank, Shake, Poke, Nail, Brush (CommandPicker::createCommands). The first four go to screen positions 0, 3, 2 and 1.
+- Multiplayer intros hide the high score. Multiplayer modes have no trophies and do not count lifetime moves.
+
+### Multiplayer: Pass It Basic and Pass It Extreme
+
+Source: MultiPlayerModeBase, MultiPassItMode, MultiPassItSingleMode, MPPassitEndGame.
+
+- One shared game passed between players. Bop plus up to four picked commands are active from the start; nothing unlocks. No rhythm grading.
+- After 4, 5 or 6 more successes (random, setTurnToPass), the success plays as usual, then the music, the "b" part and the queued callout stop. Half a beat per pitch later the pass screen comes up: a Pass It music clip (MUSIC_PassIt_01 on the first track or any theme, 02 or 03 on later tracks) and VO_Pass, both at the music volume and current pitch; "PASS IT" shows 0.25 per pitch later. Pausing is not possible during the pass.
+- 3.25 per pitch after the pass screen, the game music restarts from its beginning, a random command is called and the next player's turn opens immediately.
+- The pitch shift frequency is set to the pass point each time, and the speed up check never runs on a pass move, so Pass It in practice never speeds up.
+- A failure ends the game as in the solo modes (death line, help popup rule, banter). The end screen shows the group's moves a second later with SFX_BonusScore. Nothing is saved.
+- Pass It Basic makes Bop the first command and counts it as already called twice. Pass It Extreme's music is not themed. Otherwise they differ only in display (one BopJect at a time or all of them).
 
 ### Pause, saved game and Quick Play
 

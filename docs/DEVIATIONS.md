@@ -78,6 +78,18 @@ Of the original's 12 end-screen tips: the two about Submit Score (Facebook and t
 
 The Help overview keeps the original's sections, order and wording except where it described the phone, the touch screen or online features (the port's text is in bopit/port_texts.py, the original in bopit/texts.py): the Zoom set-up note became a headphones note; "using the touch screen" became "using the keyboard"; the X-Move section describes the microphone shout; Basic's hint about the dancing BopJects became "listen to the music: time your move with the second beat after the command"; the Scoring section points to Games>Scores instead of the leaderboard and Facebook; the Facebook section is removed; the pause button became Escape; Silent is removed from the Commands line, "Tap Off" became "Set it to Off" and a Microphone line is added; Quick Play says "Press and hold Enter on any game mode for about a second" (the original said 2 seconds; its code used 1.2). The multiplayer descriptions are unchanged until multiplayer is built. Reason: the original text described things this port does not have. Approved 2026-09-30.
 
+## Command picker spoken states
+
+In the command picker each command reads "on", "off" or "locked" instead of the original's "(X)" titles and greyed out buttons, Bop It reads "always on", and GO reads "unavailable" until two commands are picked. Trying to pick a fifth says "4 already chosen." where the original silently did nothing. Reason: accessibility. Approved 2026-09-30.
+
+## Head 2 Head callouts are panned
+
+In Head 2 Head each player's commands were on their half of the screen. Here each callout is panned toward its owner (player one left, player two right) and Bop stays in the centre. Reason: the screen halves cannot be seen. Approved 2026-09-30.
+
+## Pass It lets the bar finish before passing
+
+The original stopped the music and the success's "b" part at the passing success, waited half a beat and then played the Pass It music and VO_Pass together, so "Pass!" came about 1.3 beats later and off the beat. Here, at the passing success only the queued callout is cut; the loop and the "b" part play to the end of the bar, VO_Pass starts at the success so that its one-beat lead-in ends on the next downbeat, and the Pass It music starts on that downbeat. The next player still starts 3.25 per pitch after the Pass It music begins. Reason: the developer found the original timing broke the rhythm; this keeps "Pass!" on the first beat of the bar. Approved 2026-09-30.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

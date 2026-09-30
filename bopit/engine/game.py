@@ -50,6 +50,19 @@ SHOUT_CALL_LENGTH = 0.46
 SHOUT_THRESHOLD = 0.6
 X_MOVE_BONUS = 25
 FREQUENCY_STEP = 8          # GameController::increaseFrequencyUnlock
+# Pass It (MultiPlayerModeBase): a pass after 4 to 6 more successes, and the next player starts
+# 3.25 per pitch after the pass music begins. The original began the pass half a beat after the
+# success; this port lets the bar finish so "Pass!" lands on the downbeat (docs/DEVIATIONS.md).
+# The success's "b" part is one bar end away: 0.813 seconds of the file (17917 / 22050).
+PASS_BAR_END = 17917 / 22050
+PASS_LENGTH = 3.25
+PASS_MUSIC = ("MUSIC_PassIt_01", "MUSIC_PassIt_02", "MUSIC_PassIt_03")
+# Every callout file starts with about one beat of silence, so the voice lands as the turn
+# opens. When a turn opens at once, as after a pass, the original started the callout this
+# far in (GameController::playCommandCalloutSoundNow).
+CALLOUT_NOW_POSITION = 0.805
+# Where the picked commands go (Pass It and Head 2 Head prepareActiveCommands).
+PICKED_LOCATIONS = (0, 3, 2, 1)
 
 
 @dataclass(frozen=True)
@@ -72,6 +85,14 @@ class ModeRules:
     music_tracks: tuple[str, ...] = MUSIC_TRACKS
     # Blitz: finish after this many successes; mistakes cost time instead of ending the game.
     blitz_target: int | None = None
+    # Pass It: Bop plus the picked commands, passing to the next player every 4 to 6 moves.
+    pass_it: bool = False
+    # Pass It Basic set Bop as the first command and counted it as called twice.
+    pass_it_single: bool = False
+    # Pass It Extreme loaded its music without the theme filter.
+    themed_music: bool = True
+    # Solo modes had a trophy manager and counted lifetime moves; multiplayer modes did not.
+    tracks_trophies: bool = True
 
 
 CLASSIC = ModeRules("Classic", (("Bop", 4), ("Twist", 0), ("Pull", 3)), pitch_shift_amount=0.03,
@@ -81,6 +102,10 @@ BASIC = ModeRules("Basic", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=
 BLITZ = ModeRules("Blitz", (("Bop", 4), ("Twist", 0), ("Pull", 3), ("Spin", 2), ("Flick", 1)),
                   pitch_shift_amount=0.0, pitch_shift_frequency=50_000_000,
                   music_tracks=("MUSIC_BlitzLoop_01a", "MUSIC_BlitzLoop_01b"), blitz_target=20)
+PASS_IT_BASIC = ModeRules("Pass It Basic", (("Bop", 4),), pitch_shift_amount=0.02,
+                          pass_it=True, pass_it_single=True, tracks_trophies=False)
+PASS_IT_EXTREME = ModeRules("Pass It Extreme", (("Bop", 4),), pitch_shift_amount=0.02,
+                            pass_it=True, themed_music=False, tracks_trophies=False)
 EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
                     scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
@@ -94,6 +119,8 @@ class Options:
     shout_it: bool = True
     # Our addition: the Shout It X-Move through the microphone.
     microphone: bool = True
+    # The commands picked for Pass It and Head 2 Head, in the picker's order, without Bop.
+    picked: tuple[str, ...] = ()
 
 
 class State(Enum):
@@ -101,6 +128,7 @@ class State(Enum):
     BETWEEN_TURNS = auto()
     IN_TURN = auto()
     PAUSED = auto()
+    PASSING = auto()
     HELP = auto()
     FAILING = auto()
     OVER = auto()
@@ -142,7 +170,9 @@ class Game:
         self.options = options
         self._rng = rng
         self._banter = Banter(rng)
-        self._master = all_commands(options.shout_it)
+        self._master = (("Bop",) + options.picked) if rules.pass_it else all_commands(options.shout_it)
+        self._pitch_frequency = rules.pitch_shift_frequency
+        self._turn_to_pass = 0
         self._timers: list[tuple[float, int, Callable[[float], None]]] = []
         self._sequence = itertools.count()
         self._events: list[ev.Event] = []
@@ -259,6 +289,7 @@ class Game:
             "x_moves": self.x_moves, "perfect_count": self.rhythm.perfect_count,
             "good_count": self.rhythm.good_count, "ok_count": self.rhythm.ok_count,
             "base_bonus": self._base_bonus, "music_index": self._music_index,
+            "turn_to_pass": self._turn_to_pass,
         }
 
     def load(self, data: dict, now: float) -> None:
@@ -278,6 +309,9 @@ class Game:
         self.x_moves = data["x_moves"]
         self._base_bonus = data["base_bonus"]
         self._music_index = data["music_index"]
+        self._turn_to_pass = data.get("turn_to_pass", 0)
+        if self.rules.pass_it:
+            self._pitch_frequency = self._turn_to_pass
         self._speed_ups = 0
         self._paused_blitz_time = data["blitz_time"]
         self._blitz_started = now - self._paused_blitz_time
@@ -332,6 +366,9 @@ class Game:
         self.active = []
         for command, location in self.rules.commands:
             self._activate(command, location)
+        if self.rules.pass_it:
+            for command, location in zip(self._master[1:5], PICKED_LOCATIONS):
+                self._activate(command, location)
         for command in self.active:
             self.times_called[command] = 0
         self._emit(ev.GameStarted(self.rules.name))
@@ -346,6 +383,15 @@ class Game:
         self._next_unlock_index = 3
         self._num_to_next_unlock = (self.rules.first_unlock if self.rules.first_unlock is not None
                                     else 2**31 - 1)
+        self._pitch_frequency = self.rules.pitch_shift_frequency
+        if self.rules.pass_it:
+            # MultiPassItMode::startGame and MultiPassItSingleMode::startGame.
+            self._next_unlock_index = 1
+            self._pitch_frequency = self._set_turn_to_pass()
+            if self.rules.pass_it_single:
+                self._forced = self.active[0]
+                # Set to 1, then its startTurn counted one more call.
+                self.times_called[self._forced] = 2
         self.state = State.BETWEEN_TURNS
         self._schedule(now + BEAT / self.pitch, self._start_turn)
 
@@ -416,6 +462,8 @@ class Game:
             self._schedule(now + BEAT / self.pitch, self._success_done)
         if target is not None and self.moves > target - 1:
             self._win_blitz()
+        if self.rules.pass_it and self.moves > 0 and self.moves % self._turn_to_pass == 0:
+            self._start_pass(now)
 
     def _grade(self, now: float) -> None:
         grade = self.rhythm.grade(self._music.position(now))
@@ -481,7 +529,7 @@ class Game:
     def _success_done(self, now: float) -> None:
         if self._forced is not None:
             self._activate(self._forced, self.locations.get(self._forced, 0))
-        if self.moves != 0 and self.moves % self.rules.pitch_shift_frequency == 0:
+        if self.moves != 0 and self.moves % self._pitch_frequency == 0:
             self.pitch += self.rules.pitch_shift_amount
             self._music.set_pitch(self.pitch, now)
             self._emit(ev.MusicPitch(self.pitch))
@@ -504,6 +552,56 @@ class Game:
                 self._music_index = 0
         self._emit(ev.MusicStop())
         self._start_music(self._music_name(self._music_index), 0.0, now)
+
+    # Pass It
+
+    def _set_turn_to_pass(self) -> int:
+        """MultiPlayerModeBase::setTurnToPass: 4, 5 or 6 more successes. Also the pitch shift
+        frequency, which is why Pass It in practice never speeds up."""
+        self._turn_to_pass = self.moves + (self._rng.getrandbits(32) % 3 | 4)
+        return self._turn_to_pass
+
+    def _start_pass(self, now: float) -> None:
+        """A pass (MultiPassItMode::winTurn). The queued callout is cut at once. The loop and
+        the success's "b" part finish their bar, and VO_Pass starts now so that its one-beat
+        lead-in ends, and "Pass!" is heard, on the next downbeat."""
+        self._waiting_to_win = True
+        self.state = State.PASSING
+        if self._next is not None:
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
+        self._cancel_timers()
+        self._emit(ev.MusicSegment("VO_Pass", self.pitch))
+        self._schedule(now + PASS_BAR_END / self.pitch, self._show_pass)
+
+    def _show_pass(self, now: float) -> None:
+        """MultiPlayerModeBase::showPassItScreen, on the downbeat after the passing success."""
+        self._emit(ev.MusicStop())
+        if self._music_index == 0 or self.options.theme != 0:
+            music = PASS_MUSIC[0]
+        elif self._music_index == 4:
+            music = PASS_MUSIC[2]
+        elif self._music_index == 2:
+            music = PASS_MUSIC[1]
+        else:
+            music = None
+        if music is not None:
+            self._emit(ev.MusicSegment(themed(music, self.options.theme), self.pitch))
+        self._emit(ev.PassIt())
+        self._schedule(now + PASS_LENGTH / self.pitch, self._pass_end)
+
+    def _pass_end(self, now: float) -> None:
+        """MultiPlayerModeBase::passItEnd: the next player's turn starts at once."""
+        self._waiting_to_win = False
+        self._pitch_frequency = self._set_turn_to_pass()
+        name = self._music_name(self._music_index)
+        self._music.start(name, 0.0, self.pitch, now)
+        self._emit(ev.MusicStart(name, self.pitch, 0.0))
+        # queueNewCommandAndPlayNow: always a random active command.
+        self._next = self._rng.choice(self.active)
+        self._forced = None
+        self._call(self._next, position=CALLOUT_NOW_POSITION)
+        self._start_turn(now)
 
     def _win_blitz(self) -> None:
         """SoloSpeedMode::winBlitz: cut off the queued callout and the music, and finish."""
@@ -567,10 +665,11 @@ class Game:
         self.locations[command] = location
         self.active.append(command)
 
-    def _call(self, command: str) -> None:
+    def _call(self, command: str, position: float = 0.0) -> None:
         self._emit(ev.CommandCalled(command))
         self._emit(ev.PlaySound(
-            callout_sound(command, self.options.commands_mode, self.options.theme), self.pitch))
+            callout_sound(command, self.options.commands_mode, self.options.theme), self.pitch,
+            position))
 
     def _start_music(self, name: str, position: float, now: float) -> None:
         self._music.start(name, position, self.pitch, now)
@@ -583,7 +682,7 @@ class Game:
     def _music_name(self, index: int) -> str:
         name = self.rules.music_tracks[index]
         # Only the first track has theme variants; the original filtered only that one.
-        return themed(name, self.options.theme) if index < 2 else name
+        return themed(name, self.options.theme) if index < 2 and self.rules.themed_music else name
 
     def _schedule(self, due: float, step: Callable[[float], None]) -> None:
         heapq.heappush(self._timers, (due, next(self._sequence), step))

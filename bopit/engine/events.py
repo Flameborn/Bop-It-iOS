@@ -5,9 +5,10 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class PlaySound:
-    """A one-shot sound at the SFX volume."""
+    """A one-shot sound at the SFX volume, optionally starting part way in (seconds)."""
     name: str
     pitch: float = 1.0
+    position: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -130,6 +131,11 @@ class CommandIntroduced:
 
 
 @dataclass(frozen=True)
+class PassIt:
+    """Pass It: the device goes to the next player. The original showed "PASS IT"."""
+
+
+@dataclass(frozen=True)
 class HelpNeeded:
     """The original's help popup after failing a command called 2 times or fewer.
     The game waits for Game.dismiss_help."""
@@ -154,4 +160,4 @@ class GameOver:
 Event = (PlaySound | StopSound | MusicStart | MusicSegment | MusicSeek | MusicPitch | MusicStop | MicListen | XMove
          | WaitingToStart | GameStarted | CommandCalled | TurnOpened | MoveMade
          | TurnTimedOut | ScoreChanged | SpeedUp | RhythmGraded | StreakEarned
-         | CommandUnlocked | CommandIntroduced | HelpNeeded | BlitzFinished | GameOver)
+         | CommandUnlocked | CommandIntroduced | PassIt | HelpNeeded | BlitzFinished | GameOver)

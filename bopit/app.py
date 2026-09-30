@@ -9,7 +9,8 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
-from bopit.engine.game import BASIC, BLITZ, CLASSIC, EXTREME, ModeRules
+from bopit.engine.game import (BASIC, BLITZ, CLASSIC, EXTREME, PASS_IT_BASIC, PASS_IT_EXTREME,
+                               ModeRules)
 from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
@@ -26,7 +27,10 @@ log = logging.getLogger(__name__)
 # Keys are timestamped when the loop sees them, so a faster loop means fairer timing.
 FRAMES_PER_SECOND = 120
 MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME,
-                               "Blitz": BLITZ}
+                               "Blitz": BLITZ, "Pass It Basic": PASS_IT_BASIC,
+                               "Pass It Extreme": PASS_IT_EXTREME}
+# Multiplayer modes that go through the command picker first.
+PICKER_MODES = {"Pass It Basic", "Pass It Extreme"}
 
 
 class Screen(Protocol):
@@ -137,10 +141,17 @@ class App:
         if rules is None:
             self.not_built(name)
             return
+        if name in PICKER_MODES:
+            self.push(screens.picker_menu(self, name, lambda picked: self._begin(rules, picked)))
+            return
+        self._begin(rules, ())
+
+    def _begin(self, rules: ModeRules, picked: tuple[str, ...]) -> None:
         # Choosing a mode stops the menu music (GameController::init).
         self.stop_menu_music()
-        self.push(screens.intro_menu(self, rules.name, self.scores.best(rules.name),
-                                     lambda: self.replace(GameScreen(self, rules))))
+        best = self.scores.best(rules.name) if rules.tracks_trophies else None
+        self.push(screens.intro_menu(self, rules.name, best,
+                                     lambda: self.replace(GameScreen(self, rules, picked=picked))))
 
     # Settings and sound
 

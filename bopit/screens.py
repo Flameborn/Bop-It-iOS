@@ -93,7 +93,7 @@ def main_menu(nav: Navigator) -> Menu:
 def games_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Games", [
         Button("Solo", lambda: open_solo(nav), SELECT),
-        Button("Multiplayer", lambda: nav.push(multiplayer_menu(nav)), SELECT),
+        Button("Multiplayer", lambda: open_multiplayer(nav), SELECT),
         Button("Trophies", lambda: nav.push(trophies_menu(nav)), SELECT),
         Button("Scores", lambda: nav.push(scores_menu(nav)), SELECT),
     ])
@@ -109,7 +109,92 @@ MODE_DESCRIPTIONS = {
                "Extreme! Get Rhythm Bonus points for completing moves on the beat. Use X-Moves "
                "for additional bonus points.",
     "Blitz": "Complete 20 moves as fast as you can. Just do what it says...only faster!",
+    "Pass It Basic": "Play the Basic game with friends. Do what it says, then pass it to the "
+                     "next player. See how long the group can stay alive OR play a "
+                     "competition, where the last player standing wins!",
+    "Pass It Extreme": "Play the Extreme game with friends. Do what it says, then pass it to "
+                       "the next player. See how long the group can stay alive OR play a "
+                       "competition, where the last player standing wins!",
+    "Head 2 Head": "Complete the moves on your half of the screen. Tap your half of the Bop "
+                   "first on the \u201cBop It\u201d command to score a point. Also score when "
+                   "your opponent blows it. First player to 7 wins!",
+    "Blitz Challenge": "Challenge your friends to a game of Blitz. Take turns to see who can "
+                       "handle the pressure and get the fastest time!",
 }
+
+# CommandPicker: buttons in the order its createCommands added them to the game.
+PICKER_ORDER = ("Twist", "Pull", "Spin", "Flick", "Shout", "Squeeze", "Crank", "Shake",
+                "Poke", "Nail", "Brush")
+# Commands that must be unlocked (in Basic or Extreme) before they can be picked.
+UNLOCKABLE = {"Spin", "Flick", "Shout", "Squeeze", "Crank", "Shake", "Poke", "Nail", "Brush"}
+PICKER_HINT = "Add 2-4 BopJects to Bop It"
+MAX_PICKED = 4
+
+
+def picker_menu(nav: Navigator, mode: str, on_go: Callable[[tuple[str, ...]], None]) -> Menu:
+    """CommandPicker ("customize game"), top to bottom: GO (top left), the Bop It button,
+    which is always on, the eleven commands in rows, then the hint. Toggling on plays
+    SFX_SettingsSelect, off SFX_BackButtonOLD; GO plays SFX_Select and needs two picks."""
+    s = nav.settings
+
+    def available(command: str) -> bool:
+        if command == "Shout" and not s.shout_it:
+            return False
+        if command == "Poke" and mode == "Head 2 Head":
+            return False
+        return command not in UNLOCKABLE or command in nav.progress.unlocked
+
+    stored = [c for c in s.picked if available(c)]
+    if len(stored) >= 2:
+        picked = stored[:MAX_PICKED]
+    else:
+        # CommandPicker::defaultCommands: Twist and Pull, plus Spin and Flick if unlocked.
+        picked = ["Twist", "Pull"] + [c for c in ("Spin", "Flick") if available(c)]
+
+    def toggle(command: str) -> Callable[[], None]:
+        def pressed() -> None:
+            if not available(command):
+                return
+            if command in picked:
+                picked.remove(command)
+                nav.play("SFX_BackButtonOLD")
+            elif len(picked) < MAX_PICKED:
+                picked.append(command)
+                nav.play(SETTINGS_SELECT)
+            else:
+                # The original did nothing; see docs/DEVIATIONS.md.
+                nav.speak(f"{MAX_PICKED} already chosen.")
+                return
+            nav.speak("on" if command in picked else "off")
+        return pressed
+
+    def state(command: str) -> Callable[[], str | None]:
+        def current() -> str:
+            if not available(command):
+                return "locked"
+            return "on" if command in picked else "off"
+        return current
+
+    def go() -> None:
+        if len(picked) < 2:
+            return
+        nav.play_themed(SELECT)
+        order = tuple(c for c in PICKER_ORDER if c in picked)
+        s.picked = list(order)
+        nav.settings_changed()
+        on_go(order)
+
+    items: list[Button | Choice | Slider] = [
+        Button("GO", go, get_state=lambda: None if len(picked) >= 2 else "unavailable"),
+        Button("Bop It", lambda: None, get_state=lambda: "always on"),
+    ]
+    # On screen in rows of three, read left to right: Bop It, Twist, Pull; Spin, Flick, Shout;
+    # Squeeze, Crank, Shake; Nail, Brush, Poke.
+    for command in ("Twist", "Pull", "Spin", "Flick", "Shout", "Squeeze", "Crank", "Shake",
+                    "Nail", "Brush", "Poke"):
+        items.append(Button(command, toggle(command), get_state=state(command)))
+    items.append(Button(PICKER_HINT, lambda: None))
+    return Menu("customize game", items, on_back=nav.pop, back_sound=BACK)
 
 
 def high_score_text(mode: str, best: Entry) -> str:
@@ -119,14 +204,14 @@ def high_score_text(mode: str, best: Entry) -> str:
     return f"High Score: {best.moves} moves, {int(best.score):,} points"
 
 
-def intro_menu(nav: Navigator, mode: str, best: Entry, on_start: Callable[[], None]) -> Menu:
-    """GameModeIntro, top to bottom: description, high score, Start. Back returns to the
-    main menu without a sound, as in the original."""
-    return Menu(mode, [
-        Button(MODE_DESCRIPTIONS.get(mode, ""), lambda: None),
-        Button(high_score_text(mode, best), lambda: None),
-        Button("Start", on_start, SELECT),
-    ], on_back=nav.return_to_menu)
+def intro_menu(nav: Navigator, mode: str, best: Entry | None, on_start: Callable[[], None]) -> Menu:
+    """GameModeIntro, top to bottom: description, high score, Start. Multiplayer modes hid
+    the high score. Back returns to the main menu without a sound, as in the original."""
+    items: list[Button | Choice | Slider] = [Button(MODE_DESCRIPTIONS.get(mode, ""), lambda: None)]
+    if best is not None:
+        items.append(Button(high_score_text(mode, best), lambda: None))
+    items.append(Button("Start", on_start, SELECT))
+    return Menu(mode, items, on_back=nav.return_to_menu)
 
 
 def _modes(nav: Navigator, names: Sequence[str]) -> list[Button | Choice | Slider]:
@@ -153,12 +238,21 @@ def _modes(nav: Navigator, names: Sequence[str]) -> list[Button | Choice | Slide
             for name in names]
 
 
-def open_solo(nav: Navigator) -> None:
-    nav.push(solo_menu(nav))
-    # The first visit shows the Quick Play hint (SoloGameOptions::viewDidLoad,
-    # popupForDefaultButton). Its close button made no sound.
+def _quick_play_hint(nav: Navigator) -> None:
+    # The first visit to Solo or Multiplayer, whichever comes first, shows the Quick Play
+    # hint (popupForDefaultButton, shared by both screens). Its close button made no sound.
     if nav.first_time("quick_play_hint"):
         nav.push(Menu(QUICK_PLAY_HINT, [Button("Close", nav.pop)], on_back=nav.pop))
+
+
+def open_solo(nav: Navigator) -> None:
+    nav.push(solo_menu(nav))
+    _quick_play_hint(nav)
+
+
+def open_multiplayer(nav: Navigator) -> None:
+    nav.push(multiplayer_menu(nav))
+    _quick_play_hint(nav)
 
 
 # The original's popup said "press and hold any game mode button to make it your Quick Play

@@ -38,6 +38,7 @@ BLITZ_PAYOFF_DELAY = 0.7
 BLITZ_TIME_DELAY = 1.0
 BLITZ_HIGH_SCORE_DELAY = 0.5
 BLITZ_TIP_DELAY = 0.5
+PASS_IT_SCORES_DELAY = 1.0  # MPPassitEndGame::viewDidLoad
 # handleNewTrophy: the trophy appears after a 1.5 second delay and a 1 second animation.
 TROPHY_DELAY = 2.5
 TALLY_FRACTION = 0.05
@@ -70,13 +71,16 @@ class Host(Protocol):
 
 class GameScreen:
     def __init__(self, host: Host, rules: ModeRules, start_now: bool = False,
-                 seed: int | None = None, saved: dict | None = None) -> None:
+                 seed: int | None = None, saved: dict | None = None,
+                 picked: tuple[str, ...] = ()) -> None:
         self.title = rules.name
         self.rules = rules
+        self.picked = tuple(saved.get("picked", ())) if saved is not None else picked
         self._host = host
         self._rules = rules
         s = host.settings
-        self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone),
+        self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
+                                         self.picked),
                           random.Random(seed), host.times_called)
         self._listening = False
         self._music: Voice | None = None
@@ -113,7 +117,9 @@ class GameScreen:
     def save(self) -> None:
         """PauseMenu::exitButtonPressed saved the game only once a move had been made."""
         if self._game.moves > 0:
-            self._host.saved_game.write(self._game.save())
+            data = self._game.save()
+            data["picked"] = list(self.picked)
+            self._host.saved_game.write(data)
 
     def key(self, key: int, now: float) -> None:
         if key == pygame.K_ESCAPE:
@@ -129,6 +135,10 @@ class GameScreen:
             # The original showed the score on screen during play.
             # Points as the original showed them in play: moves plus bonus score.
             g = self._game
+            if g.rules.pass_it:
+                # Multiplayer showed only the moves (displayMPScore).
+                self._host.speech.speak(f"Moves {g.moves}.", interrupt=True)
+                return
             if g.rules.blitz_target is not None:
                 # The original showed whole seconds during Blitz.
                 seconds = int(g.blitz_elapsed(now))
@@ -165,9 +175,11 @@ class GameScreen:
         audio = self._host.audio
         speech = self._host.speech
         match event:
-            case ev.PlaySound(name, pitch):
+            case ev.PlaySound(name, pitch, position):
                 voice = audio.play(name, pitch=pitch)
                 if voice is not None:
+                    if position:
+                        voice.seek(position)
                     self._voices[name] = voice
             case ev.StopSound(name):
                 voice = self._voices.pop(name, None)
@@ -179,7 +191,9 @@ class GameScreen:
                 if self._music is not None:
                     self._music.seek(position)
             case ev.MusicSegment(name, pitch):
-                audio.play(name, pitch=pitch, music=True)
+                voice = audio.play(name, pitch=pitch, music=True)
+                if voice is not None:
+                    self._voices[name] = voice
             case ev.MusicSeek(position):
                 if self._music is not None:
                     self._music.seek(position)
@@ -219,11 +233,15 @@ class GameScreen:
                 # Replaces the original's touch instructions (see docs/DEVIATIONS.md).
                 key = key_name_for(command) or "no key"
                 speech.speak(f"{command} it. Key: {key}. Press Enter to continue.", interrupt=True)
-            case ev.MoveMade(command, _, True) if self._rules.blitz_target is None:
+            case ev.MoveMade(command, _, True) if (self._rules.tracks_trophies
+                                                  and self._rules.blitz_target is None):
                 # Classic, Basic and Extreme count lifetime moves (their winTurn); Blitz does not.
                 self._host.progress.hit(command)
-            case ev.ScoreChanged() if self._rules.blitz_target is None:
+            case ev.ScoreChanged() if (self._rules.tracks_trophies
+                                       and self._rules.blitz_target is None):
                 self._check_trophies()
+            case ev.GameOver() if self._rules.pass_it:
+                self._host.replace(PassItEndScreen(self._host, self._rules, event, self.picked))
             case ev.GameOver():
                 # failDone saved the move history.
                 self._host.progress.save()
@@ -440,7 +458,49 @@ class PauseScreen:
     def _restart(self) -> None:
         # PauseMenu::restartButtonPressed: straight into a new game.
         self._host.pop()
-        self._host.replace(GameScreen(self._host, self._game_screen.rules, start_now=True))
+        self._host.replace(GameScreen(self._host, self._game_screen.rules, start_now=True,
+                                      picked=self._game_screen.picked))
+
+
+class PassItEndScreen:
+    """MPPassitEndGame: a second after it appears, SFX_BonusScore and the group's moves.
+    Nothing is saved (its saveMoves was empty). Play Again and Menu play SFX_Select."""
+
+    def __init__(self, host: Host, rules: ModeRules, result: ev.GameOver,
+                 picked: tuple[str, ...]) -> None:
+        self.title = "Game over"
+        self._host = host
+        self._rules = rules
+        self._result = result
+        self._picked = picked
+        self._timeline = _Timeline()
+        self._announced = False
+        self._menu = Menu("Game over", [
+            Button("Play again", self._play_again, "SFX_Select"),
+            Button("Menu", host.return_to_menu, "SFX_Select"),
+        ])
+
+    def enter(self, now: float) -> None:
+        self._host.speech.speak("Game over.", interrupt=True, protect=True)
+
+        def moves() -> None:
+            self._host.audio.play("SFX_BonusScore")
+            self._host.speech.speak(f"Moves {self._result.moves}.", protect=True)
+
+        self._timeline.at(now + PASS_IT_SCORES_DELAY, moves)
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        if self._timeline.run(now) and not self._announced:
+            self._announced = True
+            self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def _play_again(self) -> None:
+        self._host.replace(GameScreen(self._host, self._rules, start_now=True, picked=self._picked))
 
 
 class BlitzEndScreen(_EndScreenBase):

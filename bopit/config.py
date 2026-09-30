@@ -2,7 +2,7 @@
 
 import json
 import logging
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
 log = logging.getLogger(__name__)
@@ -34,6 +34,8 @@ class Settings:
     theme: int = 0
     # With no choice saved, Play started Basic (LandingPage::executePlayButtonPressed).
     quick_play: str = "Basic"
+    # Commands last picked in the multiplayer command picker. Empty means its defaults.
+    picked: list[str] = field(default_factory=list)
     # Our additions.
     # Shout It X-Move through the microphone (the original's "shout Yeah!" move).
     microphone: bool = True

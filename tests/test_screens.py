@@ -262,6 +262,49 @@ class ScreenTests(unittest.TestCase):
         self.assertEqual(trophies.describe(1), "Boiiinng! Flick Unlocked, locked, 2 of 43")
         self.assertEqual(trophies.describe(9), "Got to 50!, bronze trophy, 10 of 43")
 
+    def picker(self, mode: str = "Pass It Basic") -> Menu:
+        self.chosen: list[tuple[str, ...]] = []
+        menu = screens.picker_menu(self.nav, mode, self.chosen.append)
+        self.nav.push(menu)
+        return menu
+
+    def test_picker_defaults_and_order(self) -> None:
+        menu = self.picker()
+        self.assertEqual(labels(menu)[:3], ["GO", "Bop It", "Twist"])
+        self.assertEqual(labels(menu)[-1], "Add 2-4 BopJects to Bop It")
+        self.assertEqual(menu.describe(2), "Twist, on, 3 of 14")
+        self.assertEqual(menu.describe(4), "Spin, locked, 5 of 14")
+
+    def test_picker_unlocked_defaults(self) -> None:
+        self.nav.progress.unlock("Spin")
+        self.nav.progress.unlock("Flick")
+        menu = self.picker()
+        self.assertEqual(menu.describe(4), "Spin, on, 5 of 14")
+        self.go(Nav.SELECT)
+        self.assertEqual(self.chosen, [("Twist", "Pull", "Spin", "Flick")])
+
+    def test_picker_toggle_sounds_and_go_needs_two(self) -> None:
+        self.picker()
+        self.nav.played.clear()
+        self.go(Nav.DOWN, Nav.DOWN, Nav.SELECT)  # Twist off
+        self.assertEqual(self.nav.played, ["SFX_BackButtonOLD"])
+        self.assertEqual(self.nav.stack[-1].describe(0), "GO, unavailable, 1 of 14")
+        self.go(Nav.FIRST, Nav.SELECT)
+        self.assertEqual(self.chosen, [])
+        self.go(Nav.DOWN, Nav.DOWN, Nav.SELECT)  # Twist on again
+        self.assertEqual(self.nav.played[-1], "SFX_SettingsSelect")
+        self.go(Nav.FIRST, Nav.SELECT)
+        self.assertEqual(self.chosen, [("Twist", "Pull")])
+        self.assertEqual(self.nav.settings.picked, ["Twist", "Pull"])
+
+    def test_picker_max_four_and_poke_in_head_2_head(self) -> None:
+        for c in ("Spin", "Flick", "Shout", "Poke"):
+            self.nav.progress.unlock(c)
+        menu = self.picker("Head 2 Head")
+        self.assertEqual(menu.describe(12), "Poke, locked, 13 of 14")
+        self.go(Nav.DOWN, Nav.DOWN, Nav.DOWN, Nav.DOWN, Nav.DOWN, Nav.DOWN, Nav.SELECT)  # Shout
+        self.assertEqual(self.nav.spoken[-1], "4 already chosen.")
+
     def test_play_reads_resume_game_with_a_save(self) -> None:
         self.nav.saved = True
         self.assertEqual(labels(screens.main_menu(self.nav))[0], "Resume Game")
