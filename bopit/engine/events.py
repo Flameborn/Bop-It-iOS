@@ -9,6 +9,8 @@ class PlaySound:
     name: str
     pitch: float = 1.0
     position: float = 0.0
+    # Our addition: Head 2 Head pans each player's callouts to their side (-1 left, 1 right).
+    pan: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -164,6 +166,21 @@ class ChallengeFinished:
 
 
 @dataclass(frozen=True)
+class PointScored:
+    """Head 2 Head: player (0 Green, 1 Blue) scored. scores are Green's and Blue's."""
+    player: int
+    scores: tuple[int, int]
+
+
+@dataclass(frozen=True)
+class HeadToHeadWon:
+    """Head 2 Head: player (0 Green, 1 Blue) reached 7. wins are the running totals."""
+    player: int
+    scores: tuple[int, int]
+    wins: tuple[int, int]
+
+
+@dataclass(frozen=True)
 class GameOver:
     moves: int
     bonus: int
@@ -175,4 +192,4 @@ Event = (PlaySound | StopSound | MusicStart | MusicSegment | MusicSeek | MusicPi
          | WaitingToStart | GameStarted | CommandCalled | TurnOpened | MoveMade
          | TurnTimedOut | ScoreChanged | SpeedUp | RhythmGraded | StreakEarned
          | CommandUnlocked | CommandIntroduced | PassIt | HelpNeeded | BlitzFinished | ChallengeBreak
-         | ChallengeFinished | GameOver)
+         | ChallengeFinished | PointScored | HeadToHeadWon | GameOver)

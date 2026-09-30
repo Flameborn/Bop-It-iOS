@@ -269,6 +269,20 @@ Source: mpBlitzPlayerSelect, MultiBlitzMode, MPBlitzBreak, MPBlitzEndGame, GameV
 - Ranking quirk: each sorted time is matched back to the first player with that time, so two players with exactly the same time would both show the first one's number.
 - Pause stops and resumes the clock, as in Blitz. The saved game keeps the number of players but not the times or whose turn it was, so a resumed Blitz Challenge has no times list; the original then compared unsigned numbers, which sends every finished player to another break screen and never reaches the results.
 
+### Multiplayer: Head 2 Head
+
+Source: MultiPlayerChallengeMode, Command_Bop::checkMove, GameController::gotTouchEnded, GameViewController showH2HWinner, MPH2HEndGame, CMOpenALSound::setOffset, and constants read from the binary.
+
+- Two players face each other across the phone: Green (player 1) has the bottom half of the screen, Blue (player 2) the top. The end screen names them "Green" and "Blue".
+- Poke is removed. Bop is at the centre, split in two: a Bop touch below the middle of the screen (y 240) is Green's, above it Blue's. The picks go to locations 0, 3, 2, 1 in order; locations 0 and 1 are Blue's, 2 and 3 Green's. So Green owns the 2nd and 3rd picks, Blue the 1st and 4th.
+- Nothing unlocks. It speeds up by 0.02 every 8 moves, changing music track every third speed up as in the solo modes. No rhythm grading, no banter, no help popup.
+- Doing your own command right scores nothing; the next turn comes 0.81 per pitch later. On a Bop, whoever touched their half first scores a point.
+- A wrong move, or running out of time, on a player's own command gives the other player a point. A touch on your own side of the screen (the top 195 points for Blue, below 285 for Green) during your opponent's command gives your opponent a point. A missed or wrong Bop scores for nobody. Any other stray touch ends the turn as a fail blamed on the current command's owner.
+- A fail stops the queued callout and the music and plays a death line. Unless someone has 7, the music comes back at once at the loop offset (the stop is undone by setOffset, which plays a stopped sound), a new command is called, and the next turn opens 0.81 per pitch later.
+- First to 7 wins. The music and queued callout stop, "Green wins" or "Blue wins" shows at once (on both halves, one upside down), MUSIC_PayoffLoop plays 0.5 seconds later, and the results fade in over 1 second after 2 seconds: each player's total wins, and Menu (left) and Play Again (right), both SFX_Select, which work 0.4 seconds after the results are created.
+- Total wins belong to the mode object: Play Again and Restart keep them, a new game from the menu starts them at 0. The saved game keeps the points and the total wins.
+- Pausing (its own pauseGame) works even between a fail and the next turn, and always cuts off the queued callout.
+
 ### Pause, saved game and Quick Play
 
 - Pausing (GameController::pauseGame) does nothing once the player has failed. Otherwise it cancels the turn, activates any forced command, cuts off the queued callout (only if that command was not the last in the active list), stops the music and shows the pause menu. Blitz also stops its stopwatch.

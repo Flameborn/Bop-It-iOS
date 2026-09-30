@@ -11,8 +11,9 @@ import pygame
 from bopit.audio import Audio, Voice
 from bopit.config import Settings
 from bopit.engine import events as ev
-from bopit.engine.game import Game, ModeRules, Options
-from bopit.input_map import GAME_SCORE_KEY, game_command_for, key_name_for, menu_nav_for
+from bopit.engine.game import PLAYER_NAMES, Game, ModeRules, Options
+from bopit.input_map import (GAME_SCORE_KEY, H2H_SCORE_KEY, game_command_for, h2h_key_name,
+                             h2h_slot_for, key_name_for, menu_nav_for)
 from bopit.menu import Button, Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
@@ -42,6 +43,11 @@ PASS_IT_SCORES_DELAY = 1.0  # MPPassitEndGame::viewDidLoad
 # displayMPBlitzHEndGame: the results fade in over a second after a 2 second delay.
 CHALLENGE_RESULTS_DELAY = 2.0
 CHALLENGE_RANKED = 3        # MPBlitzEndGame shows the top three.
+# Head 2 Head: the winner shows at once, MUSIC_PayoffLoop half a second later, and the
+# results fade in over a second after 2 seconds; their buttons work after 0.4 seconds.
+H2H_PAYOFF_DELAY = 0.5
+H2H_RESULTS_DELAY = 2.0
+H2H_BUTTONS_DELAY = 0.4
 # handleNewTrophy: the trophy appears after a 1.5 second delay and a 1 second animation.
 TROPHY_DELAY = 2.5
 TALLY_FRACTION = 0.05
@@ -76,7 +82,7 @@ class Host(Protocol):
 class GameScreen:
     def __init__(self, host: Host, rules: ModeRules, start_now: bool = False,
                  seed: int | None = None, saved: dict | None = None,
-                 picked: tuple[str, ...] = ()) -> None:
+                 picked: tuple[str, ...] = (), wins: tuple[int, int] = (0, 0)) -> None:
         self.title = rules.name
         self.rules = rules
         self.picked = tuple(saved.get("picked", ())) if saved is not None else picked
@@ -86,6 +92,8 @@ class GameScreen:
         self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
                                          self.picked, getattr(host, "blitz_players", 2)),
                           random.Random(seed), host.times_called)
+        # Head 2 Head's wins carry over to Play Again, as the mode object did.
+        self._game.total_wins = list(wins)
         self._listening = False
         self._music: Voice | None = None
         self._last_grade: str | None = None
@@ -114,6 +122,10 @@ class GameScreen:
             self._game.press("Bop", now)
         self._dispatch()
 
+    @property
+    def wins(self) -> tuple[int, int]:
+        return (self._game.total_wins[0], self._game.total_wins[1])
+
     def resume(self, now: float) -> None:
         self._game.resume(now)
         self._dispatch()
@@ -138,6 +150,9 @@ class GameScreen:
             elif self._game.state.name == "WAITING_TO_START":
                 # Nothing to pause yet on "Bop It to start"; leave for the menu.
                 self._host.return_to_menu()
+            return
+        if self._rules.head_to_head:
+            self._h2h_key(key, now)
             return
         if key == GAME_SCORE_KEY:
             # The original showed the score on screen during play.
@@ -174,6 +189,42 @@ class GameScreen:
             self._game.press(command, now)
             self._dispatch()
 
+    def _h2h_key(self, key: int, now: float) -> None:
+        g = self._game
+        if key == H2H_SCORE_KEY:
+            # The original showed both points on screen during play.
+            self._host.speech.speak(self._h2h_score_text(), interrupt=True)
+            return
+        slot = h2h_slot_for(key)
+        if slot is None:
+            return
+        player, index = slot
+        if index is None:
+            command = "Bop"
+        else:
+            owned = g.commands_of(player)
+            if index >= len(owned):
+                return
+            command = owned[index]
+        log.info("key %s -> %s %s at %.3f", pygame.key.name(key), PLAYER_NAMES[player],
+                 command, now)
+        g.press_by(player, command, now)
+        self._dispatch()
+
+    def _h2h_score_text(self) -> str:
+        scores = self._game.h2h_scores
+        return f"{PLAYER_NAMES[0]} {scores[0]}, {PLAYER_NAMES[1]} {scores[1]}."
+
+    def _h2h_keys_text(self) -> str:
+        """Which key does what for each player. Our addition, as the keys are ours."""
+        parts = []
+        for player, name in enumerate(PLAYER_NAMES):
+            keys = [f"Bop on {h2h_key_name(player, None)}"]
+            keys += [f"{command} on {h2h_key_name(player, i)}"
+                     for i, command in enumerate(self._game.commands_of(player))]
+            parts.append(f"{name}: " + ", ".join(keys) + ".")
+        return " ".join(parts)
+
     def update(self, now: float) -> None:
         self._game.update(now)
         if self._listening:
@@ -189,8 +240,8 @@ class GameScreen:
         audio = self._host.audio
         speech = self._host.speech
         match event:
-            case ev.PlaySound(name, pitch, position):
-                voice = audio.play(name, pitch=pitch)
+            case ev.PlaySound(name, pitch, position, pan):
+                voice = audio.play(name, pitch=pitch, pan=pan)
                 if voice is not None:
                     if position:
                         voice.seek(position)
@@ -224,9 +275,17 @@ class GameScreen:
             case ev.GameStarted():
                 # "Once you start any new game, your saved game is lost."
                 self._host.saved_game.remove()
+            case ev.WaitingToStart() if self._rules.head_to_head:
+                speech.speak(self._h2h_keys_text() + " Bop it to start.", interrupt=True)
             case ev.WaitingToStart():
                 # The original showed "Bop It to start" on screen.
                 speech.speak("Bop it to start.", interrupt=True)
+            case ev.PointScored(player, scores):
+                # The original animated the scorer's points; see docs/DEVIATIONS.md.
+                speech.speak(f"{PLAYER_NAMES[player]} {scores[player]}.", interrupt=True)
+            case ev.HeadToHeadWon():
+                self._host.replace(HeadToHeadEndScreen(self._host, self._rules, event,
+                                                       self.picked))
             case ev.RhythmGraded(grade):
                 # Shown on screen in the original; spoken on request (score key).
                 self._last_grade = f"{grade}, X-Move" if self._x_move_pending else grade
@@ -477,7 +536,8 @@ class PauseScreen:
         # PauseMenu::restartButtonPressed: straight into a new game.
         self._host.pop()
         self._host.replace(GameScreen(self._host, self._game_screen.rules, start_now=True,
-                                      picked=self._game_screen.picked))
+                                      picked=self._game_screen.picked,
+                                      wins=self._game_screen.wins))
 
 
 class PassItEndScreen:
@@ -595,6 +655,62 @@ class ChallengeBreakScreen:
     def _go(self) -> None:
         self._host.pop()
         self._game_screen.next_player(self._now)
+
+
+class HeadToHeadEndScreen:
+    """showH2HWinner and MPH2HEndGame: "Green wins" or "Blue wins" at once, MUSIC_PayoffLoop
+    half a second later, then the results fade in with each player's total wins. Menu (left)
+    and Play Again (right) play SFX_Select and work 0.4 seconds after the game ends."""
+
+    def __init__(self, host: Host, rules: ModeRules, result: ev.HeadToHeadWon,
+                 picked: tuple[str, ...]) -> None:
+        self.title = "Winner"
+        self._host = host
+        self._rules = rules
+        self._result = result
+        self._picked = picked
+        self._timeline = _Timeline()
+        self._announced = False
+        self._buttons_at = 0.0
+        self._menu = Menu("Winner", [
+            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Play again", self._play_again, "SFX_Select"),
+        ])
+
+    def enter(self, now: float) -> None:
+        r = self._result
+        speech = self._host.speech
+        speech.speak(f"{PLAYER_NAMES[r.player]} wins, {r.scores[r.player]} to "
+                     f"{r.scores[1 - r.player]}.", interrupt=True, protect=True)
+        self._buttons_at = now + H2H_BUTTONS_DELAY
+
+        def payoff() -> None:
+            self._host.audio.play("MUSIC_PayoffLoop", music=True)
+
+        def results() -> None:
+            speech.speak(f"Wins: {PLAYER_NAMES[0]} {r.wins[0]}, {PLAYER_NAMES[1]} {r.wins[1]}.",
+                         protect=True)
+
+        self._timeline.at(now + H2H_PAYOFF_DELAY, payoff)
+        self._timeline.at(now + H2H_RESULTS_DELAY, results)
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is None:
+            return
+        if nav.name == "SELECT" and now < self._buttons_at:
+            return
+        self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        if self._timeline.run(now) and not self._announced:
+            self._announced = True
+            self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def _play_again(self) -> None:
+        # playAgainButtonPressed: straight into a new game; the wins carry on.
+        self._host.replace(GameScreen(self._host, self._rules, start_now=True,
+                                      picked=self._picked, wins=self._result.wins))
 
 
 def challenge_ranking(times: tuple[float, ...]) -> list[tuple[int, float]]:

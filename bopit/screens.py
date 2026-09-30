@@ -101,7 +101,7 @@ def games_menu(nav: Navigator) -> Menu:
     ])
 
 
-# Verbatim from English.lproj/Localizable.strings.
+# From English.lproj/Localizable.strings, verbatim except Head 2 Head.
 MODE_DESCRIPTIONS = {
     "Classic": "The original game of Bop, Twist and Pull. Just do what it says to stay alive "
                "as it gets faster and faster.",
@@ -117,9 +117,11 @@ MODE_DESCRIPTIONS = {
     "Pass It Extreme": "Play the Extreme game with friends. Do what it says, then pass it to "
                        "the next player. See how long the group can stay alive OR play a "
                        "competition, where the last player standing wins!",
-    "Head 2 Head": "Complete the moves on your half of the screen. Tap your half of the Bop "
-                   "first on the \u201cBop It\u201d command to score a point. Also score when "
-                   "your opponent blows it. First player to 7 wins!",
+    # Reworded for keys; the original said "your half of the screen" and "Tap your half of
+    # the Bop" (docs/DEVIATIONS.md).
+    "Head 2 Head": "Complete the moves on your side of the keyboard. Press your Bop key first "
+                   "on the \u201cBop It\u201d command to score a point. Also score when your "
+                   "opponent blows it. First player to 7 wins!",
     "Blitz Challenge": "Challenge your friends to a game of Blitz. Take turns to see who can "
                        "handle the pressure and get the fastest time!",
 }

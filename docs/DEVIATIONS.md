@@ -76,7 +76,7 @@ Of the original's 12 end-screen tips: the two about Submit Score (Facebook and t
 
 ## Help overview adapted for this port
 
-The Help overview keeps the original's sections, order and wording except where it described the phone, the touch screen or online features (the port's text is in bopit/port_texts.py, the original in bopit/texts.py): the Zoom set-up note became a headphones note; "using the touch screen" became "using the keyboard"; the X-Move section describes the microphone shout; Basic's hint about the dancing BopJects became "listen to the music: time your move with the second beat after the command"; the Scoring section points to Games>Scores instead of the leaderboard and Facebook; the Facebook section is removed; the pause button became Escape; Silent is removed from the Commands line, "Tap Off" became "Set it to Off" and a Microphone line is added; Quick Play says "Press and hold Enter on any game mode for about a second" (the original said 2 seconds; its code used 1.2). The multiplayer descriptions are unchanged until multiplayer is built. Reason: the original text described things this port does not have. Approved 2026-09-30.
+The Help overview keeps the original's sections, order and wording except where it described the phone, the touch screen or online features (the port's text is in bopit/port_texts.py, the original in bopit/texts.py): the Zoom set-up note became a headphones note; "using the touch screen" became "using the keyboard"; the X-Move section describes the microphone shout; Basic's hint about the dancing BopJects became "listen to the music: time your move with the second beat after the command"; the Scoring section points to Games>Scores instead of the leaderboard and Facebook; the Facebook section is removed; the pause button became Escape; Silent is removed from the Commands line, "Tap Off" became "Set it to Off" and a Microphone line is added; Quick Play says "Press and hold Enter on any game mode for about a second" (the original said 2 seconds; its code used 1.2). Head2Head's description (in Help and on its intro screen) says "Complete the moves on your side of the keyboard. Press your Bop key first" instead of "your half of the screen. Tap your half of the Bop first"; the other multiplayer descriptions are unchanged (approved 2026-09-30). Reason: the original text described things this port does not have. Approved 2026-09-30.
 
 ## Command picker spoken states
 
@@ -84,7 +84,15 @@ In the command picker each command reads "on", "off" or "locked" instead of the 
 
 ## Head 2 Head callouts are panned
 
-In Head 2 Head each player's commands were on their half of the screen. Here each callout is panned toward its owner (player one left, player two right) and Bop stays in the centre. Reason: the screen halves cannot be seen. Approved 2026-09-30.
+In Head 2 Head each player's commands were on their half of the screen. Here each callout is panned toward its owner (Green, player one, left; Blue, player two, right) and Bop stays in the centre. Reason: the screen halves cannot be seen. Approved 2026-09-30.
+
+## Head 2 Head keys, points and a stray Bop
+
+Each player has their own keys, by position: a Bop key and one key for each of their commands, in the order the commands were picked. At "Bop it to start" the game says which command is on which key for each player. The score key is Tab here, as S is one of Green's keys. Reason: two players share one keyboard, and the commands each player owns change with the picks. Approved 2026-09-30.
+
+When someone scores, the port says the scorer's name and new points, for example "Green 3". The original showed a silent animation. Reason: points are the whole game here and the animation cannot be seen. Approved 2026-09-30.
+
+A player who presses their Bop key during the opponent's command gives the opponent the point, like any other press on the opponent's command. In the original the two Bop halves sat outside the screen areas it checked for touches on the wrong side, so such a tap most likely counted as the command's owner failing, handing the tapper a point. Reason: with keys it is always known who pressed, and the original's result looks like an accident of its layout. Approved 2026-09-30.
 
 ## Pass It lets the bar finish before passing
 

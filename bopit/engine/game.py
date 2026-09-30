@@ -66,6 +66,15 @@ PICKED_LOCATIONS = (0, 3, 2, 1)
 # Blitz Challenge (MultiBlitzMode): after GO on the break screen, the next player starts
 # 1.1 per pitch later (blitzBreakEnd).
 CHALLENGE_RESTART_DELAY = 1.1
+# Head 2 Head (MultiPlayerChallengeMode): first to 7 points wins.
+H2H_WINNING_SCORE = 7
+GREEN, BLUE = 0, 1
+PLAYER_NAMES = ("Green", "Blue")
+# Who owns a command at each location: Green had the bottom half of the screen (locations 2
+# and 3), Blue the top (0 and 1). Bop, at 4, was shared.
+H2H_OWNERS = {0: BLUE, 1: BLUE, 2: GREEN, 3: GREEN}
+# Our addition: each player's callouts are panned to their side of the keyboard.
+H2H_PAN = {GREEN: -0.8, BLUE: 0.8}
 
 
 @dataclass(frozen=True)
@@ -98,6 +107,12 @@ class ModeRules:
     tracks_trophies: bool = True
     # Blitz Challenge: each player in turn does this many successes against the clock.
     challenge_target: int | None = None
+    # Head 2 Head: two players, each owning some of the picked commands.
+    head_to_head: bool = False
+
+    @property
+    def uses_picked(self) -> bool:
+        return self.pass_it or self.head_to_head
 
 
 CLASSIC = ModeRules("Classic", (("Bop", 4), ("Twist", 0), ("Pull", 3)), pitch_shift_amount=0.03,
@@ -114,6 +129,8 @@ PASS_IT_EXTREME = ModeRules("Pass It Extreme", (("Bop", 4),), pitch_shift_amount
 BLITZ_CHALLENGE = ModeRules("Blitz Challenge", BLITZ.commands, pitch_shift_amount=0.0,
                             pitch_shift_frequency=50_000_000, music_tracks=BLITZ.music_tracks,
                             tracks_trophies=False, challenge_target=15)
+HEAD_TO_HEAD = ModeRules("Head 2 Head", (("Bop", 4),), pitch_shift_amount=0.02,
+                         pitch_shift_frequency=8, tracks_trophies=False, head_to_head=True)
 EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
                     scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
@@ -181,7 +198,7 @@ class Game:
         self.options = options
         self._rng = rng
         self._banter = Banter(rng)
-        self._master = (("Bop",) + options.picked) if rules.pass_it else all_commands(options.shout_it)
+        self._master = (("Bop",) + options.picked) if rules.uses_picked else all_commands(options.shout_it)
         self._pitch_frequency = rules.pitch_shift_frequency
         self._turn_to_pass = 0
         self._timers: list[tuple[float, int, Callable[[float], None]]] = []
@@ -189,6 +206,7 @@ class Game:
         self._events: list[ev.Event] = []
         self._music = MusicClock()
         self.state = State.OVER
+        self._bop_player: int | None = None
         self.active: list[str] = []
         self.locations: dict[str, int] = {}
         self.times_called = times_called if times_called is not None else {}
@@ -216,6 +234,9 @@ class Game:
         self.player_times: list[float] = []
         self.current_player = 0
         self._players = options.players
+        # Head 2 Head: this game's points, and wins across Play Again (kept by the mode object).
+        self.h2h_scores = [0, 0]
+        self.total_wins = [0, 0]
 
     # Public interface
 
@@ -238,6 +259,40 @@ class Game:
             else:
                 self._fail_turn(now)
         # Between turns input is ignored, as in the original.
+
+    def press_by(self, player: int, command: str, now: float) -> None:
+        """Head 2 Head: a player performed a command (MultiPlayerChallengeMode gotTouchBegan,
+        Command_Bop::checkMove and GameController::gotTouchEnded)."""
+        self.update(now)
+        if self.state == State.WAITING_TO_START:
+            self._start_game(now)
+            return
+        if self.state != State.IN_TURN:
+            return
+        expected = self.current or ""
+        owner = self.owner(expected)
+        correct = command == expected and (owner is None or owner == player)
+        self._emit(ev.MoveMade(command, expected, correct, now - self._turn_opened_at))
+        if correct:
+            self._bop_player = player if expected == "Bop" else None
+            self._win_turn(now)
+        elif owner is None:
+            # A wrong move on Bop fails the turn, and nobody scores.
+            self._fail_h2h(now, None)
+        else:
+            # A wrong move on your own command, or any move on your opponent's (for Bop on
+            # the opponent's command, see docs/DEVIATIONS.md), and you blew it.
+            self._fail_h2h(now, player)
+
+    def owner(self, command: str) -> int | None:
+        """Head 2 Head: who owns a command, by its location. None for Bop."""
+        return H2H_OWNERS.get(self.locations.get(command, 4))
+
+    def commands_of(self, player: int) -> list[str]:
+        """Head 2 Head: a player's commands, in the order they were picked."""
+        # Nothing unlocks in Head 2 Head, so the picks keep the places they start in.
+        return [c for c, location in zip(self._master[1:5], PICKED_LOCATIONS)
+                if H2H_OWNERS[location] == player]
 
     def hear(self, level: float, now: float) -> None:
         """The microphone's current average level, 0 to 1, while listening."""
@@ -267,7 +322,9 @@ class Game:
         if self._forced is not None:
             self._activate(self._forced, self.locations.get(self._forced, 0))
         # The original only cut off the queued callout when it was not the last active command.
-        if self._next in self.active and self.active.index(self._next) < len(self.active) - 1:
+        # Head 2 Head's own pauseGame always cut it off.
+        if self._next in self.active and (self.rules.head_to_head
+                                          or self.active.index(self._next) < len(self.active) - 1):
             self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
                                                   self.options.theme)))
         self._emit(ev.MusicStop())
@@ -307,6 +364,7 @@ class Game:
             "turn_to_pass": self._turn_to_pass,
             # MultiBlitzMode::encodeWithCoder kept only the number of players.
             "players": self._players,
+            "h2h_scores": list(self.h2h_scores), "total_wins": list(self.total_wins),
         }
 
     def load(self, data: dict, now: float) -> None:
@@ -331,6 +389,8 @@ class Game:
         # Not saved by the original: the times list comes back empty and the turn at player 1.
         self.player_times = []
         self.current_player = 0
+        self.h2h_scores = list(data.get("h2h_scores", [0, 0]))
+        self.total_wins = list(data.get("total_wins", [0, 0]))
         if self.rules.pass_it:
             self._pitch_frequency = self._turn_to_pass
         self._speed_ups = 0
@@ -403,9 +463,12 @@ class Game:
         self.active = []
         for command, location in self.rules.commands:
             self._activate(command, location)
-        if self.rules.pass_it:
+        if self.rules.uses_picked:
             for command, location in zip(self._master[1:5], PICKED_LOCATIONS):
                 self._activate(command, location)
+        # MultiPlayerChallengeMode::startGame: the points start at 0; the wins carry on.
+        self.h2h_scores = [0, 0]
+        self._bop_player = None
         for command in self.active:
             self.times_called[command] = 0
         self._emit(ev.GameStarted(self.rules.name))
@@ -461,6 +524,10 @@ class Game:
         if self.state != State.IN_TURN:
             return
         self._emit(ev.TurnTimedOut(self.current or ""))
+        if self.rules.head_to_head:
+            # The command's owner blew it; a missed Bop scores for nobody.
+            self._fail_h2h(now, self.owner(self.current or ""))
+            return
         self._fail_turn(now)
 
     def _win_turn(self, now: float) -> None:
@@ -501,6 +568,8 @@ class Game:
             self._win_blitz()
         if self.rules.pass_it and self.moves > 0 and self.moves % self._turn_to_pass == 0:
             self._start_pass(now)
+        if self.rules.head_to_head:
+            self._h2h_after_win(now)
         challenge = self.rules.challenge_target
         if challenge is not None and self.moves > challenge - 1 and self._next is not None:
             # MultiBlitzMode::winTurn: the last success cuts off the callout it just queued.
@@ -649,6 +718,57 @@ class Game:
         self._call(self._next, position=CALLOUT_NOW_POSITION)
         self._start_turn(now)
 
+    # Head 2 Head
+
+    def _h2h_after_win(self, now: float) -> None:
+        """MultiPlayerChallengeMode::winTurn: a Bop scores for whoever hit it first. At 7
+        the game is won; otherwise the next turn comes 0.81 per pitch later, as usual."""
+        if self._bop_player is not None:
+            self._score_h2h(self._bop_player)
+            self._bop_player = None
+        if max(self.h2h_scores) >= H2H_WINNING_SCORE:
+            self._cancel_timers()
+            self._emit(ev.MusicStop())
+            if self._next is not None:
+                self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                      self.options.theme)))
+            self._win_h2h()
+
+    def _fail_h2h(self, now: float, blew_it: int | None) -> None:
+        """MultiPlayerChallengeMode::failTurn: the queued callout and the music stop and the
+        death line plays; the other player scores. Unless someone has won, the music comes
+        back at the loop offset at once (setOffset restarts a stopped sound), a new command
+        is called, and the next turn opens 0.81 per pitch later."""
+        self._cancel_timers()
+        self._stop_listening()
+        if self._next is not None:
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
+        self._emit(ev.MusicStop())
+        die = self._rng.choice(DIE_LINES)
+        self._emit(ev.PlaySound(themed(die, self.options.theme)))
+        if blew_it is not None:
+            self._score_h2h(1 - blew_it)
+        if max(self.h2h_scores) >= H2H_WINNING_SCORE:
+            self._win_h2h()
+            return
+        self.state = State.BETWEEN_TURNS
+        self._schedule(now + BEAT / self.pitch, self._success_done)
+        self._start_music(self._music_name(self._music_index), LOOP_OFFSET, now)
+        self._next = self._rng.choice(self.active)
+        self._call(self._next)
+
+    def _score_h2h(self, player: int) -> None:
+        self.h2h_scores[player] += 1
+        self._emit(ev.PointScored(player, (self.h2h_scores[0], self.h2h_scores[1])))
+
+    def _win_h2h(self) -> None:
+        winner = GREEN if self.h2h_scores[GREEN] >= H2H_WINNING_SCORE else BLUE
+        self.total_wins[winner] += 1
+        self.state = State.OVER
+        self._emit(ev.HeadToHeadWon(winner, (self.h2h_scores[0], self.h2h_scores[1]),
+                                    (self.total_wins[0], self.total_wins[1])))
+
     # Blitz Challenge
 
     def _challenge_turn_done(self, now: float) -> None:
@@ -754,9 +874,13 @@ class Game:
 
     def _call(self, command: str, position: float = 0.0) -> None:
         self._emit(ev.CommandCalled(command))
+        pan = 0.0
+        if self.rules.head_to_head:
+            owner = self.owner(command)
+            pan = H2H_PAN[owner] if owner is not None else 0.0
         self._emit(ev.PlaySound(
             callout_sound(command, self.options.commands_mode, self.options.theme), self.pitch,
-            position))
+            position, pan))
 
     def _start_music(self, name: str, position: float, now: float) -> None:
         self._music.start(name, position, self.pitch, now)

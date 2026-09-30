@@ -47,6 +47,28 @@ GAME_KEYS: dict[int, str] = {
 GAME_SCORE_KEY = pygame.K_s
 
 
+# Temporary Head 2 Head keys, by position: each player's Bop, then their commands in the
+# order they were picked. Green (player 0) is on the left, Blue (player 1) on the right.
+H2H_KEYS: dict[int, tuple[int, int | None]] = {
+    pygame.K_f: (0, None), pygame.K_d: (0, 0), pygame.K_s: (0, 1),
+    pygame.K_j: (1, None), pygame.K_k: (1, 0), pygame.K_l: (1, 1),
+}
+# S is Green's, so Head 2 Head speaks the score on Tab.
+H2H_SCORE_KEY = pygame.K_TAB
+
+
+def h2h_slot_for(key: int) -> tuple[int, int | None] | None:
+    """(player, slot) for a Head 2 Head key; slot None is that player's Bop."""
+    return H2H_KEYS.get(key)
+
+
+def h2h_key_name(player: int, slot: int | None) -> str:
+    for key, bound in H2H_KEYS.items():
+        if bound == (player, slot):
+            return pygame.key.name(key).upper()
+    return "no key"
+
+
 def game_command_for(key: int) -> str | None:
     return GAME_KEYS.get(key)
 

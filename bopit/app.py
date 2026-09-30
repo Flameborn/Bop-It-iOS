@@ -9,8 +9,8 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
-from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, PASS_IT_BASIC,
-                               PASS_IT_EXTREME, ModeRules)
+from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, HEAD_TO_HEAD,
+                               PASS_IT_BASIC, PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
@@ -29,9 +29,10 @@ FRAMES_PER_SECOND = 120
 MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME,
                                "Blitz": BLITZ, "Pass It Basic": PASS_IT_BASIC,
                                "Pass It Extreme": PASS_IT_EXTREME,
-                               "Blitz Challenge": BLITZ_CHALLENGE}
+                               "Blitz Challenge": BLITZ_CHALLENGE,
+                               "Head 2 Head": HEAD_TO_HEAD}
 # Multiplayer modes that go through the command picker first.
-PICKER_MODES = {"Pass It Basic", "Pass It Extreme"}
+PICKER_MODES = {"Pass It Basic", "Pass It Extreme", "Head 2 Head"}
 
 
 class Screen(Protocol):

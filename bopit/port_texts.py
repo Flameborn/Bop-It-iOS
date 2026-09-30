@@ -34,7 +34,7 @@ HELP_OVERVIEW: tuple[str, ...] = (
     "Pass It Extreme: Play the Extreme game with friends. Do what it says, then pass it to the "
     "next player. See how long the group can stay alive OR play a competition, where the last "
     "player standing wins!",
-    "Head2Head: Complete the moves on your half of the screen. Tap your half of the Bop first "
+    "Head2Head: Complete the moves on your side of the keyboard. Press your Bop key first "
     "on the “Bop It” command to score a point. Also score when your opponent blows it. "
     "First player to 7 wins!",
     "Blitz Challenge: Challenge your friends to a game of Blitz. Take turns to see who can "
