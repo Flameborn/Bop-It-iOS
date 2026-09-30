@@ -93,11 +93,28 @@ class HeadToHeadTests(unittest.TestCase):
         self.game._call("Twist")
         self.game._call("Pull")
         self.game._call("Bop")
-        pans = [p.pan for p in of(self.game.pop_events(), ev.PlaySound)]
+        pans = [p.pan for p in of(self.game.pop_events(), ev.PlaySound)
+                if p.name not in ("green", "blue")]
         self.assertEqual(len(pans), 3)
         self.assertGreater(pans[0], 0)
         self.assertLess(pans[1], 0)
         self.assertEqual(pans[2], 0.0)
+
+    def test_side_cue_with_the_voice_only_when_side_changes(self) -> None:
+        self.game.pop_events()
+        self.game._last_side = None
+        cues = []
+        for command in ("Pull", "Bop", "Spin", "Twist", "Flick", "Pull"):
+            self.game._call(command)
+            # Nothing yet: the callout is still in its silent lead-in.
+            called = [p.name for p in of(self.game.pop_events(), ev.PlaySound)]
+            self.assertNotIn("green", called)
+            self.assertNotIn("blue", called)
+            self.game._next = command
+            self.game._start_turn(0.0)
+            self.game._timers.clear()
+            cues += [(p.name, p.pan) for p in of(self.game.pop_events(), ev.PlaySound)]
+        self.assertEqual(cues, [("green", -0.8), ("blue", 0.8), ("green", -0.8)])
 
     def test_speeds_up_every_eight_moves(self) -> None:
         for _ in range(8):

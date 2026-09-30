@@ -86,6 +86,8 @@ In the command picker each command reads "on", "off" or "locked" instead of the 
 
 In Head 2 Head each player's commands were on their half of the screen. Here each callout is panned toward its owner (Green, player one, left; Blue, player two, right) and Bop stays in the centre. Reason: the screen halves cannot be seen. Approved 2026-09-30.
 
+When the next command belongs to the other player than the last player's command, a short cue plays first: sounds/accessibility/green.wav or blue.wav, panned to that player's side, as the callout's voice starts (when the turn opens). Bop is shared, gets no cue and does not count as a change. Reason: panning alone is lost on speakers; the developer supplied the sounds. Approved 2026-09-30.
+
 ## Head 2 Head keys, points and a stray Bop
 
 Each player has their own keys, by position: a Bop key and one key for each of their commands, in the order the commands were picked. At "Bop it to start" the game says which command is on which key for each player. The score key is Tab here, as S is one of Green's keys. Reason: two players share one keyboard, and the commands each player owns change with the picks. Approved 2026-09-30.

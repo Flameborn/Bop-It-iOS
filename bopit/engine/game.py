@@ -75,6 +75,9 @@ PLAYER_NAMES = ("Green", "Blue")
 H2H_OWNERS = {0: BLUE, 1: BLUE, 2: GREEN, 3: GREEN}
 # Our addition: each player's callouts are panned to their side of the keyboard.
 H2H_PAN = {GREEN: -0.8, BLUE: 0.8}
+# Our addition: a cue for the player whose command comes next, played when the side changes
+# (Bop is shared and does not count). It sounds with the callout's voice, as the turn opens.
+H2H_CUES = {GREEN: "green", BLUE: "blue"}
 
 
 @dataclass(frozen=True)
@@ -207,6 +210,8 @@ class Game:
         self._music = MusicClock()
         self.state = State.OVER
         self._bop_player: int | None = None
+        self._last_side: int | None = None
+        self._pending_cue: int | None = None
         self.active: list[str] = []
         self.locations: dict[str, int] = {}
         self.times_called = times_called if times_called is not None else {}
@@ -469,6 +474,8 @@ class Game:
         # MultiPlayerChallengeMode::startGame: the points start at 0; the wins carry on.
         self.h2h_scores = [0, 0]
         self._bop_player = None
+        self._last_side = None
+        self._pending_cue = None
         for command in self.active:
             self.times_called[command] = 0
         self._emit(ev.GameStarted(self.rules.name))
@@ -504,6 +511,11 @@ class Game:
         self.times_called[self.current] = self.times_called.get(self.current, 0) + 1
         self._turn_opened_at = now
         self.state = State.IN_TURN
+        if self._pending_cue is not None:
+            # The callout's voice starts now, after its one-beat lead-in.
+            self._last_side = self._pending_cue
+            self._emit(ev.PlaySound(H2H_CUES[self._pending_cue], pan=H2H_PAN[self._pending_cue]))
+            self._pending_cue = None
         deadline = now + TURN_TIMEOUT / self.pitch
         self._emit(ev.TurnOpened(self.current, deadline))
         self._schedule(deadline, self._command_timeout)
@@ -877,7 +889,9 @@ class Game:
         pan = 0.0
         if self.rules.head_to_head:
             owner = self.owner(command)
-            pan = H2H_PAN[owner] if owner is not None else 0.0
+            if owner is not None:
+                pan = H2H_PAN[owner]
+            self._pending_cue = owner if owner is not None and owner != self._last_side else None
         self._emit(ev.PlaySound(
             callout_sound(command, self.options.commands_mode, self.options.theme), self.pitch,
             position, pan))
