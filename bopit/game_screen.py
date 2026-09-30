@@ -39,6 +39,9 @@ BLITZ_TIME_DELAY = 1.0
 BLITZ_HIGH_SCORE_DELAY = 0.5
 BLITZ_TIP_DELAY = 0.5
 PASS_IT_SCORES_DELAY = 1.0  # MPPassitEndGame::viewDidLoad
+# displayMPBlitzHEndGame: the results fade in over a second after a 2 second delay.
+CHALLENGE_RESULTS_DELAY = 2.0
+CHALLENGE_RANKED = 3        # MPBlitzEndGame shows the top three.
 # handleNewTrophy: the trophy appears after a 1.5 second delay and a 1 second animation.
 TROPHY_DELAY = 2.5
 TALLY_FRACTION = 0.05
@@ -55,6 +58,7 @@ class Host(Protocol):
     announced_no_microphone: bool
     saved_game: SavedGame
     tips: Tips
+    blitz_players: int
 
     def open_trophies(self) -> None: ...
 
@@ -80,7 +84,7 @@ class GameScreen:
         self._rules = rules
         s = host.settings
         self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
-                                         self.picked),
+                                         self.picked, getattr(host, "blitz_players", 2)),
                           random.Random(seed), host.times_called)
         self._listening = False
         self._music: Voice | None = None
@@ -114,6 +118,10 @@ class GameScreen:
         self._game.resume(now)
         self._dispatch()
 
+    def next_player(self, now: float) -> None:
+        self._game.next_player(now)
+        self._dispatch()
+
     def save(self) -> None:
         """PauseMenu::exitButtonPressed saved the game only once a move had been made."""
         if self._game.moves > 0:
@@ -138,6 +146,12 @@ class GameScreen:
             if g.rules.pass_it:
                 # Multiplayer showed only the moves (displayMPScore).
                 self._host.speech.speak(f"Moves {g.moves}.", interrupt=True)
+                return
+            if g.rules.challenge_target is not None:
+                seconds = int(g.blitz_elapsed(now))
+                self._host.speech.speak(
+                    f"Player {g.current_player + 1}. Moves {g.moves}. Time {seconds} seconds.",
+                    interrupt=True)
                 return
             if g.rules.blitz_target is not None:
                 # The original showed whole seconds during Blitz.
@@ -246,6 +260,10 @@ class GameScreen:
                 # failDone saved the move history.
                 self._host.progress.save()
                 self._host.replace(EndScreen(self._host, self._rules, event, self._new_trophy))
+            case ev.ChallengeBreak(player, time):
+                self._host.push(ChallengeBreakScreen(self._host, self, player, time))
+            case ev.ChallengeFinished(times):
+                self._host.replace(ChallengeEndScreen(self._host, self._rules, times))
             case ev.BlitzFinished():
                 # winBlitz checks trophies once, at the finish.
                 self._check_trophies(event.time)
@@ -541,6 +559,91 @@ class BlitzEndScreen(_EndScreenBase):
                 self._timeline.at(time_at + TROPHY_DELAY, self._show_trophy)
             else:
                 self._timeline.at(time_at + BLITZ_TIP_DELAY, self._show_tip)
+
+
+class ChallengeBreakScreen:
+    """MPBlitzBreak: MUSIC_PayoffLoopShort, "Player N Time" and the time, and a GO button
+    (labelled "next") shown at once. GO plays SFX_Select and the next player starts 1.1
+    seconds later."""
+
+    def __init__(self, host: Host, game_screen: GameScreen, player: int, time: float) -> None:
+        self.title = "Break"
+        self._host = host
+        self._game_screen = game_screen
+        self._player = player
+        self._time = time
+        self._now = 0.0
+        self._menu = Menu("Break", [Button("Next", self._go, "SFX_Select")])
+
+    def enter(self, now: float) -> None:
+        self._now = now
+        self._host.audio.play("MUSIC_PayoffLoopShort", music=True)
+        self._host.speech.speak(f"Player {self._player} time, {self._time:.3f} seconds.",
+                                interrupt=True, protect=True)
+        self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def key(self, key: int, now: float) -> None:
+        self._now = now
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        self._now = now
+        self._game_screen.update(now)
+
+    def _go(self) -> None:
+        self._host.pop()
+        self._game_screen.next_player(self._now)
+
+
+def challenge_ranking(times: tuple[float, ...]) -> list[tuple[int, float]]:
+    """MPBlitzEndGame::sortPlayers: fastest first. Each time is matched back to the first
+    player with that time, so tied players would show the same number, as in the original."""
+    return [(times.index(t) + 1, t) for t in sorted(times)]
+
+
+class ChallengeEndScreen:
+    """MPBlitzEndGame: MUSIC_PayoffLoop plays as the screen fades in after 2 seconds,
+    showing "Player N wins" and the top three players with their times. Nothing is saved.
+    Menu and Play Again sit side by side, Menu on the left; both play SFX_Select."""
+
+    def __init__(self, host: Host, rules: ModeRules, times: tuple[float, ...]) -> None:
+        self.title = "Results"
+        self._host = host
+        self._rules = rules
+        self._ranking = challenge_ranking(times)
+        self._timeline = _Timeline()
+        self._announced = False
+        self._menu = Menu("Results", [
+            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Play again", self._play_again, "SFX_Select"),
+        ])
+
+    def enter(self, now: float) -> None:
+        self._host.audio.play("MUSIC_PayoffLoop", music=True)
+
+        def results() -> None:
+            winner = self._ranking[0][0]
+            rows = " ".join(f"Player {player}, {time:.3f} seconds."
+                            for player, time in self._ranking[:CHALLENGE_RANKED])
+            self._host.speech.speak(f"Player {winner} wins. {rows}", interrupt=True, protect=True)
+
+        self._timeline.at(now + CHALLENGE_RESULTS_DELAY, results)
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        if self._timeline.run(now) and not self._announced:
+            self._announced = True
+            self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def _play_again(self) -> None:
+        # playAgainButtonPressed: straight into a new game with the same players.
+        self._host.replace(GameScreen(self._host, self._rules, start_now=True))
 
 
 def _tally_seconds(result: ev.GameOver) -> float:

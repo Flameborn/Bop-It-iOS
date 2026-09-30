@@ -27,6 +27,8 @@ class Navigator(Protocol):
     settings: Settings
     scores: Scores
     progress: Progress
+    # Blitz Challenge players. The original kept it for the session, starting at 2.
+    blitz_players: int
 
     def push(self, menu: Menu) -> None: ...
 
@@ -195,6 +197,28 @@ def picker_menu(nav: Navigator, mode: str, on_go: Callable[[tuple[str, ...]], No
         items.append(Button(command, toggle(command), get_state=state(command)))
     items.append(Button(PICKER_HINT, lambda: None))
     return Menu("customize game", items, on_back=nav.pop, back_sound=BACK)
+
+
+MIN_PLAYERS = 2
+MAX_PLAYERS = 10
+
+
+def player_select_menu(nav: Navigator, on_go: Callable[[], None]) -> Menu:
+    """mpBlitzPlayerSelect, top to bottom: the player counts 2 to 10 (choosing one made no
+    sound), then Back and GO. GO plays SFX_Select, Back SFX_Back."""
+    counts = [str(n) for n in range(MIN_PLAYERS, MAX_PLAYERS + 1)]
+
+    def set_players(index: int) -> None:
+        nav.blitz_players = MIN_PLAYERS + index
+
+    def go() -> None:
+        nav.play_themed(SELECT)
+        on_go()
+
+    return Menu("Blitz Challenge players", [
+        Choice("Players", counts, lambda: nav.blitz_players - MIN_PLAYERS, set_players),
+        Button("GO", go),
+    ], on_back=nav.pop, back_sound=BACK)
 
 
 def high_score_text(mode: str, best: Entry) -> str:

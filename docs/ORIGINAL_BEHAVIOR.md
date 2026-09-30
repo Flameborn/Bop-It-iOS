@@ -238,7 +238,7 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 
 Source: CommandPicker, Bop_ItViewController pressedBeginMulti*.
 
-- Pass It Basic, Pass It Extreme and Head 2 Head open the command picker ("customize game") before their intro; Blitz Challenge opens a player count picker instead.
+- Pass It Basic, Pass It Extreme and Head 2 Head open the command picker ("customize game") before their intro; Blitz Challenge opens a player count picker instead (see Blitz Challenge below).
 - On screen: GO at the top left, the title, then buttons in rows of three (Bop It, Twist, Pull; Spin, Flick, Shout; Squeeze, Crank, Shake; Nail, Brush, Poke), then "Add 2-4 BopJects to Bop It".
 - Bop It is always selected ("Bop It (X)"). Up to 4 more can be picked; a picked button's title gains "(X)". Picking plays SFX_SettingsSelect, unpicking SFX_BackButtonOLD, and at 4 picked a further pick does nothing. GO needs at least 2 picks and plays SFX_Select; Back plays SFX_Back.
 - Unavailable: commands never yet unlocked in Basic or Extreme (Command isCommandUnlocked reads the unlock flag; Twist and Pull are always available), Shout when Shout It is off, and Poke in Head 2 Head.
@@ -256,6 +256,18 @@ Source: MultiPlayerModeBase, MultiPassItMode, MultiPassItSingleMode, MPPassitEnd
 - The pitch shift frequency is set to the pass point each time, and the speed up check never runs on a pass move, so Pass It in practice never speeds up.
 - A failure ends the game as in the solo modes (death line, help popup rule, banter). The end screen shows the group's moves a second later with SFX_BonusScore. Nothing is saved.
 - Pass It Basic makes Bop the first command and counts it as already called twice. Pass It Extreme's music is not themed. Otherwise they differ only in display (one BopJect at a time or all of them).
+
+### Multiplayer: Blitz Challenge
+
+Source: mpBlitzPlayerSelect, MultiBlitzMode, MPBlitzBreak, MPBlitzEndGame, GameViewController displayMPBlitzBreak and displayMPBlitzHEndGame, and constants read from the binary.
+
+- Player select: buttons 2 to 10 in a scrolling list; choosing one makes no sound. The count starts at 2 when the app launches (Bop_ItViewController::viewDidLoad) and is kept for the session, not saved. Back plays SFX_Back; GO plays SFX_Select and goes to the intro ("Blitz Challenge", with its description and no high score).
+- Play is Blitz: the same five commands, the same Blitz music, no speed up, no unlocks, no grading, and a mistake costs time instead of ending the game (MultiBlitzMode::failTurn matches SoloSpeedMode::failTurn).
+- Each player does 15 successes, not Blitz's 20 (successDone checks for 15; the Help text only says "a game of Blitz"). The 15th success plays as usual and its queued callout is cut off at once. A beat per pitch later (successDone) the clock stops, the loop stops (the success's "b" part plays on) and the player's time is kept. So each time includes that last beat.
+- Between players, the break screen: MUSIC_PayoffLoopShort once, "Player N Time", the time as "%.3fs", and a GO button labelled "next", shown after a 0 second timer (in effect at once). GO plays SFX_Select; 1.1 seconds per pitch later (pitch is 1 again by then) the clock restarts from 0, the Blitz loop starts from its beginning, a random command is called straight away (from 0.805 into the callout) and the turn opens.
+- After the last player, the results (MPBlitzEndGame) fade in over 1 second after a 2 second delay, while MUSIC_PayoffLoop plays once. It shows a "Player N wins" image and the top three players, fastest first, as "Player N" and "%.3fs". Menu (left) and Play Again (right), both SFX_Select; Play Again starts straight away with the same number of players. Nothing is saved (saveTime is empty).
+- Ranking quirk: each sorted time is matched back to the first player with that time, so two players with exactly the same time would both show the first one's number.
+- Pause stops and resumes the clock, as in Blitz. The saved game keeps the number of players but not the times or whose turn it was, so a resumed Blitz Challenge has no times list; the original then compared unsigned numbers, which sends every finished player to another break screen and never reaches the results.
 
 ### Pause, saved game and Quick Play
 

@@ -150,6 +150,20 @@ class BlitzFinished:
 
 
 @dataclass(frozen=True)
+class ChallengeBreak:
+    """Blitz Challenge: a player finished and the next one is up (MPBlitzBreak).
+    player is the one who just finished, counting from 1; time is in seconds."""
+    player: int
+    time: float
+
+
+@dataclass(frozen=True)
+class ChallengeFinished:
+    """Blitz Challenge: the last player finished. times are in player order."""
+    times: tuple[float, ...]
+
+
+@dataclass(frozen=True)
 class GameOver:
     moves: int
     bonus: int
@@ -160,4 +174,5 @@ class GameOver:
 Event = (PlaySound | StopSound | MusicStart | MusicSegment | MusicSeek | MusicPitch | MusicStop | MicListen | XMove
          | WaitingToStart | GameStarted | CommandCalled | TurnOpened | MoveMade
          | TurnTimedOut | ScoreChanged | SpeedUp | RhythmGraded | StreakEarned
-         | CommandUnlocked | CommandIntroduced | PassIt | HelpNeeded | BlitzFinished | GameOver)
+         | CommandUnlocked | CommandIntroduced | PassIt | HelpNeeded | BlitzFinished | ChallengeBreak
+         | ChallengeFinished | GameOver)

@@ -9,8 +9,8 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
-from bopit.engine.game import (BASIC, BLITZ, CLASSIC, EXTREME, PASS_IT_BASIC, PASS_IT_EXTREME,
-                               ModeRules)
+from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, PASS_IT_BASIC,
+                               PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
@@ -28,7 +28,8 @@ log = logging.getLogger(__name__)
 FRAMES_PER_SECOND = 120
 MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME,
                                "Blitz": BLITZ, "Pass It Basic": PASS_IT_BASIC,
-                               "Pass It Extreme": PASS_IT_EXTREME}
+                               "Pass It Extreme": PASS_IT_EXTREME,
+                               "Blitz Challenge": BLITZ_CHALLENGE}
 # Multiplayer modes that go through the command picker first.
 PICKER_MODES = {"Pass It Basic", "Pass It Extreme"}
 
@@ -79,6 +80,8 @@ class App:
         self.saved_game = SavedGame()
         self.tips = Tips(PORT_TIPS)
         self.announced_no_microphone = False
+        # Bop_ItViewController::viewDidLoad: 2 players until changed, for the session.
+        self.blitz_players = 2
         self._stack: list[Screen] = []
         self._running = False
         self._menu_music: Voice | None = None
@@ -143,6 +146,9 @@ class App:
             return
         if name in PICKER_MODES:
             self.push(screens.picker_menu(self, name, lambda picked: self._begin(rules, picked)))
+            return
+        if rules.challenge_target is not None:
+            self.push(screens.player_select_menu(self, lambda: self._begin(rules, ())))
             return
         self._begin(rules, ())
 

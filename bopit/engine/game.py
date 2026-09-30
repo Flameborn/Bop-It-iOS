@@ -63,6 +63,9 @@ PASS_MUSIC = ("MUSIC_PassIt_01", "MUSIC_PassIt_02", "MUSIC_PassIt_03")
 CALLOUT_NOW_POSITION = 0.805
 # Where the picked commands go (Pass It and Head 2 Head prepareActiveCommands).
 PICKED_LOCATIONS = (0, 3, 2, 1)
+# Blitz Challenge (MultiBlitzMode): after GO on the break screen, the next player starts
+# 1.1 per pitch later (blitzBreakEnd).
+CHALLENGE_RESTART_DELAY = 1.1
 
 
 @dataclass(frozen=True)
@@ -93,6 +96,8 @@ class ModeRules:
     themed_music: bool = True
     # Solo modes had a trophy manager and counted lifetime moves; multiplayer modes did not.
     tracks_trophies: bool = True
+    # Blitz Challenge: each player in turn does this many successes against the clock.
+    challenge_target: int | None = None
 
 
 CLASSIC = ModeRules("Classic", (("Bop", 4), ("Twist", 0), ("Pull", 3)), pitch_shift_amount=0.03,
@@ -106,6 +111,9 @@ PASS_IT_BASIC = ModeRules("Pass It Basic", (("Bop", 4),), pitch_shift_amount=0.0
                           pass_it=True, pass_it_single=True, tracks_trophies=False)
 PASS_IT_EXTREME = ModeRules("Pass It Extreme", (("Bop", 4),), pitch_shift_amount=0.02,
                             pass_it=True, themed_music=False, tracks_trophies=False)
+BLITZ_CHALLENGE = ModeRules("Blitz Challenge", BLITZ.commands, pitch_shift_amount=0.0,
+                            pitch_shift_frequency=50_000_000, music_tracks=BLITZ.music_tracks,
+                            tracks_trophies=False, challenge_target=15)
 EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
                     scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
@@ -121,6 +129,8 @@ class Options:
     microphone: bool = True
     # The commands picked for Pass It and Head 2 Head, in the picker's order, without Bop.
     picked: tuple[str, ...] = ()
+    # Blitz Challenge: how many players take a turn.
+    players: int = 2
 
 
 class State(Enum):
@@ -129,6 +139,7 @@ class State(Enum):
     IN_TURN = auto()
     PAUSED = auto()
     PASSING = auto()
+    BREAK = auto()
     HELP = auto()
     FAILING = auto()
     OVER = auto()
@@ -201,6 +212,10 @@ class Game:
         self._listening = False
         self.x_moves = 0
         self._paused_blitz_time: float | None = None
+        # Blitz Challenge: each player's time, and whose turn it is (from 0).
+        self.player_times: list[float] = []
+        self.current_player = 0
+        self._players = options.players
 
     # Public interface
 
@@ -256,7 +271,7 @@ class Game:
             self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
                                                   self.options.theme)))
         self._emit(ev.MusicStop())
-        if self.rules.blitz_target is not None and self.blitz_time is None:
+        if self._timed and self.blitz_time is None:
             self._paused_blitz_time = now - self._blitz_started
         self.state = State.PAUSED
 
@@ -290,6 +305,8 @@ class Game:
             "good_count": self.rhythm.good_count, "ok_count": self.rhythm.ok_count,
             "base_bonus": self._base_bonus, "music_index": self._music_index,
             "turn_to_pass": self._turn_to_pass,
+            # MultiBlitzMode::encodeWithCoder kept only the number of players.
+            "players": self._players,
         }
 
     def load(self, data: dict, now: float) -> None:
@@ -310,6 +327,10 @@ class Game:
         self._base_bonus = data["base_bonus"]
         self._music_index = data["music_index"]
         self._turn_to_pass = data.get("turn_to_pass", 0)
+        self._players = data.get("players", self._players)
+        # Not saved by the original: the times list comes back empty and the turn at player 1.
+        self.player_times = []
+        self.current_player = 0
         if self.rules.pass_it:
             self._pitch_frequency = self._turn_to_pass
         self._speed_ups = 0
@@ -319,6 +340,13 @@ class Game:
         self._waiting_to_win = False
         self._next = None
         self.state = State.PAUSED
+
+    def next_player(self, now: float) -> None:
+        """GO on the Blitz Challenge break screen (MultiBlitzMode::blitzBreakEnd)."""
+        if self.state != State.BREAK or not self._waiting_to_win:
+            return
+        self._waiting_to_win = False
+        self._schedule(now + CHALLENGE_RESTART_DELAY / self.pitch, self._challenge_restart)
 
     def dismiss_help(self, now: float) -> None:
         if self.state == State.HELP:
@@ -334,8 +362,13 @@ class Game:
         events, self._events = self._events, []
         return events
 
+    @property
+    def _timed(self) -> bool:
+        return self.rules.blitz_target is not None or self.rules.challenge_target is not None
+
     def blitz_elapsed(self, now: float) -> float:
-        """The Blitz stopwatch: from the start of the game until the 20th success."""
+        """The Blitz stopwatch: from the start of the game (or of this player's turn) until
+        the finish."""
         if self.blitz_time is not None:
             return self.blitz_time
         return now - self._blitz_started if self.state != State.WAITING_TO_START else 0.0
@@ -363,6 +396,10 @@ class Game:
         self.x_moves = 0
         self.blitz_time = None
         self._waiting_to_win = False
+        if self.rules.challenge_target is not None:
+            # MultiBlitzMode::startGame: a zero time for each player, starting with the first.
+            self.player_times = [0.0] * self._players
+            self.current_player = 0
         self.active = []
         for command, location in self.rules.commands:
             self._activate(command, location)
@@ -464,6 +501,11 @@ class Game:
             self._win_blitz()
         if self.rules.pass_it and self.moves > 0 and self.moves % self._turn_to_pass == 0:
             self._start_pass(now)
+        challenge = self.rules.challenge_target
+        if challenge is not None and self.moves > challenge - 1 and self._next is not None:
+            # MultiBlitzMode::winTurn: the last success cuts off the callout it just queued.
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
 
     def _grade(self, now: float) -> None:
         grade = self.rhythm.grade(self._music.position(now))
@@ -527,6 +569,10 @@ class Game:
             self._num_to_next_unlock = FREQUENCY_STEP
 
     def _success_done(self, now: float) -> None:
+        challenge = self.rules.challenge_target
+        if challenge is not None and self.moves >= challenge:
+            self._challenge_turn_done(now)
+            return
         if self._forced is not None:
             self._activate(self._forced, self.locations.get(self._forced, 0))
         if self.moves != 0 and self.moves % self._pitch_frequency == 0:
@@ -603,6 +649,46 @@ class Game:
         self._call(self._next, position=CALLOUT_NOW_POSITION)
         self._start_turn(now)
 
+    # Blitz Challenge
+
+    def _challenge_turn_done(self, now: float) -> None:
+        """MultiBlitzMode::successDone once the player has 15: the clock stops a beat after
+        the last success, the loop stops (its "b" part plays on) and the time is kept. Then
+        the break screen, or after the last player, the results."""
+        if self._next is not None:
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
+        time = now - self._blitz_started
+        self.blitz_time = time
+        self._emit(ev.MusicStop())
+        if self.current_player < len(self.player_times):
+            self.player_times[self.current_player] = time
+        # The original compared unsigned numbers, so with no times list (a resumed saved
+        # game) every player was followed by another break.
+        if not self.player_times or self.current_player < len(self.player_times) - 1:
+            self.current_player += 1
+            self._waiting_to_win = True
+            # resetForNextPlayer and resetValues.
+            self.moves = 0
+            self.pitch = 1.0
+            self.state = State.BREAK
+            self._emit(ev.ChallengeBreak(self.current_player, time))
+        else:
+            self._waiting_to_win = False
+            self.state = State.OVER
+            self._emit(ev.ChallengeFinished(tuple(self.player_times)))
+
+    def _challenge_restart(self, now: float) -> None:
+        """MultiBlitzMode::blitzBreakEndDone: the clock restarts, the loop plays from its
+        start and a callout plays at once as the turn opens."""
+        self._blitz_started = now
+        self.blitz_time = None
+        self._start_music(self._music_name(self._music_index), 0.0, now)
+        self._next = self._rng.choice(self.active)
+        self._forced = None
+        self._call(self._next, position=CALLOUT_NOW_POSITION)
+        self._start_turn(now)
+
     def _win_blitz(self) -> None:
         """SoloSpeedMode::winBlitz: cut off the queued callout and the music, and finish."""
         self._emit(ev.StopSound(callout_sound(self._next or "", self.options.commands_mode,
@@ -626,7 +712,8 @@ class Game:
     def _fail_turn(self, now: float) -> None:
         self._cancel_timers()
         self._stop_listening()
-        if self.rules.blitz_target is not None:
+        if self._timed:
+            # MultiBlitzMode::failTurn is the same as SoloSpeedMode::failTurn.
             self._fail_blitz_turn(now)
             return
         self.state = State.FAILING
