@@ -14,6 +14,7 @@ SOUNDS_DIR = PROJECT_ROOT / "sounds"
 VENDOR_DIR = PROJECT_ROOT / "vendor"
 LOG_DIR = PROJECT_ROOT / "logs"
 SETTINGS_PATH = PROJECT_ROOT / "settings.json"
+KEYS_PATH = PROJECT_ROOT / "keys.json"
 
 
 # The original's three kinds of command. Silent showed commands as pictures only; it is

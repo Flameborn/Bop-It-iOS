@@ -100,6 +100,10 @@ A player who presses their Bop key during the opponent's command gives the oppon
 
 The original stopped the music and the success's "b" part at the passing success, waited half a beat and then played the Pass It music and VO_Pass together, so "Pass!" came about 1.3 beats later and off the beat. Here, at the passing success only the queued callout is cut; the loop and the "b" part play to the end of the bar, VO_Pass starts at the success so that its one-beat lead-in ends on the next downbeat, and the Pass It music starts on that downbeat. The next player still starts 3.25 per pitch after the Pass It music begins. Reason: the developer found the original timing broke the rhythm; this keeps "Pass!" on the first beat of the bar. Approved 2026-09-30.
 
+## Keys in a file, and a Keys page in Help
+
+The original was played by touch. Here the game keys (every command, the score key, pause and the Head 2 Head keys) are read from keys.json in the game folder, written with the defaults on first run. A missing or broken entry uses its default, and every problem is logged, printed and summed up in speech. Menu keys are fixed so a broken file cannot lock anyone out. Help has a third item, Keys, after Overview and Tutorials, listing the keys in use. Reason: keyboard play, and the developer asked for keys a player can change. Approved 2026-09-30.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

@@ -15,8 +15,8 @@ from bopit.debug.event_log import EventLog
 from bopit.debug.options import DebugOptions
 from bopit.engine import events as ev
 from bopit.engine.game import PLAYER_NAMES, Game, ModeRules, Options
-from bopit.input_map import (GAME_SCORE_KEY, H2H_SCORE_KEY, game_command_for, h2h_key_name,
-                             h2h_slot_for, key_name_for, menu_nav_for)
+from bopit.input_map import (game_command_for, h2h_key_name, h2h_slot_for, is_h2h_score_key,
+                             is_pause_key, is_score_key, key_name_for, menu_nav_for)
 from bopit.menu import Button, Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
@@ -161,7 +161,7 @@ class GameScreen:
             self._host.saved_game.write(data)
 
     def key(self, key: int, now: float) -> None:
-        if key == pygame.K_ESCAPE:
+        if is_pause_key(key):
             if self._game.can_pause:
                 self._game.pause(now)
                 self._dispatch()
@@ -173,7 +173,7 @@ class GameScreen:
         if self._rules.head_to_head:
             self._h2h_key(key, now)
             return
-        if key == GAME_SCORE_KEY:
+        if is_score_key(key):
             # The original showed the score on screen during play.
             # Points as the original showed them in play: moves plus bonus score.
             g = self._game
@@ -210,7 +210,7 @@ class GameScreen:
 
     def _h2h_key(self, key: int, now: float) -> None:
         g = self._game
-        if key == H2H_SCORE_KEY:
+        if is_h2h_score_key(key):
             # The original showed both points on screen during play.
             self._host.speech.speak(self._h2h_score_text(), interrupt=True)
             return

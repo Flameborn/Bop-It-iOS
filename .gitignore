@@ -222,6 +222,7 @@ settings.json
 scores.json
 progress.json
 savegame.json
+keys.json
 
 # Decompiler output and Ghidra project, regenerate with tools/decompile.py
 research/

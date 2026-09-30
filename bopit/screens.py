@@ -8,7 +8,7 @@ for Play and game modes, SFX_Back for back, SFX_SettingsSelect for Banter and Sh
 from collections.abc import Callable, Sequence
 from typing import Protocol
 
-from bopit import port_texts, texts
+from bopit import input_map, port_texts, texts
 from bopit.config import SELECTABLE_COMMAND_MODES, Settings
 from bopit.menu import Button, Choice, Menu, Slider
 from bopit.progress import Progress
@@ -375,6 +375,8 @@ def help_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Help", [
         Button("Overview", lambda: nav.push(text_screen(nav, "Overview", port_texts.HELP_OVERVIEW))),
         Button("Tutorials", lambda: nav.not_built("Tutorials")),
+        # Our addition: the keys, as this port is played on a keyboard (docs/DEVIATIONS.md).
+        Button("Keys", lambda: nav.push(text_screen(nav, "Keys", input_map.describe_bindings()))),
     ])
 
 

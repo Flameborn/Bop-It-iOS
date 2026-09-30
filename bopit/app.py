@@ -14,7 +14,7 @@ from bopit.debug.options import DebugOptions
 from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, HEAD_TO_HEAD,
                                PASS_IT_BASIC, PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
-from bopit.input_map import menu_nav_for
+from bopit.input_map import load_bindings, menu_nav_for
 from bopit.menu import Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
@@ -206,6 +206,7 @@ class App:
         pygame.display.set_caption("Bop It")
         clock = pygame.time.Clock()
         self.settings_changed()
+        self._load_keys()
         # The original starts the menu music at launch whatever the Commands setting.
         self.start_menu_music()
         self.push(screens.main_menu(self))
@@ -228,6 +229,19 @@ class App:
             clock.tick(FRAMES_PER_SECOND)
         self.microphone.close()
         pygame.quit()
+
+    def _load_keys(self) -> None:
+        """keys.json, written with the defaults on first run. Problems are logged, printed
+        and summed up in speech; the keys in use are always complete."""
+        problems = load_bindings()
+        for problem in problems:
+            log.error("keys.json: %s", problem)
+            print(f"keys.json: {problem}")
+        if problems:
+            count = len(problems)
+            self.speech.speak(f"keys.json has {count} problem{'s' if count > 1 else ''}. "
+                              "Default keys used there. Details in the console and the log.",
+                              protect=True)
 
     def _key_down(self, event: pygame.event.Event, now: float) -> None:
         if event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT:
