@@ -74,6 +74,7 @@ class ScreenTests(unittest.TestCase):
         s = Settings()
         self.assertEqual((s.commands, s.banter, s.shout_it, s.music_volume, s.sfx_volume, s.theme),
                          ("VOX", True, True, 100, 60, 0))
+        self.assertTrue(s.microphone)
 
     def test_order_matches_original_top_to_bottom(self) -> None:
         self.assertEqual(labels(self.nav.stack[-1]), ["Play", "Games", "Options", "Theme"])
@@ -89,7 +90,7 @@ class ScreenTests(unittest.TestCase):
         options = self.go(Nav.DOWN, Nav.DOWN, Nav.SELECT)
         self.assertEqual(labels(options), ["Help", "Settings", "Credits", "About"])
         settings = self.go(Nav.DOWN, Nav.SELECT)
-        self.assertEqual(labels(settings), ["Commands", "Banter", "Shout It", "Music", "SFX"])
+        self.assertEqual(labels(settings), ["Commands", "Banter", "Shout It", "Music", "SFX", "Microphone"])
 
     def test_button_sounds_match_original(self) -> None:
         self.go(Nav.DOWN, Nav.SELECT)  # Games: SFX_Select
@@ -134,7 +135,7 @@ class ScreenTests(unittest.TestCase):
     def test_sfx_slider_previews_except_in_silent(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.LEFT)
+        self.go(Nav.LAST, Nav.UP, Nav.LEFT)  # SFX is just above Microphone
         self.assertEqual((self.nav.settings.sfx_volume, self.nav.played), (50, ["SFX_Bop_R"]))
         self.nav.settings.commands = "Silent"
         self.go(Nav.LEFT)
@@ -143,8 +144,15 @@ class ScreenTests(unittest.TestCase):
     def test_music_slider_is_silent(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.UP, Nav.LEFT)
+        self.go(Nav.LAST, Nav.UP, Nav.UP, Nav.LEFT)
         self.assertEqual((self.nav.settings.music_volume, self.nav.played), (90, []))
+
+    def test_microphone_toggle(self) -> None:
+        self.open_settings()
+        self.nav.played.clear()
+        self.go(Nav.LAST, Nav.SELECT)
+        self.assertFalse(self.nav.settings.microphone)
+        self.assertEqual(self.nav.played, ["SFX_SettingsSelect"])
 
     def test_help_tabs_are_silent(self) -> None:
         self.go(Nav.DOWN, Nav.DOWN, Nav.SELECT, Nav.SELECT)

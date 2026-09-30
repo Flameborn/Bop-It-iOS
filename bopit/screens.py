@@ -96,12 +96,19 @@ MODE_DESCRIPTIONS = {
 }
 
 
+def high_score_text(mode: str, best: Entry) -> str:
+    """As GameModeIntro showed it: moves and points, or for Blitz a time to 4 places."""
+    if mode == "Blitz":
+        return f"High Score: {best.score:.4f} seconds"
+    return f"High Score: {best.moves} moves, {int(best.score):,} points"
+
+
 def intro_menu(nav: Navigator, mode: str, best: Entry, on_start: Callable[[], None]) -> Menu:
     """GameModeIntro, top to bottom: description, high score, Start. Back returns to the
     main menu without a sound, as in the original."""
     return Menu(mode, [
         Button(MODE_DESCRIPTIONS.get(mode, ""), lambda: None),
-        Button(f"High Score: {best.moves} moves, {best.score:,} points", lambda: None),
+        Button(high_score_text(mode, best), lambda: None),
         Button("Start", on_start, SELECT),
     ], on_back=nav.return_to_menu)
 
@@ -169,6 +176,12 @@ def settings_menu(nav: Navigator) -> Menu:
         s.music_volume = v
         nav.settings_changed()
 
+    def set_microphone(i: int) -> None:
+        # Our addition; it uses the same sound as the original's other toggles.
+        s.microphone = i == 0
+        nav.settings_changed()
+        nav.play(SETTINGS_SELECT)
+
     def set_sfx(v: int) -> None:
         # Settings::sfxValueChange previews with SFX_Bop_R, except in Silent.
         s.sfx_volume = v
@@ -183,4 +196,5 @@ def settings_menu(nav: Navigator) -> Menu:
         Choice("Shout It", ON_OFF, lambda: 0 if s.shout_it else 1, set_shout_it),
         Slider("Music", lambda: s.music_volume, set_music),
         Slider("SFX", lambda: s.sfx_volume, set_sfx),
+        Choice("Microphone", ON_OFF, lambda: 0 if s.microphone else 1, set_microphone),
     ])

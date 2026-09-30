@@ -35,6 +35,8 @@ class Settings:
     # UNCONFIRMED default, not yet found in the binary.
     quick_play: str = "Classic"
     # Our additions.
+    # Shout It X-Move through the microphone (the original's "shout Yeah!" move).
+    microphone: bool = True
     master_volume: float = 1.0
     # Used to estimate how long protected speech lasts, since NVDA cannot report it.
     speech_chars_per_second: float = 18.0

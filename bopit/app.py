@@ -9,10 +9,11 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
-from bopit.engine.game import BASIC, CLASSIC, EXTREME, ModeRules
+from bopit.engine.game import BASIC, BLITZ, CLASSIC, EXTREME, ModeRules
 from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
+from bopit.microphone import Microphone
 from bopit.progress import Progress
 from bopit.scores import Scores
 from bopit.speech import Speech
@@ -22,7 +23,8 @@ log = logging.getLogger(__name__)
 
 # Keys are timestamped when the loop sees them, so a faster loop means fairer timing.
 FRAMES_PER_SECOND = 120
-MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME}
+MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME,
+                               "Blitz": BLITZ}
 
 
 class Screen(Protocol):
@@ -62,6 +64,8 @@ class App:
         self.settings = settings
         self.scores = Scores()
         self.progress = Progress()
+        self.microphone = Microphone()
+        self.announced_no_microphone = False
         self._stack: list[Screen] = []
         self._running = False
         self._menu_music: Voice | None = None
@@ -160,6 +164,7 @@ class App:
             self._stack[-1].update(time.perf_counter())
             self.audio.update()
             clock.tick(FRAMES_PER_SECOND)
+        self.microphone.close()
         pygame.quit()
 
     def _key_down(self, event: pygame.event.Event, now: float) -> None:

@@ -34,6 +34,8 @@ LOOP_LENGTHS = {
     "MUSIC_GameLoop_01a": 53740 / 22050, "MUSIC_GameLoop_01a_HLWN": 53740 / 22050,
     "MUSIC_GameLoop_01a_XMAS": 53748 / 22050, "MUSIC_GameLoop_02a": 53745 / 22050,
     "MUSIC_GameLoop_03a": 53742 / 22050,
+    "MUSIC_BlitzLoop_01a": 53742 / 22050, "MUSIC_BlitzLoop_01a_HLWN": 53740 / 22050,
+    "MUSIC_BlitzLoop_01a_XMAS": 53748 / 22050,
 }
 DIE_LINES = ("VO_Die_01", "VO_Die_02", "VO_Die_03", "VO_Die_04")
 # Commands with a fixed screen position (Command_Bop::init, Command_Poke::init).
@@ -41,6 +43,12 @@ FIXED_LOCATIONS = {"Bop": 4, "Poke": 5}
 # Where a newly unlocked command goes, by how many are active (GameController::unlockNextCommand).
 UNLOCK_LOCATIONS = {4: 1, 3: 2, 2: 3}
 MAX_INDEX_TO_UNLOCK = 10    # GameController::init
+# Shout It X-Move. Listening starts Shout's callout length (Command_Shout::init) into the turn,
+# per pitch, and a microphone average level at or above the threshold wins
+# (GameSettings shoutItVolumeLevel; the level is the linear 0 to 1 average power).
+SHOUT_CALL_LENGTH = 0.46
+SHOUT_THRESHOLD = 0.6
+X_MOVE_BONUS = 25
 FREQUENCY_STEP = 8          # GameController::increaseFrequencyUnlock
 
 
@@ -60,12 +68,19 @@ class ModeRules:
     rhythm_graded: bool = False
     # Classic throws the end bonus away when the game ends (SoloClassicMode::failDone).
     keeps_end_bonus: bool = True
+    # The "a" and "b" music parts, in order. Blitz has its own pair.
+    music_tracks: tuple[str, ...] = MUSIC_TRACKS
+    # Blitz: finish after this many successes; mistakes cost time instead of ending the game.
+    blitz_target: int | None = None
 
 
 CLASSIC = ModeRules("Classic", (("Bop", 4), ("Twist", 0), ("Pull", 3)), pitch_shift_amount=0.03,
                     keeps_end_bonus=False)
 BASIC = ModeRules("Basic", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=12,
                   scripted_intro=True, intro_call_count=1, rhythm_graded=True)
+BLITZ = ModeRules("Blitz", (("Bop", 4), ("Twist", 0), ("Pull", 3), ("Spin", 2), ("Flick", 1)),
+                  pitch_shift_amount=0.0, pitch_shift_frequency=50_000_000,
+                  music_tracks=("MUSIC_BlitzLoop_01a", "MUSIC_BlitzLoop_01b"), blitz_target=20)
 EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
                     scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
@@ -77,6 +92,8 @@ class Options:
     banter: bool = True
     theme: int = 0
     shout_it: bool = True
+    # Our addition: the Shout It X-Move through the microphone.
+    microphone: bool = True
 
 
 class State(Enum):
@@ -147,6 +164,11 @@ class Game:
         self._next_unlock_index = 3
         self._num_to_next_unlock = 0
         self._unlock_counter = 0
+        self._blitz_started = 0.0
+        self.blitz_time: float | None = None
+        self._waiting_to_win = False
+        self._listening = False
+        self.x_moves = 0
 
     # Public interface
 
@@ -170,6 +192,19 @@ class Game:
                 self._fail_turn(now)
         # Between turns input is ignored, as in the original.
 
+    def hear(self, level: float, now: float) -> None:
+        """The microphone's current average level, 0 to 1, while listening."""
+        self.update(now)
+        if not self._listening or self.state != State.IN_TURN or self.current != "Shout":
+            return
+        if level >= SHOUT_THRESHOLD:
+            # GameController::gotAudio:peakPower: an X-Move win.
+            self.rhythm.end_bonus += X_MOVE_BONUS
+            self.x_moves += 1
+            self._emit(ev.XMove("Shout"))
+            self._emit(ev.MoveMade("Shout", "Shout", True, now - self._turn_opened_at))
+            self._win_turn(now)
+
     def dismiss_help(self, now: float) -> None:
         if self.state == State.HELP:
             self._fail_sound_done(now)
@@ -183,6 +218,12 @@ class Game:
     def pop_events(self) -> list[ev.Event]:
         events, self._events = self._events, []
         return events
+
+    def blitz_elapsed(self, now: float) -> float:
+        """The Blitz stopwatch: from the start of the game until the 20th success."""
+        if self.blitz_time is not None:
+            return self.blitz_time
+        return now - self._blitz_started if self.state != State.WAITING_TO_START else 0.0
 
     @property
     def end_bonus(self) -> int:
@@ -203,6 +244,10 @@ class Game:
         self._speed_ups = 0
         self._music_index = 0
         self._unlock_counter = 0
+        self._blitz_started = now
+        self.x_moves = 0
+        self.blitz_time = None
+        self._waiting_to_win = False
         self.active = []
         for command, location in self.rules.commands:
             self._activate(command, location)
@@ -235,6 +280,18 @@ class Game:
         deadline = now + TURN_TIMEOUT / self.pitch
         self._emit(ev.TurnOpened(self.current, deadline))
         self._schedule(deadline, self._command_timeout)
+        if self.current == "Shout" and self.options.microphone:
+            self._schedule(now + SHOUT_CALL_LENGTH / self.pitch, self._start_listening)
+
+    def _start_listening(self, now: float) -> None:
+        if self.state == State.IN_TURN:
+            self._listening = True
+            self._emit(ev.MicListen(True))
+
+    def _stop_listening(self) -> None:
+        if self._listening:
+            self._listening = False
+            self._emit(ev.MicListen(False))
 
     def _command_timeout(self, now: float) -> None:
         if self.state != State.IN_TURN:
@@ -244,6 +301,12 @@ class Game:
 
     def _win_turn(self, now: float) -> None:
         self._cancel_timers()
+        self._stop_listening()
+        target = self.rules.blitz_target
+        if target is not None and self.moves > target - 2:
+            # SoloSpeedMode::winTurn: the last success stops the clock.
+            self.blitz_time = now - self._blitz_started
+            self._waiting_to_win = True
         if self.rules.rhythm_graded:
             self._grade(now)
         if self.rules.scripted_intro:
@@ -268,7 +331,10 @@ class Game:
                 self._emit(ev.CommandIntroduced(self._forced))
             self._call(self._forced)
         self.state = State.BETWEEN_TURNS
-        self._schedule(now + BEAT / self.pitch, self._success_done)
+        if not self._waiting_to_win:
+            self._schedule(now + BEAT / self.pitch, self._success_done)
+        if target is not None and self.moves > target - 1:
+            self._win_blitz()
 
     def _grade(self, now: float) -> None:
         grade = self.rhythm.grade(self._music.position(now))
@@ -358,8 +424,32 @@ class Game:
         self._emit(ev.MusicStop())
         self._start_music(self._music_name(self._music_index), 0.0, now)
 
+    def _win_blitz(self) -> None:
+        """SoloSpeedMode::winBlitz: cut off the queued callout and the music, and finish."""
+        self._emit(ev.StopSound(callout_sound(self._next or "", self.options.commands_mode,
+                                              self.options.theme)))
+        self._emit(ev.MusicStop())
+        self.state = State.OVER
+        self._emit(ev.BlitzFinished(self.blitz_time or 0.0, self.moves))
+
+    def _fail_blitz_turn(self, now: float) -> None:
+        """SoloSpeedMode::failTurn: a mistake costs time. The die line plays and a new
+        command is called; the music and the clock keep going."""
+        die = self._rng.choice(DIE_LINES)
+        self._emit(ev.PlaySound(themed(die, self.options.theme)))
+        self.state = State.BETWEEN_TURNS
+        if not self._waiting_to_win:
+            self._schedule(now + BEAT / self.pitch, self._success_done)
+            self._seek_music(LOOP_OFFSET, now)
+            self._next = self._rng.choice(self.active)
+            self._call(self._next)
+
     def _fail_turn(self, now: float) -> None:
         self._cancel_timers()
+        self._stop_listening()
+        if self.rules.blitz_target is not None:
+            self._fail_blitz_turn(now)
+            return
         self.state = State.FAILING
         self._emit(ev.MusicStop())
         die = self._rng.choice(DIE_LINES)
@@ -410,7 +500,7 @@ class Game:
         self._emit(ev.MusicSeek(position))
 
     def _music_name(self, index: int) -> str:
-        name = MUSIC_TRACKS[index]
+        name = self.rules.music_tracks[index]
         # Only the first track has theme variants; the original filtered only that one.
         return themed(name, self.options.theme) if index < 2 else name
 

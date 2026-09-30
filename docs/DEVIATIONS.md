@@ -50,6 +50,10 @@ In Basic and Extreme a new BopJect appeared on screen when a command entered pla
 
 The original asked "Would you like to see the tutorials and try the moves before playing?" before the very first game. It is left out until tutorials are designed for this port. Approved 2026-09-29.
 
+## Microphone setting for the Shout It X-Move
+
+The original always used the microphone for the Shout It X-Move. It is kept here with the original's timing (listening starts 0.46 seconds per pitch into a Shout turn), threshold (0.6 linear average level) and bonus (25), but only the level is measured and nothing is played back. A Microphone setting, added as the last Settings item, turns it on or off; it defaults to on. If no microphone can be opened, "No microphone found. Use the Shout key." is spoken once and the key still works. Reason: desktop speakers can leak game sound into a microphone, which the phone's hardware did not. Approved 2026-09-29.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

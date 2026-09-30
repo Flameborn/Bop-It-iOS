@@ -14,6 +14,7 @@ from bopit.engine import events as ev
 from bopit.engine.game import Game, ModeRules, Options
 from bopit.input_map import GAME_SCORE_KEY, game_command_for, key_name_for, menu_nav_for
 from bopit.menu import Button, Menu
+from bopit.microphone import Microphone
 from bopit.progress import Progress
 from bopit.scores import Scores
 from bopit.speech import Speech
@@ -28,6 +29,11 @@ END_BONUS_DELAY = 1.0       # Scores to bonus (or, in Classic, to the feedback w
 END_TOTAL_DELAY = 0.5       # Bonus to the total's count up.
 END_FEEDBACK_DELAY = 1.0    # Count up finished to the high score check.
 TALLY_INTERVAL = 1 / 60
+# SoloBlitzEndGame: payoff music as the screen finishes sliding in, the time a second
+# later, and the high score sound half a second after that.
+BLITZ_PAYOFF_DELAY = 0.7
+BLITZ_TIME_DELAY = 1.0
+BLITZ_HIGH_SCORE_DELAY = 0.5
 TALLY_FRACTION = 0.05
 
 
@@ -38,6 +44,8 @@ class Host(Protocol):
     scores: Scores
     times_called: dict[str, int]
     progress: Progress
+    microphone: Microphone
+    announced_no_microphone: bool
 
     def replace(self, screen: object) -> None: ...
 
@@ -53,10 +61,14 @@ class GameScreen:
         self._host = host
         self._rules = rules
         s = host.settings
-        self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it),
+        self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone),
                           random.Random(seed), host.times_called)
+        self._listening = False
         self._music: Voice | None = None
         self._last_grade: str | None = None
+        # The latest voice for each one-shot sound, so the engine can cut one off.
+        self._voices: dict[str, Voice] = {}
+        self._x_move_pending = False
         self._unlock_message: str | None = None
         self._start_now = start_now
 
@@ -70,6 +82,7 @@ class GameScreen:
     def key(self, key: int, now: float) -> None:
         if key == pygame.K_ESCAPE:
             # Temporary until the pause menu is built.
+            self._set_listening(False)
             self._stop_music()
             self._host.return_to_menu()
             return
@@ -77,6 +90,11 @@ class GameScreen:
             # The original showed the score on screen during play.
             # Points as the original showed them in play: moves plus bonus score.
             g = self._game
+            if g.rules.blitz_target is not None:
+                # The original showed whole seconds during Blitz.
+                seconds = int(g.blitz_elapsed(now))
+                self._host.speech.speak(f"Moves {g.moves}. Time {seconds} seconds.", interrupt=True)
+                return
             text = f"Moves {g.moves}. Points {_grouped(g.moves + g.bonus)}."
             if self._last_grade is not None:
                 text += f" Last move {self._last_grade}."
@@ -95,6 +113,8 @@ class GameScreen:
 
     def update(self, now: float) -> None:
         self._game.update(now)
+        if self._listening:
+            self._game.hear(self._host.microphone.level(), now)
         self._dispatch()
 
     def _dispatch(self) -> None:
@@ -107,7 +127,13 @@ class GameScreen:
         speech = self._host.speech
         match event:
             case ev.PlaySound(name, pitch):
-                audio.play(name, pitch=pitch)
+                voice = audio.play(name, pitch=pitch)
+                if voice is not None:
+                    self._voices[name] = voice
+            case ev.StopSound(name):
+                voice = self._voices.pop(name, None)
+                if voice is not None:
+                    voice.stop()
             case ev.MusicStart(name, pitch, position):
                 self._stop_music()
                 self._music = audio.play(name, pitch=pitch, loop=True, music=True)
@@ -123,12 +149,18 @@ class GameScreen:
                     self._music.set_pitch(pitch)
             case ev.MusicStop():
                 self._stop_music()
+            case ev.MicListen(listening):
+                self._set_listening(listening)
+            case ev.XMove():
+                # The original showed an X-Move banner; spoken on request with the grade.
+                self._x_move_pending = True
             case ev.WaitingToStart():
                 # The original showed "Bop It to start" on screen.
                 speech.speak("Bop it to start.", interrupt=True)
             case ev.RhythmGraded(grade):
                 # Shown on screen in the original; spoken on request (score key).
-                self._last_grade = grade
+                self._last_grade = f"{grade}, X-Move" if self._x_move_pending else grade
+                self._x_move_pending = False
             case ev.StreakEarned(kind):
                 speech.speak(f"25 {kind} streak.")
             case ev.CommandUnlocked(command):
@@ -144,8 +176,23 @@ class GameScreen:
                 speech.speak(f"{command} it. Key: {key}. Press Enter to continue.", interrupt=True)
             case ev.GameOver():
                 self._host.replace(EndScreen(self._host, self._rules, event))
+            case ev.BlitzFinished():
+                self._host.replace(BlitzEndScreen(self._host, self._rules, event))
             case _:
                 pass
+
+    def _set_listening(self, listening: bool) -> None:
+        mic = self._host.microphone
+        if listening and not mic.open():
+            if not self._host.announced_no_microphone:
+                self._host.announced_no_microphone = True
+                self._host.speech.speak("No microphone found. Use the Shout key.")
+            return
+        self._listening = listening
+        if listening:
+            mic.start()
+        else:
+            mic.stop()
 
     def _stop_music(self) -> None:
         if self._music is not None:
@@ -225,6 +272,60 @@ class EndScreen:
             self._host.audio.play("SFX_HighScore")
             self._host.speech.speak("New high score.", protect=True)
         self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def _play_again(self) -> None:
+        self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+
+
+class BlitzEndScreen:
+    """SoloBlitzEndGame. The screen slides in and the short payoff music plays; a second
+    later the time appears; half a second after that, SFX_HighScore for a new best."""
+
+    def __init__(self, host: Host, rules: ModeRules, result: ev.BlitzFinished) -> None:
+        self.title = "Finished"
+        self._host = host
+        self._rules = rules
+        self._result = result
+        compared = host.scores.add_time(rules.name, result.time)
+        self._new_best = result.time < compared or compared == 0
+        self._timeline: list[tuple[float, Callable[[], None]]] = []
+        self._menu = Menu("Finished", [
+            Button("Play again", self._play_again, "SFX_Select"),
+            Button("Menu", host.return_to_menu, "SFX_Select"),
+        ])
+
+    def enter(self, now: float) -> None:
+        speech = self._host.speech
+        audio = self._host.audio
+        speech.speak("Finished.", interrupt=True, protect=True)
+        shown = now + BLITZ_PAYOFF_DELAY
+
+        def payoff() -> None:
+            audio.play("MUSIC_PayoffLoopShort", music=True)
+
+        def time_shown() -> None:
+            speech.speak(f"Time {self._result.time:.3f} seconds.", protect=True)
+            if not self._new_best:
+                speech.speak(self._menu.describe(), protect=True)
+
+        def high_score() -> None:
+            audio.play("SFX_HighScore")
+            speech.speak("New high score.", protect=True)
+            speech.speak(self._menu.describe(), protect=True)
+
+        self._timeline = [(shown, payoff), (shown + BLITZ_TIME_DELAY, time_shown)]
+        if self._new_best:
+            self._timeline.append((shown + BLITZ_TIME_DELAY + BLITZ_HIGH_SCORE_DELAY, high_score))
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        while self._timeline and self._timeline[0][0] <= now:
+            _, step = self._timeline.pop(0)
+            step()
 
     def _play_again(self) -> None:
         self._host.replace(GameScreen(self._host, self._rules, start_now=True))

@@ -209,7 +209,15 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - Each unlock also raises the base bonus by 5.
 - Once every command has been unlocked, each further unlock picks a random command from master list entries 1 to 10 that is not active (up to 6 tries, otherwise nothing changes), at a random position from 0 to 3.
 - Command call counts (used for the help popup) are stored on the command objects, which live until the command list is rebuilt (theme change or Shout It change). A new game resets only the counts of the commands active at its start.
-- Blitz (SoloSpeedMode): Bop, Twist, Pull, Spin and Flick. Never speeds up. Timed. Details not read yet.
+- Blitz (SoloSpeedMode):
+  - Bop, Twist, Pull, Spin and Flick are all active from the start. Pitch stays at 1.0 (pitch shift frequency 50,000,000). Nothing unlocks. No rhythm grading.
+  - Its music is MUSIC_BlitzLoop_01a and 01b (with theme variants), used the same way as the game loops.
+  - A stopwatch starts with the game (startBlitzTimer). During play the original showed whole seconds (updateTime, format %i).
+  - Mistakes do not end the game (SoloSpeedMode::failTurn). A wrong move or a timeout plays a random death line; the music keeps playing and jumps back to the loop offset, a new random command is called at once, and the next turn opens 0.81 seconds later. No help popup, no banter. So a mistake costs time.
+  - On the 20th success the stopwatch stops. The normal success still plays and the next callout starts, then winBlitz cuts that callout off, stops the music and shows the end screen.
+  - Times are kept per mode in a top 10 list, fastest first, with a 0 placeholder that counts as an empty slot (GameSettings::saveGameModeTime). A time slower than every entry in a full list is not kept.
+  - The intro shows "High Score" and the best time as "%0.4f Seconds".
+  - End screen (SoloBlitzEndGame): as the screen finishes sliding in (0.7 seconds), MUSIC_PayoffLoopShort plays at the music volume; 1 second later the time appears as "%.3fs", for example "23.037s"; if it beats the best time (or there was none), 0.5 seconds later SFX_HighScore.
 - Unlocked commands come in master list order. Once all are unlocked, a random command is forced instead (GameController::unlockNextCommand).
 - The very first game ever shows the tutorial popup instead of the mode intro (hasShownTutorialPopup).
 

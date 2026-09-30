@@ -44,3 +44,41 @@ class ScoresTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BlitzTimeTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.scores = Scores(Path(self.tmp.name) / "scores.json")
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def times(self) -> list[float]:
+        return [e.score for e in self.scores.entries("Blitz")]
+
+    def test_first_time_is_new_best(self) -> None:
+        self.assertEqual(self.scores.add_time("Blitz", 25.0), 0)
+        self.assertEqual(self.times(), [25.0, 0])
+
+    def test_fastest_first_with_placeholder_last(self) -> None:
+        for t in (25.0, 20.0, 22.0, 30.0):
+            self.scores.add_time("Blitz", t)
+        self.assertEqual(self.times(), [20.0, 22.0, 25.0, 30.0, 0])
+
+    def test_new_best_only_when_faster(self) -> None:
+        self.scores.add_time("Blitz", 20.0)
+        self.scores.add_time("Blitz", 25.0)
+        self.assertLess(18.0, self.scores.add_time("Blitz", 18.0))
+        self.assertFalse(22.0 < self.scores.add_time("Blitz", 22.0))
+        self.assertFalse(18.0 < self.scores.add_time("Blitz", 18.0))
+
+    def test_full_list_drops_slow_times(self) -> None:
+        for n in range(12):
+            self.scores.add_time("Blitz", 10.0 + n)
+        times = self.times()
+        self.assertEqual(len(times), 10)
+        self.assertEqual(times[0], 10.0)
+        self.assertNotIn(0, times)
+        self.scores.add_time("Blitz", 50.0)
+        self.assertNotIn(50.0, self.times())

@@ -11,6 +11,12 @@ class PlaySound:
 
 
 @dataclass(frozen=True)
+class StopSound:
+    """Cut off a one-shot sound, such as a callout that is no longer needed."""
+    name: str
+
+
+@dataclass(frozen=True)
 class MusicStart:
     """Start the game music loop, replacing any current one."""
     name: str
@@ -38,6 +44,18 @@ class MusicPitch:
 @dataclass(frozen=True)
 class MusicStop:
     pass
+
+
+@dataclass(frozen=True)
+class MicListen:
+    """Open (True) or close (False) the microphone. Only its level is used."""
+    listening: bool
+
+
+@dataclass(frozen=True)
+class XMove:
+    """A move made the X-Move way, which for this port means shouting into the microphone."""
+    command: str
 
 
 @dataclass(frozen=True)
@@ -119,6 +137,13 @@ class HelpNeeded:
 
 
 @dataclass(frozen=True)
+class BlitzFinished:
+    """Blitz ends on its 20th success. time is in seconds."""
+    time: float
+    moves: int
+
+
+@dataclass(frozen=True)
 class GameOver:
     moves: int
     bonus: int
@@ -126,7 +151,7 @@ class GameOver:
     total: int
 
 
-Event = (PlaySound | MusicStart | MusicSegment | MusicSeek | MusicPitch | MusicStop
+Event = (PlaySound | StopSound | MusicStart | MusicSegment | MusicSeek | MusicPitch | MusicStop | MicListen | XMove
          | WaitingToStart | GameStarted | CommandCalled | TurnOpened | MoveMade
          | TurnTimedOut | ScoreChanged | SpeedUp | RhythmGraded | StreakEarned
-         | CommandUnlocked | CommandIntroduced | HelpNeeded | GameOver)
+         | CommandUnlocked | CommandIntroduced | HelpNeeded | BlitzFinished | GameOver)

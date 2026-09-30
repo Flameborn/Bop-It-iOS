@@ -15,7 +15,8 @@ LIST_LENGTH = 10
 
 @dataclass(frozen=True)
 class Entry:
-    score: int
+    # Points, or for Blitz a time in seconds.
+    score: float
     moves: int
 
 
@@ -49,6 +50,33 @@ class Scores:
                 self._save()
                 break
         return previous_best
+
+    def add_time(self, mode: str, seconds: float) -> float:
+        """Record a Blitz time, fastest first (GameSettings::saveGameModeTime). A 0 entry is
+        an empty slot. Returns the value the original compared against last, which is 0 or
+        the previous best whenever the new time is a new best."""
+        entries = self.entries(mode)
+        count = len(entries)
+        compared = entries[count - 1].score
+        index = count - 2
+        while True:
+            if compared <= seconds and compared != 0:
+                position = index + 1
+                break
+            if index + 1 > 0:
+                compared = entries[index].score
+            more = index > 0
+            position = index
+            index -= 1
+            if not more:
+                break
+        position += 1 if compared < seconds else 0
+        if position < count:
+            entries.insert(position, Entry(seconds, 0))
+            del entries[LIST_LENGTH:]
+            self._modes[mode] = entries
+            self._save()
+        return compared
 
     def _save(self) -> None:
         raw = {mode: [asdict(e) for e in entries] for mode, entries in self._modes.items()}
