@@ -1,0 +1,442 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "help_background.png"
+ },
+ {
+  "rect": [
+   201.0,
+   6.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   217.0,
+   20.0,
+   71.0,
+   69.0
+  ],
+  "image": "settings_options.png"
+ },
+ {
+  "rect": [
+   199.0,
+   28.0,
+   106.0,
+   59.0
+  ],
+  "text": "opciones"
+ },
+ {
+  "rect": [
+   16.0,
+   11.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "helpNode"
+ },
+ {
+  "rect": [
+   21.0,
+   11.0,
+   96.0,
+   97.0
+  ],
+  "image": "help_help.png"
+ },
+ {
+  "rect": [
+   7.0,
+   26.0,
+   125.0,
+   75.0
+  ],
+  "text": "ayuda"
+ },
+ {
+  "rect": [
+   17.0,
+   396.0,
+   72.0,
+   74.0
+  ],
+  "image": "help_back.png"
+ },
+ {
+  "rect": [
+   9.0,
+   406.0,
+   88.0,
+   61.0
+  ],
+  "text": "atrás"
+ },
+ {
+  "rect": [
+   16.0,
+   111.0,
+   289.0,
+   289.0
+  ],
+  "outlet": "mainNode"
+ },
+ {
+  "rect": [
+   20.0,
+   117.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_greyPanel.png"
+ },
+ {
+  "rect": [
+   20.0,
+   112.0,
+   280.0,
+   64.0
+  ],
+  "image": "help_headerPanel.png"
+ },
+ {
+  "rect": [
+   20.0,
+   116.0,
+   280.0,
+   279.0
+  ],
+  "outlet": "tutorialView"
+ },
+ {
+  "rect": [
+   20.0,
+   139.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_greenBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "bopButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   27.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "bopitButtonImage",
+  "image": "help_bopjectBopIt.png"
+ },
+ {
+  "rect": [
+   225.0,
+   168.0,
+   72.0,
+   75.0
+  ],
+  "outlet": "spinButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   228.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectSpinIt.png"
+ },
+ {
+  "rect": [
+   23.0,
+   241.0,
+   72.0,
+   75.0
+  ],
+  "outlet": "flickButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectFlickIt.png"
+ },
+ {
+  "rect": [
+   161.0,
+   168.0,
+   67.0,
+   75.0
+  ],
+  "outlet": "pullButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   161.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectPullIt.png"
+ },
+ {
+  "rect": [
+   160.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "brushButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   160.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectBrushIt.png"
+ },
+ {
+  "rect": [
+   93.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "twistButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   95.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectTwistIt.png"
+ },
+ {
+  "rect": [
+   95.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "shoutButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   92.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectShoutIt.png"
+ },
+ {
+  "rect": [
+   160.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "squeezeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   161.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectSqueezeIt.png"
+ },
+ {
+  "rect": [
+   92.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "nailButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   92.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectNailIt.png"
+ },
+ {
+  "rect": [
+   227.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "crankButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   225.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectCrankIt.png"
+ },
+ {
+  "rect": [
+   225.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "pokeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   228.0,
+   315.0,
+   65.0,
+   75.0
+  ],
+  "image": "help_bopjectPokeIt.png"
+ },
+ {
+  "rect": [
+   26.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "shakeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectShakeIt.png"
+ },
+ {
+  "rect": [
+   23.0,
+   166.0,
+   275.0,
+   230.0
+  ],
+  "outlet": "overviewView"
+ },
+ {
+  "rect": [
+   23.0,
+   166.0,
+   275.0,
+   225.0
+  ],
+  "outlet": "overviewTextScrollView"
+ },
+ {
+  "rect": [
+   23.0,
+   169.0,
+   270.0,
+   2750.0
+  ],
+  "outlet": "overviewLabel",
+  "text": "Configuración\nAsegúrate de que el ZOOM está desactivado en el dispositivo (Ajustes>General>Accesibilidad>Zoom). Si está activado dificultará el desarrollo del juego.\n\nIntroducción\n¡BOP IT da las órdenes y tú debes reaccionar en el acto! Juega por simple diversión o intenta establecer un récord y retar a tus amigos. Hay 4 modos de juego individuales y 4 modos multijugador. En cada uno de los modos el juego te dice el movimiento que tienes que hacer, y tú debes hacerlo antes de que se acabe el tiempo. Los 12 movimientos se pueden realizar en la pantalla táctil, y algunos de ellos también permiten un Movimiento X.\n\nMovimiento X\nUn Movimiento X se realiza cuando tienes que mover el dispositivo para ejecutar un movimiento, como girar el teléfono en ¡Tuerce! En algunos juegos los Movimientos X suponen puntos de bonificación. Para el Movimiento X ¡Grita! el iPod Touch puede ser necesario un micrófono externo. Para practicar y obtener más información, ve a Opciones>Ayuda>Tutoriales.\n\nModos de juego individuales\nClásico: el juego original de golpeos, tirones y giros. Haz lo que el juego te ordene para seguir avanzando, y cada vez más rápido.\nBásico: ¡El desafío rítmico! Ejecuta movimientos sincronizados para conseguir puntos de bonificación de ritmo. La mayor puntuación se consigue con un PERFECTO. Utiliza los Movimientos X para sumar puntos de bonificación adicionales. Para ejecutar movimientos \"sincronizados\" te puedes guiar por los BopJetos que se mueven hacia arriba y hacia abajo. Intenta sincronizar tu movimiento con el final del segundo movimiento hacia abajo. \nExtremo: ¡En pantalla tendrás hasta 6 BopJetos a la vez! Algo extremo hasta para un maestro del Bop. Ejecuta movimientos sincronizados para conseguir puntos de bonificación de ritmo. Utiliza los Movimientos X para sumar puntos de bonificación adicionales.\nBombardeo: completa 20 movimientos lo más rápido que puedas. ¡Haz lo que te indican... pero más rápido!\n\nModos de juego multijugador\nPasa básico: juega una partida básica con tus amigos. Haz lo que te pide el juego, y luego pásaselo al siguiente jugador. ¡Aguantad todo el tiempo que podáis en grupo, o jugad una competición y el que llegue más lejos será el ganador!\nPasa extremo: juega una partida extrema con tus amigos. Haz lo que te pide el juego, y luego pásaselo al siguiente jugador. ¡Aguantad todo el tiempo que podáis en grupo, o jugad una competición y el que llegue más lejos será el ganador!\nCara a cara: completa los movimientos de tu parte de la pantalla. Toca tu parte del Bop en primer lugar a la orden \"¡Bop It!\" para sumar un punto. También sumas puntos si tu rival falla. ¡El primero que llegue a 7 gana!\nDesafío Bombardeo: desafía a tus amigos a una partida de Bombardeo. ¡Averiguad quién soporta mejor la presión y consigue el mejor tiempo por turnos!\n\nPuntuación  \nRegistra tus récords en el marcador o compáralos con los de tus amigos de Facebook (puede que se apliquen tarifas de red). Intenta realizar todos los movimientos que puedas y sumar puntos de bonificación para mejorar tu récord. Los puntos de bonificación se conceden solo en los modos de juego Básico y Extremo. En el modo Bombardeo la puntuación consiste en tiempo, en vez de en movimientos o puntos.\n\nFacebook \nPublica tu puntuación y realiza comentarios en tu Muro y en las páginas de tus amigos. ¡Que todo el mundo conozca tu pericia en el BOP IT!\n\nDetener partida\nPulsa el botón de pausa de la parte superior de la pantalla para detener el juego en cualquier momento. Para volver al juego, pulsa el botón Reanudar en el menú principal. Si inicias una nueva partida se pierde la partida guardada anterior.\n\nConfiguración\nÓrdenes: EFECTOS DE VOZ = órdenes vocales, EFECTOS SONOROS = órdenes con efectos de sonido, SILENCIO = órdenes de texto (sin sonido).\nPalabrería: puedes desactivar los abucheos y las palabras de ánimo... pero, ¿para qué ibas a hacerlo?\nGrita: toca \"No\" para retirar la orden ¡Grita! del juego.\nMúsica/Efectos sonoros: ajusta el sonido del juego.\n\nPartida rápida\nPuedes establecer el juego que se ejecuta al pulsar el botón de Partida rápida. Mantén pulsado el botón del modo de juego correspondiente durante 2 segundos."
+ },
+ {
+  "rect": [
+   22.0,
+   120.0,
+   141.0,
+   48.0
+  ],
+  "outlet": "overviewButton",
+  "image": "help_headerPanelSelected.png"
+ },
+ {
+  "rect": [
+   159.0,
+   121.0,
+   139.0,
+   48.0
+  ],
+  "outlet": "tutorialButton",
+  "image": "help_headerPanelSelected.png"
+ },
+ {
+  "rect": [
+   -5.0,
+   105.0,
+   195.0,
+   84.0
+  ],
+  "text": "descripción"
+ },
+ {
+  "rect": [
+   157.0,
+   125.0,
+   142.0,
+   44.0
+  ],
+  "text": "tutoriales"
+ },
+ {
+  "rect": [
+   20.0,
+   116.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_roundedOutline.png"
+ }
+]

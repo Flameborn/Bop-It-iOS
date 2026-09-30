@@ -1,0 +1,155 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "blitzChallengeEndGame_background.png"
+ },
+ {
+  "rect": [
+   2.0,
+   1.0,
+   197.0,
+   117.0
+  ],
+  "outlet": "bopItLogo",
+  "image": "blitzChallengeEndGame_bopitLogo.png"
+ },
+ {
+  "rect": [
+   16.0,
+   166.0,
+   289.0,
+   178.0
+  ],
+  "image": "blitzChallengeEndGame_topScoresBox.png"
+ },
+ {
+  "rect": [
+   50.0,
+   361.0,
+   100.0,
+   98.0
+  ],
+  "image": "blitzChallengeEndGame_mainMenu.png"
+ },
+ {
+  "rect": [
+   155.0,
+   345.0,
+   119.0,
+   122.0
+  ],
+  "image": "blitzChallengeEndGame_playAgain.png"
+ },
+ {
+  "rect": [
+   20.0,
+   48.0,
+   289.0,
+   181.0
+  ],
+  "outlet": "winningPlayerImage",
+  "image": "blitzChallengeEndGame_player5Wins.png"
+ },
+ {
+  "rect": [
+   176.0,
+   184.0,
+   98.0,
+   57.0
+  ],
+  "outlet": "topScore1",
+  "text": "23.1234s"
+ },
+ {
+  "rect": [
+   176.0,
+   230.0,
+   98.0,
+   57.0
+  ],
+  "outlet": "topScore2",
+  "text": "23.1234s"
+ },
+ {
+  "rect": [
+   176.0,
+   275.0,
+   98.0,
+   57.0
+  ],
+  "outlet": "topScore3",
+  "text": "23.1234s"
+ },
+ {
+  "rect": [
+   37.0,
+   237.0,
+   119.0,
+   43.0
+  ],
+  "outlet": "topPlayer2",
+  "text": "Label"
+ },
+ {
+  "rect": [
+   37.0,
+   282.0,
+   119.0,
+   43.0
+  ],
+  "outlet": "topPlayer3",
+  "text": "Label"
+ },
+ {
+  "rect": [
+   37.0,
+   193.0,
+   119.0,
+   43.0
+  ],
+  "outlet": "topPlayer1",
+  "text": "Label"
+ },
+ {
+  "rect": [
+   45.0,
+   385.0,
+   111.0,
+   52.0
+  ],
+  "text": "menú"
+ },
+ {
+  "rect": [
+   152.0,
+   348.0,
+   124.0,
+   90.0
+  ],
+  "text": "volver a"
+ },
+ {
+  "rect": [
+   161.0,
+   398.0,
+   106.0,
+   54.0
+  ],
+  "text": "jugar"
+ }
+]

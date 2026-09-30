@@ -1,0 +1,414 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "multiGameCustom_background.png"
+ },
+ {
+  "rect": [
+   17.0,
+   11.0,
+   286.0,
+   377.0
+  ],
+  "outlet": "buttonsNode"
+ },
+ {
+  "rect": [
+   18.0,
+   115.0,
+   282.0,
+   260.0
+  ],
+  "image": "multiGameCustom_greyBase.png"
+ },
+ {
+  "rect": [
+   19.0,
+   63.0,
+   281.0,
+   366.0
+  ],
+  "image": "multiGameCustom_greenBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   121.0,
+   90.0,
+   63.0
+  ],
+  "image": "multiGameCustom_selectedTopLeftCorner.png"
+ },
+ {
+  "rect": [
+   26.0,
+   121.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "bopitButtonImage",
+  "image": "multiGameCustom_bopjectBopIt.png"
+ },
+ {
+  "rect": [
+   115.0,
+   121.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "twistButton",
+  "image": "multiGameCustom_selectedTopMiddle.png"
+ },
+ {
+  "rect": [
+   114.0,
+   122.0,
+   90.0,
+   64.0
+  ],
+  "image": "multiGameCustom_bopjectTwistIt.png"
+ },
+ {
+  "rect": [
+   204.0,
+   121.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "pullButton",
+  "image": "multiGameCustom_selectedTopRightCorner.png"
+ },
+ {
+  "rect": [
+   204.0,
+   122.0,
+   90.0,
+   64.0
+  ],
+  "image": "multiGameCustom_bopjectPullIt.png"
+ },
+ {
+  "rect": [
+   25.0,
+   184.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "spinButton",
+  "image": "multiGameCustom_selectedCenterTopLeftEdge.png"
+ },
+ {
+  "rect": [
+   26.0,
+   183.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "spinImage",
+  "image": "multiGameCustom_bopjectSpinIt.png"
+ },
+ {
+  "rect": [
+   115.0,
+   184.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "flickButton",
+  "image": "multiGameCustom_selectedCenterTopMiddle.png"
+ },
+ {
+  "rect": [
+   115.0,
+   183.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "flickImage",
+  "image": "multiGameCustom_bopjectFlickIt.png"
+ },
+ {
+  "rect": [
+   204.0,
+   184.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "shoutButton",
+  "image": "multiGameCustom_selectedCenterTopRightEdge.png"
+ },
+ {
+  "rect": [
+   204.0,
+   183.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "shoutImage",
+  "image": "multiGameCustom_bopjectShoutIt.png"
+ },
+ {
+  "rect": [
+   25.0,
+   246.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "squeezeButton",
+  "image": "multiGameCustom_selectedCenterBottomLeftEdge.png"
+ },
+ {
+  "rect": [
+   26.0,
+   246.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "squeezeImage",
+  "image": "multiGameCustom_bopjectSqueezeIt.png"
+ },
+ {
+  "rect": [
+   115.0,
+   246.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "crankButton",
+  "image": "multiGameCustom_selectedCenterBottomMiddle.png"
+ },
+ {
+  "rect": [
+   116.0,
+   246.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "crankImage",
+  "image": "multiGameCustom_bopjectCrankIt.png"
+ },
+ {
+  "rect": [
+   204.0,
+   246.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "shakeButton",
+  "image": "multiGameCustom_selectedCenterBottomRightEdge.png"
+ },
+ {
+  "rect": [
+   204.0,
+   246.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "shakeImage",
+  "image": "multiGameCustom_bopjectShakeIt.png"
+ },
+ {
+  "rect": [
+   204.0,
+   309.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "pokeButton",
+  "image": "multiGameCustom_selectedBottomLeftCorner.png"
+ },
+ {
+  "rect": [
+   204.0,
+   308.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "pokeImage",
+  "image": "multiGameCustom_bopjectPokeIt.png"
+ },
+ {
+  "rect": [
+   26.0,
+   309.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "nailButton",
+  "image": "multiGameCustom_selectedBottomMiddle.png"
+ },
+ {
+  "rect": [
+   25.0,
+   307.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "nailImage",
+  "image": "multiGameCustom_bopjectNailIt.png"
+ },
+ {
+  "rect": [
+   114.0,
+   309.0,
+   90.0,
+   63.0
+  ],
+  "outlet": "brushButton",
+  "image": "multiGameCustom_selectedBottomRightCorner.png"
+ },
+ {
+  "rect": [
+   114.0,
+   307.0,
+   90.0,
+   64.0
+  ],
+  "outlet": "brushImage",
+  "image": "multiGameCustom_bopjectBrushIt.png"
+ },
+ {
+  "rect": [
+   18.0,
+   112.0,
+   284.0,
+   268.0
+  ],
+  "image": "multiGameCustom_grid.png"
+ },
+ {
+  "rect": [
+   16.0,
+   8.0,
+   106.0,
+   101.0
+  ],
+  "outlet": "customNode"
+ },
+ {
+  "rect": [
+   24.0,
+   16.0,
+   87.0,
+   87.0
+  ],
+  "image": "multiGameCustom_customizeGame.png"
+ },
+ {
+  "rect": [
+   5.5,
+   0.0,
+   124.0,
+   102.0
+  ],
+  "text": "Spiel"
+ },
+ {
+  "rect": [
+   -21.0,
+   23.0,
+   177.0,
+   102.0
+  ],
+  "text": "anpassen"
+ },
+ {
+  "rect": [
+   215.0,
+   20.0,
+   78.0,
+   73.0
+  ],
+  "outlet": "gamesNode"
+ },
+ {
+  "rect": [
+   223.0,
+   26.0,
+   60.0,
+   60.0
+  ],
+  "image": "multiGameCustom_games.png"
+ },
+ {
+  "rect": [
+   203.0,
+   39.0,
+   101.0,
+   43.0
+  ],
+  "text": "Spiele"
+ },
+ {
+  "rect": [
+   17.0,
+   400.0,
+   72.0,
+   68.0
+  ],
+  "outlet": "backButton",
+  "image": "multiGameCustom_back.png"
+ },
+ {
+  "rect": [
+   231.0,
+   396.0,
+   72.0,
+   73.0
+  ],
+  "outlet": "goNode"
+ },
+ {
+  "rect": [
+   231.0,
+   396.0,
+   72.0,
+   73.0
+  ],
+  "outlet": "goButton",
+  "image": "multiGameCustom_go.png"
+ },
+ {
+  "rect": [
+   227.0,
+   410.0,
+   81.0,
+   61.0
+  ],
+  "text": "Los"
+ },
+ {
+  "rect": [
+   -2.0,
+   413.0,
+   111.0,
+   43.0
+  ],
+  "text": "Zurück"
+ },
+ {
+  "rect": [
+   -14.0,
+   378.0,
+   349.0,
+   31.0
+  ],
+  "outlet": "chooseBopjectsLabel",
+  "text": "Füge Bop It 2-4 BopJekte hinzu"
+ }
+]

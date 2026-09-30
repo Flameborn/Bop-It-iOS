@@ -1,0 +1,250 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "multiGameOptions_background.png"
+ },
+ {
+  "rect": [
+   173.0,
+   10.0,
+   106.5,
+   103.0
+  ],
+  "outlet": "gamesNode"
+ },
+ {
+  "rect": [
+   173.0,
+   10.0,
+   106.0,
+   103.0
+  ],
+  "image": "multiGameOptions_games.png"
+ },
+ {
+  "rect": [
+   154.0,
+   34.0,
+   145.0,
+   61.0
+  ],
+  "text": "juegos"
+ },
+ {
+  "rect": [
+   109.0,
+   177.0,
+   81.0,
+   88.0
+  ],
+  "outlet": "mpNode"
+ },
+ {
+  "rect": [
+   101.0,
+   177.0,
+   98.0,
+   88.0
+  ],
+  "image": "multiGameOptions_multiplayer.png"
+ },
+ {
+  "rect": [
+   95.0,
+   191.0,
+   109.0,
+   61.0
+  ],
+  "text": "multijugador"
+ },
+ {
+  "rect": [
+   10.0,
+   82.0,
+   128.0,
+   122.0
+  ],
+  "outlet": "basicNode"
+ },
+ {
+  "rect": [
+   3.0,
+   77.0,
+   143.0,
+   137.0
+  ],
+  "outlet": "basicButton",
+  "image": "multiGameOptions_passitBasic.png"
+ },
+ {
+  "rect": [
+   11.0,
+   104.0,
+   125.0,
+   61.0
+  ],
+  "text": "pasa"
+ },
+ {
+  "rect": [
+   13.0,
+   138.0,
+   123.0,
+   61.0
+  ],
+  "text": "básico"
+ },
+ {
+  "rect": [
+   6.0,
+   269.0,
+   128.0,
+   125.0
+  ],
+  "outlet": "extremeNode"
+ },
+ {
+  "rect": [
+   2.0,
+   261.0,
+   129.0,
+   129.0
+  ],
+  "outlet": "extremeButton",
+  "image": "multiGameOptions_passitExtreme.png"
+ },
+ {
+  "rect": [
+   4.0,
+   282.0,
+   125.0,
+   61.0
+  ],
+  "text": "pasa"
+ },
+ {
+  "rect": [
+   6.0,
+   313.0,
+   123.0,
+   61.0
+  ],
+  "text": "extremo"
+ },
+ {
+  "rect": [
+   147.0,
+   284.0,
+   131.5,
+   127.0
+  ],
+  "outlet": "h2hNode"
+ },
+ {
+  "rect": [
+   141.0,
+   279.0,
+   132.5,
+   129.0
+  ],
+  "outlet": "h2hButton",
+  "image": "multiGameOptions_h2h.png"
+ },
+ {
+  "rect": [
+   161.0,
+   276.0,
+   89.0,
+   96.0
+  ],
+  "text": "cara"
+ },
+ {
+  "rect": [
+   163.0,
+   300.0,
+   88.0,
+   96.0
+  ],
+  "text": "a"
+ },
+ {
+  "rect": [
+   162.0,
+   322.0,
+   89.0,
+   96.0
+  ],
+  "text": "cara"
+ },
+ {
+  "rect": [
+   180.0,
+   161.0,
+   140.0,
+   128.0
+  ],
+  "outlet": "blitzNode"
+ },
+ {
+  "rect": [
+   184.0,
+   161.0,
+   140.0,
+   128.0
+  ],
+  "outlet": "blitzButton",
+  "image": "multiGameOptions_blitzChallenge.png"
+ },
+ {
+  "rect": [
+   185.0,
+   175.0,
+   138.0,
+   76.0
+  ],
+  "text": "desafío"
+ },
+ {
+  "rect": [
+   177.0,
+   209.0,
+   155.0,
+   72.0
+  ],
+  "text": "bombardeo"
+ },
+ {
+  "rect": [
+   17.0,
+   399.0,
+   72.0,
+   70.0
+  ],
+  "image": "multiGameCustom_back.png"
+ },
+ {
+  "rect": [
+   9.0,
+   407.0,
+   88.0,
+   61.0
+  ],
+  "text": "atrás"
+ }
+]

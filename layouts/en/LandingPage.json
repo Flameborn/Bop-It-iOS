@@ -1,0 +1,157 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundScrollView"
+ },
+ {
+  "rect": [
+   0.0,
+   428.0,
+   320.0,
+   44.0
+  ],
+  "image": "swipeForThemes_btn.png"
+ },
+ {
+  "rect": [
+   77.0,
+   187.0,
+   112.0,
+   107.0
+  ],
+  "outlet": "gamesNode"
+ },
+ {
+  "rect": [
+   77.0,
+   187.0,
+   112.0,
+   107.0
+  ],
+  "image": "landingPage_gamesBtn.png"
+ },
+ {
+  "rect": [
+   61.0,
+   216.0,
+   145.0,
+   57.0
+  ],
+  "text": "games"
+ },
+ {
+  "rect": [
+   92.0,
+   298.0,
+   104.0,
+   98.0
+  ],
+  "outlet": "moreNode"
+ },
+ {
+  "rect": [
+   92.0,
+   298.0,
+   104.0,
+   98.0
+  ],
+  "image": "landingPage_moreGamesBtn.png"
+ },
+ {
+  "rect": [
+   102.0,
+   312.0,
+   83.0,
+   48.0
+  ],
+  "text": "more"
+ },
+ {
+  "rect": [
+   89.0,
+   339.0,
+   109.0,
+   48.0
+  ],
+  "text": "games"
+ },
+ {
+  "rect": [
+   173.0,
+   259.0,
+   109.0,
+   107.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   173.0,
+   259.0,
+   109.0,
+   107.0
+  ],
+  "image": "landingPage_optionsBtn.png"
+ },
+ {
+  "rect": [
+   150.0,
+   284.0,
+   155.0,
+   67.0
+  ],
+  "text": "options"
+ },
+ {
+  "rect": [
+   170.0,
+   144.0,
+   126.0,
+   125.0
+  ],
+  "outlet": "playNode"
+ },
+ {
+  "rect": [
+   161.0,
+   135.0,
+   144.0,
+   144.0
+  ],
+  "image": "landingPage_playBtn.png"
+ },
+ {
+  "rect": [
+   173.0,
+   162.0,
+   121.0,
+   57.0
+  ],
+  "outlet": "playLabel",
+  "text": "play"
+ },
+ {
+  "rect": [
+   172.0,
+   201.0,
+   121.0,
+   63.0
+  ],
+  "outlet": "playLabel2",
+  "text": "play"
+ }
+]

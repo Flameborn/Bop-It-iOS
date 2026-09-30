@@ -1,0 +1,130 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "credits_background.png"
+ },
+ {
+  "rect": [
+   202.0,
+   6.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   218.0,
+   20.0,
+   71.0,
+   69.0
+  ],
+  "image": "settings_options.png"
+ },
+ {
+  "rect": [
+   201.0,
+   26.0,
+   108.0,
+   59.0
+  ],
+  "text": "opciones"
+ },
+ {
+  "rect": [
+   14.0,
+   13.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "creditsNode"
+ },
+ {
+  "rect": [
+   19.0,
+   13.0,
+   96.0,
+   97.0
+  ],
+  "image": "help_help.png"
+ },
+ {
+  "rect": [
+   4.0,
+   33.0,
+   125.0,
+   60.0
+  ],
+  "text": "créditos"
+ },
+ {
+  "rect": [
+   17.0,
+   397.0,
+   72.0,
+   74.0
+  ],
+  "image": "help_back.png"
+ },
+ {
+  "rect": [
+   9.0,
+   406.0,
+   88.0,
+   61.0
+  ],
+  "text": "atrás"
+ },
+ {
+  "rect": [
+   15.0,
+   113.0,
+   289.0,
+   289.0
+  ],
+  "outlet": "mainNode"
+ },
+ {
+  "rect": [
+   20.0,
+   113.0,
+   280.0,
+   279.0
+  ],
+  "image": "credits_greyPanel.png"
+ },
+ {
+  "rect": [
+   26.0,
+   126.0,
+   270.0,
+   252.0
+  ],
+  "outlet": "textScrollView"
+ },
+ {
+  "rect": [
+   26.0,
+   129.0,
+   270.0,
+   320.0
+  ],
+  "outlet": "creditLabel",
+  "text": "Concepto y producción de KID Group: Dan Klitsner, Brian Clemens, Gary Levenberg, Roberto Antonio, Claire Sanders \n\nDesarrollo de software de Riptide Games: Ohm Unmongkolthavong, Seth Howard, Jayson Flick, Bryan Mashinter, Mike Montgomery, Brian Robbins and Jonathan Hartstein\n\nSonido de Hasbro y Adam Rossi Audio\nMaterial 3D de Perez Design\n\nAgradecimiento especial a los equipos de Hasbro y de EA"
+ }
+]

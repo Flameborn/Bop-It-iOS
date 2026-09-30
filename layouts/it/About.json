@@ -1,0 +1,130 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "about_background.png"
+ },
+ {
+  "rect": [
+   201.0,
+   7.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   217.0,
+   21.0,
+   71.0,
+   69.0
+  ],
+  "image": "settings_options.png"
+ },
+ {
+  "rect": [
+   207.0,
+   28.0,
+   91.0,
+   59.0
+  ],
+  "text": "opzioni"
+ },
+ {
+  "rect": [
+   14.0,
+   13.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "aboutNode"
+ },
+ {
+  "rect": [
+   19.0,
+   13.0,
+   96.0,
+   97.0
+  ],
+  "image": "help_help.png"
+ },
+ {
+  "rect": [
+   -41.0,
+   35.0,
+   216.0,
+   59.0
+  ],
+  "text": "informazioni"
+ },
+ {
+  "rect": [
+   17.0,
+   397.0,
+   72.0,
+   74.0
+  ],
+  "image": "about_back.png"
+ },
+ {
+  "rect": [
+   9.0,
+   406.0,
+   88.0,
+   61.0
+  ],
+  "text": "indietro"
+ },
+ {
+  "rect": [
+   15.0,
+   110.0,
+   289.0,
+   289.0
+  ],
+  "outlet": "mainNode"
+ },
+ {
+  "rect": [
+   20.0,
+   114.0,
+   280.0,
+   279.0
+  ],
+  "image": "about_greyPanel.png"
+ },
+ {
+  "rect": [
+   25.0,
+   128.0,
+   270.0,
+   256.0
+  ],
+  "outlet": "scrollView"
+ },
+ {
+  "rect": [
+   30.0,
+   128.0,
+   260.0,
+   430.0
+  ],
+  "outlet": "aboutLabel",
+  "text": "© KID Group LLC 2011. Tutti i diritti riservati.\r\n\nvVERSION_NUM\n\r\nBOP IT per iPhone e iPod Touch è stato realizzato dall'inventore del famoso gioco elettronico portatile Hasbro\r\r\nBOP IT è un marchio di Hasbro usato previa autorizzazione © 2011 Hasbro.\r\r\nServizio clienti: scrivi a help@eamobile.com \r\n\r\nAcquistando e/o utilizzando questa applicazione, accetti i termini dell'Accordo di licenza con l'utente finale, della Politica sulla privacy e i Termini di servizio di EA"
+ }
+]

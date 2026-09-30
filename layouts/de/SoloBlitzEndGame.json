@@ -1,0 +1,161 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   322.0,
+   478.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "soloBlitzEndGame_background.png"
+ },
+ {
+  "rect": [
+   -1.0,
+   8.0,
+   203.0,
+   102.0
+  ],
+  "outlet": "bopItLogo",
+  "image": "soloBlitzEndGame_bopitLogo.png"
+ },
+ {
+  "rect": [
+   17.0,
+   139.0,
+   285.0,
+   92.0
+  ],
+  "image": "soloBlitzEndGame_timeArea.png"
+ },
+ {
+  "rect": [
+   47.0,
+   169.0,
+   92.0,
+   49.0
+  ],
+  "text": "Zeit"
+ },
+ {
+  "rect": [
+   167.0,
+   166.0,
+   171.0,
+   57.0
+  ],
+  "outlet": "finalTimeLabel",
+  "text": "23.037s"
+ },
+ {
+  "rect": [
+   25.0,
+   377.0,
+   82.0,
+   82.0
+  ],
+  "outlet": "menuButton",
+  "image": "soloEndGame_menu.png"
+ },
+ {
+  "rect": [
+   18.0,
+   397.0,
+   96.0,
+   45.0
+  ],
+  "text": "Menü"
+ },
+ {
+  "rect": [
+   112.0,
+   361.0,
+   109.0,
+   108.0
+  ],
+  "outlet": "playAgainButton",
+  "image": "soloEndGame_playAgain.png"
+ },
+ {
+  "rect": [
+   113.0,
+   361.0,
+   106.0,
+   82.0
+  ],
+  "text": "Erneut"
+ },
+ {
+  "rect": [
+   111.0,
+   407.0,
+   111.0,
+   54.0
+  ],
+  "text": "spielen"
+ },
+ {
+  "rect": [
+   226.0,
+   377.0,
+   82.0,
+   82.0
+  ],
+  "outlet": "submitScoreButton",
+  "image": "soloEndGame_submitScore.png"
+ },
+ {
+  "rect": [
+   231.0,
+   433.0,
+   71.0,
+   41.0
+  ],
+  "image": "soloEndGame_facebook.png"
+ },
+ {
+  "rect": [
+   217.5,
+   376.0,
+   99.0,
+   65.0
+  ],
+  "text": "Ergebnis"
+ },
+ {
+  "rect": [
+   221.0,
+   410.0,
+   90.0,
+   42.0
+  ],
+  "text": "senden"
+ },
+ {
+  "rect": [
+   26.0,
+   121.0,
+   269.0,
+   236.0
+  ],
+  "outlet": "trophyView"
+ },
+ {
+  "rect": [
+   23.0,
+   233.0,
+   275.0,
+   124.0
+  ],
+  "outlet": "gameplayTip"
+ }
+]

@@ -1,0 +1,49 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "image": "soloInGame_popupScreen.png"
+ },
+ {
+  "rect": [
+   -29.0,
+   100.0,
+   383.0,
+   103.0
+  ],
+  "outlet": "whichPlayerLabel",
+  "text": "Zeit Spieler 1"
+ },
+ {
+  "rect": [
+   11.0,
+   188.0,
+   297.0,
+   103.0
+  ],
+  "outlet": "playerTimeLabel",
+  "text": "23.527"
+ },
+ {
+  "rect": [
+   14.0,
+   314.0,
+   297.0,
+   103.0
+  ],
+  "text": "Weiter"
+ }
+]

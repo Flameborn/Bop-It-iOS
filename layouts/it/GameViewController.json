@@ -1,0 +1,317 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundPlaceHolder",
+  "image": "help_popupbackground2.png"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage2",
+  "image": "help_popupbackground2.png"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage1",
+  "image": "help_popupbackground2.png"
+ },
+ {
+  "rect": [
+   0.0,
+   32.0,
+   216.0,
+   278.0
+  ],
+  "outlet": "topLeftView"
+ },
+ {
+  "rect": [
+   0.0,
+   32.0,
+   160.0,
+   240.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   109.0,
+   32.0,
+   211.0,
+   278.0
+  ],
+  "outlet": "topRightView"
+ },
+ {
+  "rect": [
+   109.0,
+   32.0,
+   160.0,
+   240.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   0.0,
+   206.0,
+   216.0,
+   274.0
+  ],
+  "outlet": "bottomLeftView"
+ },
+ {
+  "rect": [
+   0.0,
+   206.0,
+   160.0,
+   240.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   109.0,
+   206.0,
+   211.0,
+   274.0
+  ],
+  "outlet": "bottomRightView"
+ },
+ {
+  "rect": [
+   109.0,
+   206.0,
+   160.0,
+   240.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   0.0,
+   137.0,
+   320.0,
+   240.0
+  ],
+  "outlet": "sidesView"
+ },
+ {
+  "rect": [
+   1.0,
+   187.0,
+   320.0,
+   140.0
+  ],
+  "outlet": "imageView",
+  "image": "Poke320X480_0.png"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "middleView"
+ },
+ {
+  "rect": [
+   60.0,
+   158.0,
+   200.0,
+   200.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   317.0,
+   80.0
+  ],
+  "outlet": "scoreView"
+ },
+ {
+  "rect": [
+   1.0,
+   1.0,
+   183.0,
+   69.0
+  ],
+  "image": "soloInGame_scoreBoxLeft.png"
+ },
+ {
+  "rect": [
+   15.0,
+   11.0,
+   52.0,
+   57.0
+  ],
+  "outlet": "scoreDisplayLabel",
+  "text": "0"
+ },
+ {
+  "rect": [
+   80.0,
+   10.0,
+   89.0,
+   57.0
+  ],
+  "text": "mosse"
+ },
+ {
+  "rect": [
+   125.0,
+   -10.0,
+   72.0,
+   37.0
+  ],
+  "outlet": "pauseButton",
+  "image": "soloInGame_pauseBtn.png"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "errorView"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "errorImageView",
+  "image": "Error_Default_01.png"
+ },
+ {
+  "rect": [
+   30.0,
+   19.0,
+   261.0,
+   132.0
+  ],
+  "outlet": "errorLabel"
+ },
+ {
+  "rect": [
+   41.0,
+   324.0,
+   122.0,
+   116.0
+  ],
+  "image": "soloEndGame_continueBtn.png"
+ },
+ {
+  "rect": [
+   18.0,
+   368.0,
+   167.0,
+   43.0
+  ],
+  "text": "continua"
+ },
+ {
+  "rect": [
+   162.0,
+   338.0,
+   98.0,
+   90.0
+  ],
+  "outlet": "errorPopUpContinue",
+  "image": "soloEndGame_tryitBtn.png"
+ },
+ {
+  "rect": [
+   162.0,
+   364.0,
+   99.0,
+   43.0
+  ],
+  "text": "prova"
+ },
+ {
+  "rect": [
+   -95.0,
+   432.0,
+   509.0,
+   36.0
+  ],
+  "text": "tocca Continua per visualizzare il tuo punteggio"
+ },
+ {
+  "rect": [
+   0.0,
+   -12.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "tutorialCommandView"
+ },
+ {
+  "rect": [
+   60.0,
+   146.0,
+   200.0,
+   200.0
+  ],
+  "outlet": "imageView"
+ },
+ {
+  "rect": [
+   3.0,
+   0.0,
+   314.0,
+   480.0
+  ],
+  "outlet": "youWinView"
+ },
+ {
+  "rect": [
+   65.0,
+   192.0,
+   195.0,
+   58.0
+  ],
+  "outlet": "youWinLabel",
+  "text": "You Win!"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   1.0,
+   1.0
+  ],
+  "outlet": "animationDummyView"
+ }
+]

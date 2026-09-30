@@ -16,6 +16,7 @@ from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, 
                                PASS_IT_BASIC, PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
 from bopit.tutorial_screen import TutorialScreen
+from bopit.visuals import Renderer
 from bopit.input_map import load_bindings, menu_nav_for
 from bopit.menu import Menu
 from bopit.microphone import Microphone
@@ -30,6 +31,8 @@ log = logging.getLogger(__name__)
 
 # Keys are timestamped when the loop sees them, so a faster loop means fairer timing.
 FRAMES_PER_SECOND = 120
+# The picture is redrawn at most this often, so drawing never takes time from input.
+DRAW_INTERVAL = 1 / 30
 MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME,
                                "Blitz": BLITZ, "Pass It Basic": PASS_IT_BASIC,
                                "Pass It Extreme": PASS_IT_EXTREME,
@@ -67,6 +70,9 @@ class MenuScreen:
         nav = menu_nav_for(key)
         if nav is not None:
             self._menu.handle(nav, self._app.speech, self._app.play_themed, now)
+
+    def caption(self) -> str:
+        return self._menu.describe()
 
     def key_up(self, key: int, now: float) -> None:
         nav = menu_nav_for(key)
@@ -281,8 +287,11 @@ class App:
 
     def run(self) -> None:
         pygame.init()
-        pygame.display.set_mode((320, 480))
+        # The original's 320 by 480 point screen, scaled up to fit the desktop.
+        surface = pygame.display.set_mode((320, 480), pygame.SCALED)
         pygame.display.set_caption("Bop It")
+        renderer = Renderer(surface)
+        last_draw = 0.0
         clock = pygame.time.Clock()
         self.settings_changed()
         self._load_keys()
@@ -307,6 +316,10 @@ class App:
                         key_up(event.key, time.perf_counter())
             self._stack[-1].update(time.perf_counter())
             self.audio.update()
+            now = time.perf_counter()
+            if now - last_draw >= DRAW_INTERVAL:
+                last_draw = now
+                self._draw(renderer)
             clock.tick(FRAMES_PER_SECOND)
         self.microphone.close()
         pygame.quit()
@@ -323,6 +336,43 @@ class App:
             self.speech.speak(f"keys.json has {count} problem{'s' if count > 1 else ''}. "
                               "Default keys used there. Details in the console and the log.",
                               protect=True)
+
+    def _draw(self, renderer: Renderer) -> None:
+        """The picture, lowest priority: a drawing problem is logged once and never stops
+        the game."""
+        screen = self._stack[-1]
+        try:
+            caption = getattr(screen, "caption", lambda: None)()
+            texts: dict[str, str] = {}
+            if screen.title == "Bop It":
+                # LandingPage::setPlayButtonLabel: "quick" over "play", or "resume" over
+                # "game" when there is a saved game.
+                top, bottom = ("resume", "game") if self.has_saved_game() else ("quick", "play")
+                texts = {"playLabel": i18n.tr(top), "playLabel2": i18n.tr(bottom)}
+            elif screen.title in MODES:
+                texts = self._intro_texts(screen.title)
+            renderer.draw(screen, self.settings.theme, caption, texts)
+            pygame.display.flip()
+        except Exception:
+            if not getattr(self, "_draw_failed", False):
+                self._draw_failed = True
+                log.exception("Drawing failed; the game carries on without updating the picture")
+
+    def _intro_texts(self, mode: str) -> dict[str, str]:
+        """GameModeIntro::viewDidLoad filled in the mode, its description and the high
+        score; multiplayer modes had none."""
+        texts = {"gameModeLabel": i18n.tr(mode),
+                 "gameModeDescriptionLabel": i18n.tr(screens.MODE_DESCRIPTIONS.get(mode, ""))}
+        rules = MODES[mode]
+        best = self.scores.best(mode) if rules.tracks_trophies else None
+        if best is None or (best.score == 0 and best.moves == 0):
+            texts.update(highScoresStaticLabel="", highMovesLabel="", highScoreLabel="")
+        elif rules.blitz_target is not None:
+            texts.update(highMovesLabel=f"{best.score:.4f}s", highScoreLabel="")
+        else:
+            texts.update(highMovesLabel=f"{best.moves} {i18n.tr('Moves')}",
+                         highScoreLabel=f"{int(best.score):,} {i18n.tr('Points')}")
+        return texts
 
     def _key_down(self, event: pygame.event.Event, now: float) -> None:
         if event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT:

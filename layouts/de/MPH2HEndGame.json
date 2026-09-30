@@ -1,0 +1,134 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "h2hEndGame_background.png"
+ },
+ {
+  "rect": [
+   18.0,
+   74.0,
+   287.0,
+   176.0
+  ],
+  "outlet": "player2WinsImage",
+  "image": "h2hEndGame_blueWins.png"
+ },
+ {
+  "rect": [
+   15.0,
+   79.0,
+   292.0,
+   167.0
+  ],
+  "outlet": "player1WinsImage",
+  "image": "h2hEndGame_greenWins.png"
+ },
+ {
+  "rect": [
+   2.0,
+   0.0,
+   197.0,
+   117.0
+  ],
+  "outlet": "bopItLogo",
+  "image": "h2hEndGame_bopitLogo.png"
+ },
+ {
+  "rect": [
+   155.0,
+   346.0,
+   119.0,
+   121.0
+  ],
+  "image": "h2hEndGame_playAgain.png"
+ },
+ {
+  "rect": [
+   50.0,
+   355.0,
+   97.0,
+   107.0
+  ],
+  "image": "h2hEndGame_mainMenu.png"
+ },
+ {
+  "rect": [
+   12.0,
+   206.0,
+   300.0,
+   128.0
+  ],
+  "image": "h2hEndGame_winsArea.png"
+ },
+ {
+  "rect": [
+   202.0,
+   276.0,
+   59.0,
+   42.0
+  ],
+  "outlet": "player2Score",
+  "text": "2"
+ },
+ {
+  "rect": [
+   53.0,
+   233.0,
+   98.0,
+   42.0
+  ],
+  "text": "Grün"
+ },
+ {
+  "rect": [
+   202.0,
+   232.0,
+   59.0,
+   42.0
+  ],
+  "outlet": "player1Score",
+  "text": "1"
+ },
+ {
+  "rect": [
+   53.0,
+   276.0,
+   71.0,
+   42.0
+  ],
+  "text": "Blau"
+ },
+ {
+  "rect": [
+   43.0,
+   387.0,
+   111.0,
+   52.0
+  ],
+  "text": "Menü"
+ },
+ {
+  "rect": [
+   157.0,
+   365.0,
+   116.0,
+   87.0
+  ],
+  "text": "Erneut spielen"
+ }
+]

@@ -1,0 +1,175 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "mpBlitzPlayerSelect_background.png"
+ },
+ {
+  "rect": [
+   199.0,
+   21.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "mpNode"
+ },
+ {
+  "rect": [
+   215.0,
+   35.0,
+   71.0,
+   69.0
+  ],
+  "image": "mpBlitzPlayerSelect_multiplayer.png"
+ },
+ {
+  "rect": [
+   190.0,
+   27.0,
+   121.0,
+   64.0
+  ],
+  "text": "Multi"
+ },
+ {
+  "rect": [
+   211.0,
+   45.0,
+   79.0,
+   64.0
+  ],
+  "text": "player"
+ },
+ {
+  "rect": [
+   101.0,
+   51.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "blitzNode"
+ },
+ {
+  "rect": [
+   106.0,
+   51.0,
+   96.0,
+   97.0
+  ],
+  "image": "mpBlitzPlayerSelect_blitzChallenge.png"
+ },
+ {
+  "rect": [
+   92.0,
+   67.0,
+   125.0,
+   59.0
+  ],
+  "text": "Blitz"
+ },
+ {
+  "rect": [
+   49.0,
+   92.0,
+   211.0,
+   59.0
+  ],
+  "text": "Herausforderung"
+ },
+ {
+  "rect": [
+   15.0,
+   398.0,
+   76.0,
+   72.0
+  ],
+  "outlet": "backNode"
+ },
+ {
+  "rect": [
+   17.0,
+   400.0,
+   72.0,
+   68.0
+  ],
+  "image": "mpBlitzPlayerSelect_back.png"
+ },
+ {
+  "rect": [
+   7.0,
+   410.0,
+   92.0,
+   61.0
+  ],
+  "text": "Zurück"
+ },
+ {
+  "rect": [
+   225.0,
+   394.0,
+   84.0,
+   77.0
+  ],
+  "outlet": "goNode"
+ },
+ {
+  "rect": [
+   231.0,
+   397.0,
+   72.0,
+   72.0
+  ],
+  "outlet": "goButton",
+  "image": "multiGameCustom_go.png"
+ },
+ {
+  "rect": [
+   223.0,
+   408.0,
+   88.0,
+   61.0
+  ],
+  "text": "Los"
+ },
+ {
+  "rect": [
+   69.0,
+   156.0,
+   185.0,
+   225.0
+  ],
+  "outlet": "scrollNode"
+ },
+ {
+  "rect": [
+   79.0,
+   163.0,
+   163.0,
+   212.0
+  ],
+  "outlet": "playerPickerSV"
+ },
+ {
+  "rect": [
+   75.0,
+   159.0,
+   171.0,
+   220.0
+  ],
+  "image": "mpBlitzPlayerSelect_roundedOutline.png"
+ }
+]

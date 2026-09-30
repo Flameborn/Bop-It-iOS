@@ -63,6 +63,17 @@ class TutorialScreen:
         if self._play is not None:
             self._play.update(now)
 
+    def caption(self) -> str:
+        if self._play is not None:
+            return self._play.caption()
+        return self._menu.describe()
+
+    def draw_game(self, renderer: "object", theme: int) -> None:
+        if self._play is not None:
+            self._play.draw_game(renderer, theme)
+        else:
+            renderer.bopjects({self._command: 4}, None, theme)
+
     def _toggle(self) -> None:
         if self._play is not None:
             self._stop()

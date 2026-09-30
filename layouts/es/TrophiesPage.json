@@ -1,0 +1,120 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "trophies_background.png"
+ },
+ {
+  "rect": [
+   212.0,
+   17.0,
+   82.0,
+   77.0
+  ],
+  "outlet": "gamesNode"
+ },
+ {
+  "rect": [
+   219.0,
+   18.0,
+   68.0,
+   75.0
+  ],
+  "image": "trophies_games.png"
+ },
+ {
+  "rect": [
+   207.0,
+   38.0,
+   91.0,
+   40.0
+  ],
+  "text": "juegos"
+ },
+ {
+  "rect": [
+   11.0,
+   8.0,
+   112.0,
+   103.0
+  ],
+  "outlet": "trophyNode"
+ },
+ {
+  "rect": [
+   15.0,
+   11.0,
+   105.0,
+   97.0
+  ],
+  "image": "gameOptions_games.png"
+ },
+ {
+  "rect": [
+   3.0,
+   42.0,
+   129.0,
+   43.0
+  ],
+  "text": "trofeos"
+ },
+ {
+  "rect": [
+   17.0,
+   399.0,
+   72.0,
+   70.0
+  ],
+  "image": "trophies_back.png"
+ },
+ {
+  "rect": [
+   19.0,
+   415.0,
+   68.0,
+   40.0
+  ],
+  "text": "atrás"
+ },
+ {
+  "rect": [
+   19.0,
+   104.0,
+   283.0,
+   302.0
+  ],
+  "outlet": "tableNode"
+ },
+ {
+  "rect": [
+   30.0,
+   126.0,
+   260.0,
+   250.0
+  ],
+  "outlet": "table"
+ },
+ {
+  "rect": [
+   24.0,
+   121.0,
+   271.0,
+   257.0
+  ],
+  "image": "trophies_roundedOutline.png"
+ }
+]

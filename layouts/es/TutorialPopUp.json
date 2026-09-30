@@ -1,0 +1,74 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "image": "soloInGame_popupScreen.png"
+ },
+ {
+  "rect": [
+   157.0,
+   234.5,
+   100.0,
+   100.0
+  ],
+  "image": "soloInGame_resume.png"
+ },
+ {
+  "rect": [
+   52.0,
+   240.0,
+   104.0,
+   89.0
+  ],
+  "image": "soloInGame_noBtn.png"
+ },
+ {
+  "rect": [
+   144.0,
+   264.0,
+   126.0,
+   50.0
+  ],
+  "text": "sí"
+ },
+ {
+  "rect": [
+   41.0,
+   264.0,
+   126.0,
+   50.0
+  ],
+  "text": "no"
+ },
+ {
+  "rect": [
+   37.0,
+   38.0,
+   246.0,
+   156.0
+  ],
+  "text": "¿Quieres ver los tutoriales y practicar los movimientos antes de jugar?"
+ },
+ {
+  "rect": [
+   -15.0,
+   392.0,
+   350.0,
+   55.0
+  ],
+  "text": "accede a los tutoriales en cualquier momento en opciones>ayuda"
+ }
+]

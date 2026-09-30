@@ -1,0 +1,192 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "gameOptions_background.png"
+ },
+ {
+  "rect": [
+   160.0,
+   141.0,
+   110.0,
+   110.0
+  ],
+  "outlet": "gamesNode"
+ },
+ {
+  "rect": [
+   160.0,
+   141.0,
+   110.0,
+   110.0
+  ],
+  "image": "soloGameOptions_games.png"
+ },
+ {
+  "rect": [
+   143.0,
+   169.0,
+   145.0,
+   57.0
+  ],
+  "text": "giochi"
+ },
+ {
+  "rect": [
+   23.0,
+   159.0,
+   125.0,
+   127.0
+  ],
+  "outlet": "multiNode"
+ },
+ {
+  "rect": [
+   23.0,
+   165.0,
+   125.0,
+   121.0
+  ],
+  "image": "gameOptions_multiplayer.png"
+ },
+ {
+  "rect": [
+   27.0,
+   184.0,
+   117.0,
+   54.0
+  ],
+  "text": "multi"
+ },
+ {
+  "rect": [
+   20.0,
+   221.0,
+   131.0,
+   57.0
+  ],
+  "text": "player"
+ },
+ {
+  "rect": [
+   64.0,
+   298.0,
+   117.0,
+   116.0
+  ],
+  "outlet": "scoresNode"
+ },
+ {
+  "rect": [
+   64.0,
+   299.0,
+   117.0,
+   115.0
+  ],
+  "image": "gameOptions_scores.png"
+ },
+ {
+  "rect": [
+   38.0,
+   329.0,
+   169.0,
+   61.0
+  ],
+  "text": "punteggi"
+ },
+ {
+  "rect": [
+   189.0,
+   265.0,
+   111.0,
+   112.0
+  ],
+  "outlet": "trophiesNode"
+ },
+ {
+  "rect": [
+   189.0,
+   263.0,
+   112.0,
+   115.0
+  ],
+  "image": "gameOptions_trophies.png"
+ },
+ {
+  "rect": [
+   160.0,
+   295.0,
+   171.0,
+   61.0
+  ],
+  "text": "trofei"
+ },
+ {
+  "rect": [
+   69.0,
+   20.0,
+   133.0,
+   136.0
+  ],
+  "outlet": "soloNode"
+ },
+ {
+  "rect": [
+   69.0,
+   24.0,
+   133.0,
+   132.0
+  ],
+  "image": "gameOptions_solo.png"
+ },
+ {
+  "rect": [
+   40.0,
+   44.0,
+   191.0,
+   93.0
+  ],
+  "text": "singolo"
+ },
+ {
+  "rect": [
+   18.0,
+   399.0,
+   71.0,
+   69.0
+  ],
+  "outlet": "backNode"
+ },
+ {
+  "rect": [
+   18.0,
+   400.0,
+   71.0,
+   68.0
+  ],
+  "image": "gameOptions_back.png"
+ },
+ {
+  "rect": [
+   4.0,
+   407.0,
+   99.0,
+   61.0
+  ],
+  "text": "indietro"
+ }
+]

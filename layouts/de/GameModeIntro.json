@@ -1,0 +1,106 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "image": "soloInGame_popupScreen.png"
+ },
+ {
+  "rect": [
+   20.0,
+   19.0,
+   280.0,
+   50.0
+  ],
+  "outlet": "gameModeLabel",
+  "text": "Extrem"
+ },
+ {
+  "rect": [
+   63.0,
+   355.0,
+   72.0,
+   79.0
+  ],
+  "image": "soloInGame_back.png"
+ },
+ {
+  "rect": [
+   59.0,
+   377.0,
+   80.0,
+   38.0
+  ],
+  "text": "Zurück"
+ },
+ {
+  "rect": [
+   141.0,
+   335.0,
+   123.0,
+   116.0
+  ],
+  "image": "soloInGame_start.png"
+ },
+ {
+  "rect": [
+   136.0,
+   379.0,
+   132.0,
+   45.0
+  ],
+  "text": "Starten"
+ },
+ {
+  "rect": [
+   26.0,
+   69.0,
+   268.0,
+   142.0
+  ],
+  "outlet": "gameModeDescriptionLabel",
+  "text": "Auf dem Bildschirm sind bis zu 6 Bopjekte gleichzeitig - das wird selbst für Bopmeister extrem! Hol dir Rhythmuspunkte, indem du Moves im Takt ausführst. Mit X-Moves bekommst du zusätzliche Bonus-Punkte."
+ },
+ {
+  "rect": [
+   65.0,
+   210.0,
+   191.0,
+   43.0
+  ],
+  "outlet": "highScoresStaticLabel",
+  "text": "Highscore"
+ },
+ {
+  "rect": [
+   106.0,
+   251.0,
+   109.0,
+   30.0
+  ],
+  "outlet": "highMovesLabel",
+  "text": "57 Moves"
+ },
+ {
+  "rect": [
+   89.0,
+   280.0,
+   142.0,
+   30.0
+  ],
+  "outlet": "highScoreLabel",
+  "text": "57 Punkte"
+ }
+]

@@ -1,0 +1,130 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "about_background.png"
+ },
+ {
+  "rect": [
+   201.0,
+   7.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   217.0,
+   21.0,
+   71.0,
+   69.0
+  ],
+  "image": "settings_options.png"
+ },
+ {
+  "rect": [
+   207.0,
+   28.0,
+   91.0,
+   59.0
+  ],
+  "text": "Optionen"
+ },
+ {
+  "rect": [
+   14.0,
+   13.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "aboutNode"
+ },
+ {
+  "rect": [
+   19.0,
+   13.0,
+   96.0,
+   97.0
+  ],
+  "image": "help_help.png"
+ },
+ {
+  "rect": [
+   4.0,
+   37.0,
+   125.0,
+   59.0
+  ],
+  "text": "Über"
+ },
+ {
+  "rect": [
+   17.0,
+   397.0,
+   72.0,
+   74.0
+  ],
+  "image": "about_back.png"
+ },
+ {
+  "rect": [
+   9.0,
+   407.0,
+   88.0,
+   61.0
+  ],
+  "text": "Zurück"
+ },
+ {
+  "rect": [
+   15.0,
+   110.0,
+   289.0,
+   289.0
+  ],
+  "outlet": "mainNode"
+ },
+ {
+  "rect": [
+   20.0,
+   114.0,
+   280.0,
+   279.0
+  ],
+  "image": "about_greyPanel.png"
+ },
+ {
+  "rect": [
+   25.0,
+   128.0,
+   270.0,
+   256.0
+  ],
+  "outlet": "scrollView"
+ },
+ {
+  "rect": [
+   30.0,
+   128.0,
+   260.0,
+   491.0
+  ],
+  "outlet": "aboutLabel",
+  "text": "© KID Group LLC 2011. All rights reserved.\r\n\nvVERSION_NUM\n\r\nBOP IT für iPhone und iPod Touch wurde vom Original-Erfinder des elektronischen Spielgeräte-Tophits von Hasbro erstellt\r\r\nBOP IT ist ein eingetragenes Warenzeichen von Hasbro und wird mit Genehmigung verwendet © 2011 Hasbro.\r\r\nKundendienst: Sende eine E-Mail an help@eamobile.de \r\n\r\nDurch den Kauf und/oder die Verwendung dieser Anwendung erkennst du die Bedingungen des Endbenutzer-Lizenzvertrages sowie der Datenschutzrichtlinie und Nutzungsbedingungen von EA uneingeschränkt an."
+ }
+]

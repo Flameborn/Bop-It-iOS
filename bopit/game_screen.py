@@ -249,6 +249,23 @@ class GameScreen:
             self._game.press(command, now)
             self._dispatch()
 
+    def caption(self) -> str:
+        """For anyone watching: the command being called, or the state."""
+        g = self._game
+        state = g.state.name
+        if state == "WAITING_TO_START":
+            return "Bop It to Start"
+        if state == "IN_TURN" and g.current:
+            return f"{tr(g.current)} It!"
+        if g.rules.head_to_head:
+            return self._h2h_score_text()
+        return f"{tr('Moves')} {g.moves}"
+
+    def draw_game(self, renderer: "object", theme: int) -> None:
+        g = self._game
+        current = g.current if g.state.name == "IN_TURN" else None
+        renderer.bopjects({c: g.locations.get(c, 4) for c in g.active}, current, theme)
+
     def _h2h_key(self, key: int, now: float) -> None:
         g = self._game
         if is_h2h_score_key(key):

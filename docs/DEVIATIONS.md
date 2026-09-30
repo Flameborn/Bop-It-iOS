@@ -2,6 +2,10 @@
 
 Each entry needs a reason and the developer's approval.
 
+## Visuals are the lowest priority
+
+The port shows the original's own images, but the visuals are built last and kept simple: screens are drawn from the original's layouts and images, without its animations, transitions or exact fonts, and some details may be missing or placed differently. The screen may not look the same as the original. Two things are added for anyone watching: a caption strip at the bottom showing the focused menu item, or during play the command being called, and a frame round the BopJect being called. The picture is redrawn at most 30 times a second so drawing never delays input. Everything that matters for play is delivered through speech and sound, which always come first. Reason: the game is made to be played without sight; the visuals are for sighted people watching or helping. Approved 2026-09-30.
+
 ## Menu order is top to bottom
 
 The original menus are touch screens with round buttons scattered around, so they have no list order. Menu items are listed by their on-screen position, top to bottom, using the button centers from the decoded nibs. Back is not a list item; it is on the back key. Reason: menus must be linear to be navigated by keyboard and speech. Approved 2026-09-29.

@@ -1,0 +1,113 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "image": "22-EndGame_MPPassItGames.jpg"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "passitEndGame_background.png"
+ },
+ {
+  "rect": [
+   0.0,
+   3.0,
+   200.0,
+   113.0
+  ],
+  "outlet": "bopItLogo",
+  "image": "soloEndGame_bopitLogo.png"
+ },
+ {
+  "rect": [
+   20.0,
+   145.0,
+   280.0,
+   80.0
+  ],
+  "image": "passitEndGame_movesArea.png"
+ },
+ {
+  "rect": [
+   44.0,
+   163.0,
+   121.0,
+   49.0
+  ],
+  "text": "Moves"
+ },
+ {
+  "rect": [
+   152.0,
+   343.0,
+   125.0,
+   120.0
+  ],
+  "image": "blitzChallengeEndGame_playAgain.png"
+ },
+ {
+  "rect": [
+   50.0,
+   360.0,
+   98.0,
+   100.0
+  ],
+  "image": "blitzChallengeEndGame_mainMenu.png"
+ },
+ {
+  "rect": [
+   185.0,
+   163.0,
+   89.0,
+   49.0
+  ],
+  "outlet": "totalMovesLabel",
+  "text": "78"
+ },
+ {
+  "rect": [
+   44.0,
+   384.0,
+   111.0,
+   52.0
+  ],
+  "text": "menu"
+ },
+ {
+  "rect": [
+   164.0,
+   366.0,
+   101.0,
+   54.0
+  ],
+  "text": "play"
+ },
+ {
+  "rect": [
+   161.0,
+   399.0,
+   106.0,
+   54.0
+  ],
+  "text": "again"
+ }
+]

@@ -1,0 +1,442 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "help_background.png"
+ },
+ {
+  "rect": [
+   201.0,
+   6.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   217.0,
+   20.0,
+   71.0,
+   69.0
+  ],
+  "image": "settings_options.png"
+ },
+ {
+  "rect": [
+   210.0,
+   28.0,
+   84.0,
+   59.0
+  ],
+  "text": "Optionen"
+ },
+ {
+  "rect": [
+   16.0,
+   11.0,
+   104.0,
+   97.0
+  ],
+  "outlet": "helpNode"
+ },
+ {
+  "rect": [
+   21.0,
+   11.0,
+   96.0,
+   97.0
+  ],
+  "image": "help_help.png"
+ },
+ {
+  "rect": [
+   7.0,
+   26.0,
+   125.0,
+   75.0
+  ],
+  "text": "Hilfe"
+ },
+ {
+  "rect": [
+   17.0,
+   396.0,
+   72.0,
+   74.0
+  ],
+  "image": "help_back.png"
+ },
+ {
+  "rect": [
+   7.0,
+   406.0,
+   92.0,
+   61.0
+  ],
+  "text": "Zurück"
+ },
+ {
+  "rect": [
+   16.0,
+   111.0,
+   289.0,
+   289.0
+  ],
+  "outlet": "mainNode"
+ },
+ {
+  "rect": [
+   20.0,
+   117.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_greyPanel.png"
+ },
+ {
+  "rect": [
+   20.0,
+   112.0,
+   280.0,
+   64.0
+  ],
+  "image": "help_headerPanel.png"
+ },
+ {
+  "rect": [
+   20.0,
+   116.0,
+   280.0,
+   279.0
+  ],
+  "outlet": "tutorialView"
+ },
+ {
+  "rect": [
+   20.0,
+   139.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_greenBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "bopButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   27.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "bopitButtonImage",
+  "image": "help_bopjectBopIt.png"
+ },
+ {
+  "rect": [
+   225.0,
+   168.0,
+   72.0,
+   75.0
+  ],
+  "outlet": "spinButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   228.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectSpinIt.png"
+ },
+ {
+  "rect": [
+   23.0,
+   241.0,
+   72.0,
+   75.0
+  ],
+  "outlet": "flickButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectFlickIt.png"
+ },
+ {
+  "rect": [
+   161.0,
+   168.0,
+   67.0,
+   75.0
+  ],
+  "outlet": "pullButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   161.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectPullIt.png"
+ },
+ {
+  "rect": [
+   160.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "brushButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   160.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectBrushIt.png"
+ },
+ {
+  "rect": [
+   93.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "twistButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   95.0,
+   168.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectTwistIt.png"
+ },
+ {
+  "rect": [
+   95.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "shoutButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   92.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectShoutIt.png"
+ },
+ {
+  "rect": [
+   160.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "squeezeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   161.0,
+   241.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectSqueezeIt.png"
+ },
+ {
+  "rect": [
+   92.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "nailButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   92.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectNailIt.png"
+ },
+ {
+  "rect": [
+   227.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "crankButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   225.0,
+   242.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectCrankIt.png"
+ },
+ {
+  "rect": [
+   225.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "pokeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   228.0,
+   315.0,
+   65.0,
+   75.0
+  ],
+  "image": "help_bopjectPokeIt.png"
+ },
+ {
+  "rect": [
+   26.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "outlet": "shakeButton",
+  "image": "help_selectedBase.png"
+ },
+ {
+  "rect": [
+   25.0,
+   315.0,
+   68.0,
+   75.0
+  ],
+  "image": "help_bopjectShakeIt.png"
+ },
+ {
+  "rect": [
+   23.0,
+   166.0,
+   275.0,
+   230.0
+  ],
+  "outlet": "overviewView"
+ },
+ {
+  "rect": [
+   23.0,
+   166.0,
+   275.0,
+   225.0
+  ],
+  "outlet": "overviewTextScrollView"
+ },
+ {
+  "rect": [
+   23.0,
+   169.0,
+   270.0,
+   2670.0
+  ],
+  "outlet": "overviewLabel",
+  "text": "Konfiguration\nBitte stelle sicher, dass der ZOOM deines Geräts auf AUS steht (Einstellungen>Allgemein>Bedienungshilfen>Zoom). Im eingeschalteten Zustand beeinträchtigt er das Spiel.\n\nIntro\nBOP IT nennt die Kommandos - und du musst reagieren! Hol dir den Spaß oder den Highscore und fordere deine Freunde heraus. Es gibt 4 Solo-spielmodi und 4 Multiplayer-spielmodi. In jedem Modus sagt dir das Spiel, was du machen musst. Folge den Anweisungen vor Ablauf der Zeit. Kinderleicht! Du kannst jeden der 12 Moves mit dem Touchscreen ausführen - und einige sogar mit einem X-Move.\n\nX-Move\nBei einem X-Move führst du den Move mit dem gesamten Gerät aus. Beim Kommando \"Drehen\" drehst du es beispielsweise. X-Moves bringen in einigen Spielen Bonuspunkte. Für den \"Schreien\"-X-Move auf dem iPod Touch kann ein externes Mikrofon erforderlich sein. Unter Optionen>Hilfe>Tutorial kannst du trainieren und mehr erfahren.\n\nSolo-Spielmodi\nKlassisch: Das Originalspiel mit Bop It, Drehen und Ziehen. Folge den Anweisungen und bleibe im Spiel, während das Tempo immer mehr steigt.\nEinfach: Die Rhythmus-Herausforderung! Hol dir Rhythmuspunkte, indem du Moves im Takt ausführst - für ein PERFEKT gibt es die meisten punkte. Mit X-Moves bekommst du zusätzliche Bonus-punkte. Achte auf die auf- und abtanzenden BopJekte, um Moves \"im Takt\" auszuführen. Versuche, deinen Move am Ende der zweiten \"Landung\" auszuführen.\nExtrem: Auf dem Bildschirm sind bis zu 6 BopJekte gleichzeitig - das wird selbst für Bopmeister extrem! Hol dir Rhythmuspunkte, indem du Moves im Takt ausführst. Mit X-Moves bekommst du zusätzliche Bonus-punkte.\nFühre 20 Moves so schnell wie möglich aus. Folge einfach den Anweisungen ... unfassbar schnell!\n\nMultiplayer-Spielmodi\nWeitergeben Einfach: Spiele das Einfache Spiel mit Freunden. Folgt den Anweisungen und gebt das Spiel dann dem nächsten Spieler weiter. Bleibt als Team so lange wie möglich im Spiel ODER findet heraus, wer sich im Wettbewerb als Letzter den Sieg holen kann!\nWeitergeben Extrem: Spiele das Extreme Spiel mit Freunden. Folgt den Anweisungen und gebt das Spiel dann dem nächsten Spieler weiter. Bleibt als Team so lange wie möglich im Spiel ODER findet heraus, wer sich im Wettbewerb als Letzter den Sieg holen kann!\nKopf-an-Kopf: Führe die Moves aus, die auf deiner Bildschirmhälfte angezeigt werden. Tippe beim Kommando \"Bop It\" als Erster deine Bop-Hälfte an, um einen Punkt zu holen. Oder punkte, wenn dein Gegner scheitert. Wer als erster 7 punkte hat, gewinnt!\nBlitz-Herausforderung: Fordere deine Freunde zu einer Partie Blitz heraus. Stellt euch abwechselnd den Anforderungen und erzielt die beste Zeit!\n\nPunkte\nVerfolge deine Highscores auf dem Leaderboard oder vergleiche sie mit deinen Facebook-Freunden (Netzwerkgebühren können anfallen). Verbessere deinen Highscore mit den meisten Moves oder mit Bonuspunkten. Bonuspunkte werden nur in den Spielmodi Einfach und Extrem vergeben. Im Blitz-Spiel wird die Zeit gewertet, nicht Moves oder Punkte.\n\nFacebook \nVeröffentliche dein Ergebnis mit einem Kommentar auf deiner Pinnwand und den Pinnwänden deiner Freunde. Zeige der Welt, was du in BOP IT drauf hast!\n\nSpiel pausieren\nDu kannst das Spiel jederzeit pausieren, indem du den Pause-Button oben auf dem Bildschirm drückst. Mit dem Spiel fortsetzen-Button im Hauptmenü kannst du ins Spiel zurückkehren. Sobald du ein neues Spiel startest, geht dein gespeichertes Spiel verloren.\n\nEinstellungen\nKommandos: VOX = Sprachkommandos, SFX = Soundeffekt-Kommandos, STUMM = Textkommandos (kein Audio)\nZwischenrufe: Du kannst die Spötteleien und Ermutigungen ausstellen ... aber warum solltest du?\nSchreien: Tippe \"Aus\" an, um Schreien aus allen Spielmodi zu entfernen.\nMusik/SFX: Passe den Audiomix des Spiels an.\n\nSchnelles Spiel\nDu kannst einstellen, welches Spiel mit dem Schnelles Spiel-Button gestartet wird. Drücke einen beliebigen Spielmodus-Button und halte ihn 2 Sekunden lang."
+ },
+ {
+  "rect": [
+   22.0,
+   120.0,
+   141.0,
+   48.0
+  ],
+  "outlet": "overviewButton",
+  "image": "help_headerPanelSelected.png"
+ },
+ {
+  "rect": [
+   159.0,
+   121.0,
+   139.0,
+   48.0
+  ],
+  "outlet": "tutorialButton",
+  "image": "help_headerPanelSelected.png"
+ },
+ {
+  "rect": [
+   -5.0,
+   105.0,
+   195.0,
+   84.0
+  ],
+  "text": "Übersicht"
+ },
+ {
+  "rect": [
+   157.0,
+   126.0,
+   142.0,
+   44.0
+  ],
+  "text": "Tutorials"
+ },
+ {
+  "rect": [
+   20.0,
+   116.0,
+   280.0,
+   279.0
+  ],
+  "image": "help_roundedOutline.png"
+ }
+]

@@ -1,0 +1,183 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "options_background.png"
+ },
+ {
+  "rect": [
+   103.0,
+   145.0,
+   115.0,
+   115.0
+  ],
+  "outlet": "optionsNode"
+ },
+ {
+  "rect": [
+   114.0,
+   157.0,
+   91.0,
+   92.0
+  ],
+  "image": "options_options.png"
+ },
+ {
+  "rect": [
+   93.0,
+   183.0,
+   133.0,
+   49.0
+  ],
+  "text": "opciones"
+ },
+ {
+  "rect": [
+   6.0,
+   65.0,
+   115.0,
+   115.0
+  ],
+  "outlet": "settingsNode"
+ },
+ {
+  "rect": [
+   9.0,
+   67.0,
+   110.0,
+   110.0
+  ],
+  "image": "options_allButtons.png"
+ },
+ {
+  "rect": [
+   -55.0,
+   100.0,
+   238.0,
+   53.0
+  ],
+  "text": "configuración"
+ },
+ {
+  "rect": [
+   164.0,
+   24.0,
+   115.0,
+   115.0
+  ],
+  "outlet": "helpNode"
+ },
+ {
+  "rect": [
+   164.0,
+   28.0,
+   111.0,
+   108.0
+  ],
+  "image": "options_allButtons.png"
+ },
+ {
+  "rect": [
+   138.0,
+   44.0,
+   164.0,
+   82.0
+  ],
+  "text": "ayuda"
+ },
+ {
+  "rect": [
+   194.0,
+   228.0,
+   115.0,
+   115.0
+  ],
+  "outlet": "creditsNode"
+ },
+ {
+  "rect": [
+   197.0,
+   232.0,
+   110.0,
+   108.0
+  ],
+  "image": "options_allButtons.png"
+ },
+ {
+  "rect": [
+   175.0,
+   263.0,
+   155.0,
+   60.0
+  ],
+  "text": "créditos"
+ },
+ {
+  "rect": [
+   23.0,
+   263.0,
+   115.0,
+   115.0
+  ],
+  "outlet": "aboutNode"
+ },
+ {
+  "rect": [
+   27.0,
+   267.0,
+   107.0,
+   107.0
+  ],
+  "image": "options_allButtons.png"
+ },
+ {
+  "rect": [
+   2.0,
+   290.0,
+   156.0,
+   73.0
+  ],
+  "text": "acerca de"
+ },
+ {
+  "rect": [
+   17.0,
+   397.0,
+   72.0,
+   71.0
+  ],
+  "outlet": "backNode"
+ },
+ {
+  "rect": [
+   17.0,
+   399.0,
+   72.0,
+   68.0
+  ],
+  "image": "options_back.png"
+ },
+ {
+  "rect": [
+   13.0,
+   416.0,
+   79.0,
+   40.0
+  ],
+  "text": "atrás"
+ }
+]

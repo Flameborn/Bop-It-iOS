@@ -1,0 +1,199 @@
+[
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "view"
+ },
+ {
+  "rect": [
+   0.0,
+   0.0,
+   320.0,
+   480.0
+  ],
+  "outlet": "backgroundImage",
+  "image": "soloEndGame_background.png"
+ },
+ {
+  "rect": [
+   -19.0,
+   -5.0,
+   240.0,
+   128.0
+  ],
+  "outlet": "bopItLogo",
+  "image": "soloEndGame_bopitLogo.png"
+ },
+ {
+  "rect": [
+   15.0,
+   102.0,
+   291.0,
+   263.0
+  ],
+  "image": "soloEndGame_pointsArea.png"
+ },
+ {
+  "rect": [
+   35.0,
+   121.0,
+   101.0,
+   43.0
+  ],
+  "text": "Moves"
+ },
+ {
+  "rect": [
+   194.0,
+   214.0,
+   82.0,
+   43.0
+  ],
+  "outlet": "totalPointsLabel",
+  "text": "1,531"
+ },
+ {
+  "rect": [
+   35.0,
+   166.0,
+   97.0,
+   43.0
+  ],
+  "text": "Bonus"
+ },
+ {
+  "rect": [
+   194.0,
+   168.0,
+   80.0,
+   43.0
+  ],
+  "outlet": "bonusPointsLabel",
+  "text": "1,453"
+ },
+ {
+  "rect": [
+   35.0,
+   212.0,
+   95.0,
+   43.0
+  ],
+  "text": "Points"
+ },
+ {
+  "rect": [
+   194.0,
+   123.0,
+   42.0,
+   43.0
+  ],
+  "outlet": "totalMovesLabel",
+  "text": "78"
+ },
+ {
+  "rect": [
+   18.0,
+   377.0,
+   82.0,
+   82.0
+  ],
+  "outlet": "menuButton",
+  "image": "soloEndGame_menu.png"
+ },
+ {
+  "rect": [
+   11.0,
+   397.0,
+   96.0,
+   45.0
+  ],
+  "text": "menu"
+ },
+ {
+  "rect": [
+   105.0,
+   361.0,
+   109.0,
+   108.0
+  ],
+  "outlet": "playAgainButton",
+  "image": "soloEndGame_playAgain.png"
+ },
+ {
+  "rect": [
+   109.0,
+   374.0,
+   101.0,
+   54.0
+  ],
+  "text": "play"
+ },
+ {
+  "rect": [
+   106.0,
+   407.0,
+   106.0,
+   54.0
+  ],
+  "text": "again"
+ },
+ {
+  "rect": [
+   219.0,
+   377.0,
+   82.0,
+   82.0
+  ],
+  "outlet": "submitScoreButton",
+  "image": "soloEndGame_submitScore.png"
+ },
+ {
+  "rect": [
+   214.0,
+   386.0,
+   90.0,
+   42.0
+  ],
+  "text": "submit"
+ },
+ {
+  "rect": [
+   29.0,
+   119.0,
+   269.0,
+   236.0
+  ],
+  "outlet": "trophyView"
+ },
+ {
+  "rect": [
+   26.0,
+   238.0,
+   275.0,
+   124.0
+  ],
+  "outlet": "gameplayTip"
+ },
+ {
+  "rect": [
+   224.0,
+   433.0,
+   71.0,
+   41.0
+  ],
+  "image": "soloEndGame_facebook.png"
+ },
+ {
+  "rect": [
+   214.0,
+   409.0,
+   90.0,
+   42.0
+  ],
+  "text": "score"
+ }
+]
