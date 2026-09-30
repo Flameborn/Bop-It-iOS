@@ -96,12 +96,33 @@ class Nib:
                 result["background"] = background
         return result
 
-    def walk(self, uid: UID, depth: int, lines: list[str]) -> None:
-        lines.append(f"depth {depth}: {self.describe(uid)}")
+    def geometry(self, obj: dict[str, Any]) -> tuple[float, float, float, float] | None:
+        """Center x, center y, width, height in the parent's coordinates."""
+        if "UICenter" not in obj or "UIBounds" not in obj:
+            return None
+        cx, cy = (float(v) for v in self.get(obj["UICenter"]).strip("{}").split(", "))
+        size = self.get(obj["UIBounds"]).strip("{}").split("}, {")[-1]
+        width, height = (float(v) for v in size.split(", "))
+        return cx, cy, width, height
+
+    def walk(self, uid: UID, depth: int, lines: list[str],
+             origin: tuple[float, float] = (0.0, 0.0)) -> None:
         obj = self.get(uid)
+        line = f"depth {depth}: {self.describe(uid)}"
+        child_origin = origin
+        geometry = self.geometry(obj) if isinstance(obj, dict) else None
+        if geometry is not None:
+            cx, cy, width, height = geometry
+            screen_x, screen_y = origin[0] + cx, origin[1] + cy
+            if depth > 1:
+                line += f", screen center {screen_x:g}, {screen_y:g}"
+            # Top level views fill the screen; children are placed relative to their parent's corner.
+            if depth > 0:
+                child_origin = (screen_x - width / 2, screen_y - height / 2)
+        lines.append(line)
         if isinstance(obj, dict) and "UISubviews" in obj:
             for child in self.array(obj["UISubviews"]):
-                self.walk(child, depth + 1, lines)
+                self.walk(child, depth + 1, lines, child_origin)
 
     def dump(self) -> list[str]:
         lines = ["Views:"]

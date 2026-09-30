@@ -3,35 +3,35 @@ Views:
 depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIImageView #11, image multiGameOptions_background.png, center 160, 240, size 320, 480, not interactive
 depth 1: TreeNode #18, center 226.25, 61.5, size 106.5, 103
-depth 2: UIImageView #22, image multiGameOptions_games.png, center 53, 51.5, size 106, 103, not interactive
-depth 2: FontLabel #27, text "games", center 53.5, 54.5, size 145, 61, not interactive
+depth 2: UIImageView #22, image multiGameOptions_games.png, center 53, 51.5, size 106, 103, not interactive, screen center 226, 61.5
+depth 2: FontLabel #27, text "games", center 53.5, 54.5, size 145, 61, not interactive, screen center 226.5, 64.5
 depth 1: TreeNode #44, center 149.5, 221, size 81, 88
-depth 2: UIImageView #48, image multiGameOptions_multiplayer.png, center 41, 44, size 98, 88, not interactive
-depth 2: FontLabel #53, text "multi player", center 41, 44.5, size 60, 61, not interactive
+depth 2: UIImageView #48, image multiGameOptions_multiplayer.png, center 41, 44, size 98, 88, not interactive, screen center 150, 221
+depth 2: FontLabel #53, text "multi player", center 41, 44.5, size 60, 61, not interactive, screen center 150, 221.5
 depth 1: TreeNode #62, center 74, 143, size 128, 122
-depth 2: UIButton #66, image multiGameOptions_passitBasic.png, center 64.5, 63.5, size 143, 137
-depth 2: FontLabel #87, text "pass it", center 63.5, 56.5, size 125, 61, not interactive
-depth 2: FontLabel #95, text "basic", center 64.5, 86.5, size 123, 61, not interactive
+depth 2: UIButton #66, image multiGameOptions_passitBasic.png, center 64.5, 63.5, size 143, 137, screen center 74.5, 145.5
+depth 2: FontLabel #87, text "pass it", center 63.5, 56.5, size 125, 61, not interactive, screen center 73.5, 138.5
+depth 2: FontLabel #95, text "basic", center 64.5, 86.5, size 123, 61, not interactive, screen center 74.5, 168.5
 depth 1: TreeNode #104, center 70, 331.5, size 128, 125
-depth 2: UIButton #108, title "pass it extreme", image multiGameOptions_passitExtreme.png, center 60.5, 56.5, size 129, 129
-depth 2: FontLabel #120, text "pass it", center 60.5, 46.5, size 125, 61, not interactive
-depth 2: FontLabel #125, text "extreme", center 61.5, 74.5, size 123, 61, not interactive
+depth 2: UIButton #108, title "pass it extreme", image multiGameOptions_passitExtreme.png, center 60.5, 56.5, size 129, 129, screen center 66.5, 325.5
+depth 2: FontLabel #120, text "pass it", center 60.5, 46.5, size 125, 61, not interactive, screen center 66.5, 315.5
+depth 2: FontLabel #125, text "extreme", center 61.5, 74.5, size 123, 61, not interactive, screen center 67.5, 343.5
 depth 1: TreeNode #134, center 212.75, 347.5, size 131.5, 127
-depth 2: UIButton #138, title "head 2 head", image multiGameOptions_h2h.png, center 60.25, 59.5, size 132.5, 129
-depth 2: FontLabel #150, text "head", center 58.5, 40, size 89, 96, not interactive
-depth 2: FontLabel #158, text "2", center 60, 64, size 88, 96, not interactive
-depth 2: FontLabel #164, text "head", center 59.5, 86, size 89, 96, not interactive
+depth 2: UIButton #138, title "head 2 head", image multiGameOptions_h2h.png, center 60.25, 59.5, size 132.5, 129, screen center 207.25, 343.5
+depth 2: FontLabel #150, text "head", center 58.5, 40, size 89, 96, not interactive, screen center 205.5, 324
+depth 2: FontLabel #158, text "2", center 60, 64, size 88, 96, not interactive, screen center 207, 348
+depth 2: FontLabel #164, text "head", center 59.5, 86, size 89, 96, not interactive, screen center 206.5, 370
 depth 1: TreeNode #170, center 250, 225, size 140, 128
-depth 2: UIButton #174, image multiGameOptions_blitzChallenge.png, center 74, 64, size 140, 128
-depth 2: FontLabel #183, text "blitz", center 73.5, 50.5, size 109, 61, not interactive
-depth 2: FontLabel #189, text "challenge", center 74.5, 78.5, size 155, 61, not interactive
+depth 2: UIButton #174, image multiGameOptions_blitzChallenge.png, center 74, 64, size 140, 128, screen center 254, 225
+depth 2: FontLabel #183, text "blitz", center 73.5, 50.5, size 109, 61, not interactive, screen center 253.5, 211.5
+depth 2: FontLabel #189, text "challenge", center 74.5, 78.5, size 155, 61, not interactive, screen center 254.5, 239.5
 depth 1: UIButton #196, title "back", image multiGameCustom_back.png, center 53, 434, size 72, 70
 depth 1: FontLabel #205, text "back", center 53, 437.5, size 88, 61, not interactive
 depth 1: UIView #212, center 160, 240, size 320, 460, HIDDEN
-depth 2: UIImageView #216, image soloGameOptions_popupScreen.png, center 160, 230, size 322, 480, not interactive
-depth 2: FontLabel #221, text "press and hold any game mode button to make it your Quick Play game", center 160.5, 188.5, size 303, 155, not interactive
-depth 2: UIButton #227, image blitzChallengeInGame_back.png, center 160, 309.5, size 72, 71
-depth 2: FontLabel #235, text "close", center 159.5, 309.5, size 85, 47, not interactive
+depth 2: UIImageView #216, image soloGameOptions_popupScreen.png, center 160, 230, size 322, 480, not interactive, screen center 160, 240
+depth 2: FontLabel #221, text "press and hold any game mode button to make it your Quick Play game", center 160.5, 188.5, size 303, 155, not interactive, screen center 160.5, 198.5
+depth 2: UIButton #227, image blitzChallengeInGame_back.png, center 160, 309.5, size 72, 71, screen center 160, 319.5
+depth 2: FontLabel #235, text "close", center 159.5, 309.5, size 85, 47, not interactive, screen center 159.5, 319.5
 Connections:
 action backButtonPressed: sent by UIButton #196, title "back", image multiGameCustom_back.png, center 53, 434, size 72, 70
 action basicButtonDown: sent by UIButton #66, image multiGameOptions_passitBasic.png, center 64.5, 63.5, size 143, 137

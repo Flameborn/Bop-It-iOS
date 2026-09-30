@@ -16,12 +16,23 @@ LOG_DIR = PROJECT_ROOT / "logs"
 SETTINGS_PATH = PROJECT_ROOT / "settings.json"
 
 
+COMMAND_MODES = ("VOX", "SFX", "Silent")
+
+
 @dataclass
 class Settings:
+    # The original's settings, with its defaults from GameSettings::loadGameSettings.
+    commands: str = "VOX"
+    banter: bool = True
+    shout_it: bool = True
+    music_volume: int = 100
+    sfx_volume: int = 60
+    # Index into themes.THEMES. The original starts on Original (SkinsManager::init).
+    theme: int = 0
+    # UNCONFIRMED default, not yet found in the binary.
+    quick_play: str = "Classic"
+    # Our additions.
     master_volume: float = 1.0
-    effects_volume: float = 1.0
-    # Ignored by backends that cannot set volume, including NVDA.
-    speech_volume: float = 1.0
     # Used to estimate how long protected speech lasts, since NVDA cannot report it.
     speech_chars_per_second: float = 18.0
 

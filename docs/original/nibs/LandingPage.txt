@@ -4,19 +4,19 @@ depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIScrollView #11, center 160, 240, size 320, 480
 depth 1: UIImageView #15, image swipeForThemes_btn.png, center 160, 450, size 320, 44, not interactive
 depth 1: TreeNode #22, center 133, 240.5, size 112, 107
-depth 2: UIButton #26, title "Games", image landingPage_gamesBtn.png, center 56, 53.5, size 112, 107
-depth 2: FontLabel #47, text "games", center 56.5, 57.5, size 145, 57, not interactive
+depth 2: UIButton #26, title "Games", image landingPage_gamesBtn.png, center 56, 53.5, size 112, 107, screen center 133, 240.5
+depth 2: FontLabel #47, text "games", center 56.5, 57.5, size 145, 57, not interactive, screen center 133.5, 244.5
 depth 1: TreeNode #61, center 144, 347, size 104, 98
-depth 2: UIButton #65, title "More Game", image landingPage_moreGamesBtn.png, center 52, 49, size 104, 98
-depth 2: FontLabel #74, text "more", center 51.5, 38, size 83, 48, not interactive
-depth 2: FontLabel #82, text "games", center 51.5, 65, size 109, 48, not interactive
+depth 2: UIButton #65, title "More Game", image landingPage_moreGamesBtn.png, center 52, 49, size 104, 98, screen center 144, 347
+depth 2: FontLabel #74, text "more", center 51.5, 38, size 83, 48, not interactive, screen center 143.5, 336
+depth 2: FontLabel #82, text "games", center 51.5, 65, size 109, 48, not interactive, screen center 143.5, 363
 depth 1: TreeNode #88, center 227.5, 312.5, size 109, 107
-depth 2: UIButton #92, title "Options", image landingPage_optionsBtn.png, center 54.5, 53.5, size 109, 107
-depth 2: FontLabel #102, text "options", center 54.5, 58.5, size 155, 67, not interactive
+depth 2: UIButton #92, title "Options", image landingPage_optionsBtn.png, center 54.5, 53.5, size 109, 107, screen center 227.5, 312.5
+depth 2: FontLabel #102, text "options", center 54.5, 58.5, size 155, 67, not interactive, screen center 227.5, 317.5
 depth 1: TreeNode #109, center 233, 206.5, size 126, 125
-depth 2: UIButton #113, title "Play", image landingPage_playBtn.png, center 63, 63, size 144, 144
-depth 2: FontLabel #122, text "play", center 63.5, 46.5, size 121, 57, not interactive
-depth 2: FontLabel #128, text "play", center 62.5, 88.5, size 121, 63, not interactive
+depth 2: UIButton #113, title "Play", image landingPage_playBtn.png, center 63, 63, size 144, 144, screen center 233, 207
+depth 2: FontLabel #122, text "play", center 63.5, 46.5, size 121, 57, not interactive, screen center 233.5, 190.5
+depth 2: FontLabel #128, text "play", center 62.5, 88.5, size 121, 63, not interactive, screen center 232.5, 232.5
 depth 1: UIRoundedRectButton #134, center 192, 448.5, size 72, 37, HIDDEN
 Connections:
 action TutorialModePressed sent by UIRoundedRectButton #134, center 192, 448.5, size 72, 37, HIDDEN

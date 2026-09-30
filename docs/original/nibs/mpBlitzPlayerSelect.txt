@@ -4,21 +4,21 @@ depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIImageView #11, image mpBlitzPlayerSelect_background.png, center 160, 240, size 320, 480, not interactive
 depth 1: UIImageView #18, image mpBlitzPlayerSelect_buttonTree.png, center 182, 197.5, size 214, 389, HIDDEN, not interactive
 depth 1: TreeNode #23, center 251, 69.5, size 104, 97
-depth 2: UIImageView #27, image mpBlitzPlayerSelect_multiplayer.png, center 51.5, 48.5, size 71, 69, not interactive
-depth 2: FontLabel #32, text "multi player", center 52, 49.5, size 68, 59, not interactive
+depth 2: UIImageView #27, image mpBlitzPlayerSelect_multiplayer.png, center 51.5, 48.5, size 71, 69, not interactive, screen center 250.5, 69.5
+depth 2: FontLabel #32, text "multi player", center 52, 49.5, size 68, 59, not interactive, screen center 251, 70.5
 depth 1: TreeNode #49, center 153, 99.5, size 104, 97
-depth 2: UIImageView #53, image mpBlitzPlayerSelect_blitzChallenge.png, center 53, 48.5, size 96, 97, not interactive
-depth 2: FontLabel #58, text "blitz", center 53.5, 45.5, size 125, 59, not interactive
-depth 2: FontLabel #66, text "challenge", center 53.5, 67.5, size 125, 59, not interactive
+depth 2: UIImageView #53, image mpBlitzPlayerSelect_blitzChallenge.png, center 53, 48.5, size 96, 97, not interactive, screen center 154, 99.5
+depth 2: FontLabel #58, text "blitz", center 53.5, 45.5, size 125, 59, not interactive, screen center 154.5, 96.5
+depth 2: FontLabel #66, text "challenge", center 53.5, 67.5, size 125, 59, not interactive, screen center 154.5, 118.5
 depth 1: TreeNode #75, center 53, 434, size 76, 72
-depth 2: UIButton #79, title "back", image mpBlitzPlayerSelect_back.png, center 38, 36, size 72, 68
-depth 2: FontLabel #97, text "back", center 38, 39.5, size 88, 61, not interactive
+depth 2: UIButton #79, title "back", image mpBlitzPlayerSelect_back.png, center 38, 36, size 72, 68, screen center 53, 434
+depth 2: FontLabel #97, text "back", center 38, 39.5, size 88, 61, not interactive, screen center 53, 437.5
 depth 1: TreeNode #105, center 267, 432.5, size 84, 77
-depth 2: UIButton #109, title "GO", image multiGameCustom_go.png, center 42, 39, size 72, 72
-depth 2: FontLabel #122, text "Go", center 42, 44.5, size 88, 61, not interactive
+depth 2: UIButton #109, title "GO", image multiGameCustom_go.png, center 42, 39, size 72, 72, screen center 267, 433
+depth 2: FontLabel #122, text "Go", center 42, 44.5, size 88, 61, not interactive, screen center 267, 438.5
 depth 1: TreeNode #131, center 161.5, 268.5, size 185, 225
-depth 2: UIScrollView #135, center 91.5, 113, size 163, 212
-depth 2: UIImageView #139, image mpBlitzPlayerSelect_roundedOutline.png, center 91.5, 113, size 171, 220, not interactive
+depth 2: UIScrollView #135, center 91.5, 113, size 163, 212, screen center 160.5, 269
+depth 2: UIImageView #139, image mpBlitzPlayerSelect_roundedOutline.png, center 91.5, 113, size 171, 220, not interactive, screen center 160.5, 269
 Connections:
 action backButtonPressed: sent by UIButton #79, title "back", image mpBlitzPlayerSelect_back.png, center 38, 36, size 72, 68
 action goButtonPressed: sent by UIButton #109, title "GO", image multiGameCustom_go.png, center 42, 39, size 72, 72

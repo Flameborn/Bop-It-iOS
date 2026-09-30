@@ -2,7 +2,7 @@ Nib: TwoColumnScoreRow.nib
 Views:
 depth 0: UITableViewCell #7, center 134, 16.5, size 268, 33
 depth 1: UITableViewCellContentView #11, center 134, 16.5, size 268, 33
-depth 2: FontLabel #15, text "Points", center 222.5, 18.5, size 77, 29, not interactive, tag 3
-depth 2: FontLabel #28, text "Name", center 88, 18.5, size 162, 29, not interactive, tag 1
+depth 2: FontLabel #15, text "Points", center 222.5, 18.5, size 77, 29, not interactive, tag 3, screen center 222.5, 18.5
+depth 2: FontLabel #28, text "Name", center 88, 18.5, size 162, 29, not interactive, tag 1, screen center 88, 18.5
 Connections:
 outlet twoScoreCell is UITableViewCell #7, center 134, 16.5, size 268, 33

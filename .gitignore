@@ -219,3 +219,6 @@ __marimo__/
 
 # Local user settings
 settings.json
+
+# Decompiler output and Ghidra project, regenerate with tools/decompile.py
+research/

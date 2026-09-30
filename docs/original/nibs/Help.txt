@@ -3,45 +3,45 @@ Views:
 depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIImageView #11, image help_background.png, center 160, 240, size 320, 480, not interactive
 depth 1: TreeNode #18, center 253, 54.5, size 104, 97
-depth 2: UIImageView #22, image settings_options.png, center 51.5, 48.5, size 71, 69, not interactive
-depth 2: FontLabel #27, text "options", center 51, 51.5, size 84, 59, not interactive
+depth 2: UIImageView #22, image settings_options.png, center 51.5, 48.5, size 71, 69, not interactive, screen center 252.5, 54.5
+depth 2: FontLabel #27, text "options", center 51, 51.5, size 84, 59, not interactive, screen center 252, 57.5
 depth 1: TreeNode #44, center 68, 59.5, size 104, 97
-depth 2: UIImageView #48, image help_help.png, center 53, 48.5, size 96, 97, not interactive
-depth 2: FontLabel #53, text "help", center 53.5, 52.5, size 125, 75, not interactive
+depth 2: UIImageView #48, image help_help.png, center 53, 48.5, size 96, 97, not interactive, screen center 69, 59.5
+depth 2: FontLabel #53, text "help", center 53.5, 52.5, size 125, 75, not interactive, screen center 69.5, 63.5
 depth 1: TreeNode #62, center 53, 433, size 76, 72
-depth 2: UIButton #66, image help_back.png, center 38, 36, size 72, 74
-depth 2: FontLabel #83, text "back", center 38, 39.5, size 88, 61, not interactive
+depth 2: UIButton #66, image help_back.png, center 38, 36, size 72, 74, screen center 53, 433
+depth 2: FontLabel #83, text "back", center 38, 39.5, size 88, 61, not interactive, screen center 53, 436.5
 depth 1: TreeNode #92, center 160.5, 255.5, size 289, 289
-depth 2: UIImageView #96, image help_greyPanel.png, center 144, 145.5, size 280, 279, not interactive
-depth 2: UIImageView #101, image help_headerPanel.png, center 144, 33, size 280, 64, not interactive
-depth 2: UIView #106, center 144, 144.5, size 280, 279
-depth 3: UIImageView #110, image help_greenBase.png, center 140, 162.5, size 280, 279, not interactive
-depth 3: UIButton #115, title "Bop", image help_selectedBase.png, center 39, 89.5, size 68, 75
-depth 3: UIImageView #127, image help_bopjectBopIt.png, center 41, 89.5, size 68, 75, not interactive
-depth 3: UIButton #132, title "Spin", image help_selectedBase.png, center 241, 89.5, size 72, 75
-depth 3: UIImageView #140, image help_bopjectSpinIt.png, center 242, 89.5, size 68, 75, not interactive
-depth 3: UIButton #145, title "Flick", image help_selectedBase.png, center 39, 162.5, size 72, 75
-depth 3: UIImageView #153, image help_bopjectFlickIt.png, center 39, 162.5, size 68, 75, not interactive
-depth 3: UIButton #158, title "Pull", image help_selectedBase.png, center 174.5, 89.5, size 67, 75
-depth 3: UIImageView #166, image help_bopjectPullIt.png, center 175, 89.5, size 68, 75, not interactive
-depth 3: UIButton #171, title "Brush", image help_selectedBase.png, center 174, 236.5, size 68, 75
-depth 3: UIImageView #179, image help_bopjectBrushIt.png, center 174, 236.5, size 68, 75, not interactive
-depth 3: UIButton #184, title "Twist", image help_selectedBase.png, center 107, 89.5, size 68, 75
-depth 3: UIImageView #192, image help_bopjectTwistIt.png, center 109, 89.5, size 68, 75, not interactive
-depth 3: UIButton #197, title "Shout", image help_selectedBase.png, center 109, 163.5, size 68, 75
-depth 3: UIImageView #205, image help_bopjectShoutIt.png, center 106, 162.5, size 68, 75, not interactive
-depth 3: UIButton #210, title "Squeeze", image help_selectedBase.png, center 174, 162.5, size 68, 75
-depth 3: UIImageView #218, image help_bopjectSqueezeIt.png, center 175, 162.5, size 68, 75, not interactive
-depth 3: UIButton #223, title "Nail", image help_selectedBase.png, center 106, 236.5, size 68, 75
-depth 3: UIImageView #231, image help_bopjectNailIt.png, center 106, 236.5, size 68, 75, not interactive
-depth 3: UIButton #236, title "Crank", image help_selectedBase.png, center 241, 163.5, size 68, 75
-depth 3: UIImageView #244, image help_bopjectCrankIt.png, center 239, 163.5, size 68, 75, not interactive
-depth 3: UIButton #249, title "Poke", image help_selectedBase.png, center 239, 236.5, size 68, 75
-depth 3: UIImageView #257, image help_bopjectPokeIt.png, center 240.5, 236.5, size 65, 75, not interactive
-depth 3: UIButton #262, title "Shake", image help_selectedBase.png, center 40, 236.5, size 68, 75
-depth 3: UIImageView #270, image help_bopjectShakeIt.png, center 39, 236.5, size 68, 75, not interactive
-depth 2: UIView #276, center 144.5, 170, size 275, 230
-depth 3: UIScrollView #280, center 137.5, 112.5, size 275, 225
+depth 2: UIImageView #96, image help_greyPanel.png, center 144, 145.5, size 280, 279, not interactive, screen center 160, 256.5
+depth 2: UIImageView #101, image help_headerPanel.png, center 144, 33, size 280, 64, not interactive, screen center 160, 144
+depth 2: UIView #106, center 144, 144.5, size 280, 279, screen center 160, 255.5
+depth 3: UIImageView #110, image help_greenBase.png, center 140, 162.5, size 280, 279, not interactive, screen center 160, 278.5
+depth 3: UIButton #115, title "Bop", image help_selectedBase.png, center 39, 89.5, size 68, 75, screen center 59, 205.5
+depth 3: UIImageView #127, image help_bopjectBopIt.png, center 41, 89.5, size 68, 75, not interactive, screen center 61, 205.5
+depth 3: UIButton #132, title "Spin", image help_selectedBase.png, center 241, 89.5, size 72, 75, screen center 261, 205.5
+depth 3: UIImageView #140, image help_bopjectSpinIt.png, center 242, 89.5, size 68, 75, not interactive, screen center 262, 205.5
+depth 3: UIButton #145, title "Flick", image help_selectedBase.png, center 39, 162.5, size 72, 75, screen center 59, 278.5
+depth 3: UIImageView #153, image help_bopjectFlickIt.png, center 39, 162.5, size 68, 75, not interactive, screen center 59, 278.5
+depth 3: UIButton #158, title "Pull", image help_selectedBase.png, center 174.5, 89.5, size 67, 75, screen center 194.5, 205.5
+depth 3: UIImageView #166, image help_bopjectPullIt.png, center 175, 89.5, size 68, 75, not interactive, screen center 195, 205.5
+depth 3: UIButton #171, title "Brush", image help_selectedBase.png, center 174, 236.5, size 68, 75, screen center 194, 352.5
+depth 3: UIImageView #179, image help_bopjectBrushIt.png, center 174, 236.5, size 68, 75, not interactive, screen center 194, 352.5
+depth 3: UIButton #184, title "Twist", image help_selectedBase.png, center 107, 89.5, size 68, 75, screen center 127, 205.5
+depth 3: UIImageView #192, image help_bopjectTwistIt.png, center 109, 89.5, size 68, 75, not interactive, screen center 129, 205.5
+depth 3: UIButton #197, title "Shout", image help_selectedBase.png, center 109, 163.5, size 68, 75, screen center 129, 279.5
+depth 3: UIImageView #205, image help_bopjectShoutIt.png, center 106, 162.5, size 68, 75, not interactive, screen center 126, 278.5
+depth 3: UIButton #210, title "Squeeze", image help_selectedBase.png, center 174, 162.5, size 68, 75, screen center 194, 278.5
+depth 3: UIImageView #218, image help_bopjectSqueezeIt.png, center 175, 162.5, size 68, 75, not interactive, screen center 195, 278.5
+depth 3: UIButton #223, title "Nail", image help_selectedBase.png, center 106, 236.5, size 68, 75, screen center 126, 352.5
+depth 3: UIImageView #231, image help_bopjectNailIt.png, center 106, 236.5, size 68, 75, not interactive, screen center 126, 352.5
+depth 3: UIButton #236, title "Crank", image help_selectedBase.png, center 241, 163.5, size 68, 75, screen center 261, 279.5
+depth 3: UIImageView #244, image help_bopjectCrankIt.png, center 239, 163.5, size 68, 75, not interactive, screen center 259, 279.5
+depth 3: UIButton #249, title "Poke", image help_selectedBase.png, center 239, 236.5, size 68, 75, screen center 259, 352.5
+depth 3: UIImageView #257, image help_bopjectPokeIt.png, center 240.5, 236.5, size 65, 75, not interactive, screen center 260.5, 352.5
+depth 3: UIButton #262, title "Shake", image help_selectedBase.png, center 40, 236.5, size 68, 75, screen center 60, 352.5
+depth 3: UIImageView #270, image help_bopjectShakeIt.png, center 39, 236.5, size 68, 75, not interactive, screen center 59, 352.5
+depth 2: UIView #276, center 144.5, 170, size 275, 230, screen center 160.5, 281
+depth 3: UIScrollView #280, center 137.5, 112.5, size 275, 225, screen center 160.5, 278.5
 depth 4: FontLabel #284, text "Set Up
 Please make sure ZOOM is turned OFF on your device (Settings>General>Accessibility>Zoom). It will interfere with the game if turned on.
 
@@ -79,12 +79,12 @@ Shout it: Tap “Off” to remove Shout It from all gameplay
 Music/SFX: Adjust the game’s audio mix
 
 Quick Play
-You can set which game is launched by the Quick Play button. Press and hold any game mode button for 2 seconds.", center 135, 1163, size 270, 2320, not interactive
-depth 2: UIButton #294, image help_headerPanelSelected.png, center 76.5, 33, size 141, 48
-depth 2: UIButton #303, image help_headerPanelSelected.png, center 212.5, 34, size 139, 48
-depth 2: FontLabel #310, text "overview", center 76.5, 36, size 195, 84, not interactive
-depth 2: FontLabel #318, text "tutorials", center 212, 39, size 142, 44, not interactive
-depth 2: UIImageView #326, image help_roundedOutline.png, center 144, 144.5, size 280, 279, not interactive
+You can set which game is launched by the Quick Play button. Press and hold any game mode button for 2 seconds.", center 135, 1163, size 270, 2320, not interactive, screen center 158, 1329
+depth 2: UIButton #294, image help_headerPanelSelected.png, center 76.5, 33, size 141, 48, screen center 92.5, 144
+depth 2: UIButton #303, image help_headerPanelSelected.png, center 212.5, 34, size 139, 48, screen center 228.5, 145
+depth 2: FontLabel #310, text "overview", center 76.5, 36, size 195, 84, not interactive, screen center 92.5, 147
+depth 2: FontLabel #318, text "tutorials", center 212, 39, size 142, 44, not interactive, screen center 228, 150
+depth 2: UIImageView #326, image help_roundedOutline.png, center 144, 144.5, size 280, 279, not interactive, screen center 160, 255.5
 Connections:
 action backButtonPressed: sent by UIButton #66, image help_back.png, center 38, 36, size 72, 74
 action overViewButtonPressed: sent by UIButton #294, image help_headerPanelSelected.png, center 76.5, 33, size 141, 48

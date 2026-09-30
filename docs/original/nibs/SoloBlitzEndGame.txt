@@ -7,21 +7,21 @@ depth 1: UIImageView #23, image soloBlitzEndGame_timeArea.png, center 159.5, 185
 depth 1: FontLabel #28, text "Time", center 93, 193.5, size 92, 49, not interactive
 depth 1: FontLabel #41, text "23.037s", center 252.5, 194.5, size 171, 57, not interactive
 depth 1: UIView #49, center 167, 413.5, size 320, 133
-depth 2: UIButton #53, image soloEndGame_menu.png, center 59, 71, size 82, 82
-depth 2: FontLabel #70, text "menu", center 59, 72.5, size 96, 45, not interactive
-depth 2: UIView #78, center 159.5, 68, size 109, 108
-depth 3: UIButton #82, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108
-depth 3: FontLabel #90, text "play", center 54.5, 40, size 101, 54, not interactive
-depth 3: FontLabel #98, text "again", center 54, 73, size 106, 54, not interactive
-depth 2: UIButton #107, image soloEndGame_submitScore.png, center 260, 71, size 82, 82
-depth 2: UIImageView #115, image soloEndGame_facebook.png, center 259.5, 106.5, size 71, 41, not interactive
-depth 2: FontLabel #120, text "submit", center 260, 61, size 90, 42, not interactive
-depth 2: FontLabel #128, text "score", center 260, 84, size 90, 42, not interactive
+depth 2: UIButton #53, image soloEndGame_menu.png, center 59, 71, size 82, 82, screen center 66, 418
+depth 2: FontLabel #70, text "menu", center 59, 72.5, size 96, 45, not interactive, screen center 66, 419.5
+depth 2: UIView #78, center 159.5, 68, size 109, 108, screen center 166.5, 415
+depth 3: UIButton #82, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108, screen center 166.5, 415
+depth 3: FontLabel #90, text "play", center 54.5, 40, size 101, 54, not interactive, screen center 166.5, 401
+depth 3: FontLabel #98, text "again", center 54, 73, size 106, 54, not interactive, screen center 166, 434
+depth 2: UIButton #107, image soloEndGame_submitScore.png, center 260, 71, size 82, 82, screen center 267, 418
+depth 2: UIImageView #115, image soloEndGame_facebook.png, center 259.5, 106.5, size 71, 41, not interactive, screen center 266.5, 453.5
+depth 2: FontLabel #120, text "submit", center 260, 61, size 90, 42, not interactive, screen center 267, 408
+depth 2: FontLabel #128, text "score", center 260, 84, size 90, 42, not interactive, screen center 267, 431
 depth 1: UIView #134, center 160.5, 239, size 269, 236
-depth 2: PulseImageAnimation #138, image soloEndGame_trophiesAchieved.png, center 128, 179, size 268, 90, HIDDEN, not interactive
-depth 2: UIImageView #145, image soloEndGame_highScore.png, center 132, 175.5, size 268, 99, HIDDEN, not interactive
-depth 2: UIButton #150, center 128, 176, size 256, 58, HIDDEN
-depth 2: FontLabel #156, text "", center 134.5, 174, size 275, 124, not interactive
+depth 2: PulseImageAnimation #138, image soloEndGame_trophiesAchieved.png, center 128, 179, size 268, 90, HIDDEN, not interactive, screen center 154, 300
+depth 2: UIImageView #145, image soloEndGame_highScore.png, center 132, 175.5, size 268, 99, HIDDEN, not interactive, screen center 158, 296.5
+depth 2: UIButton #150, center 128, 176, size 256, 58, HIDDEN, screen center 154, 297
+depth 2: FontLabel #156, text "", center 134.5, 174, size 275, 124, not interactive, screen center 160.5, 295
 Connections:
 action menuButtonPressed: sent by UIButton #53, image soloEndGame_menu.png, center 59, 71, size 82, 82
 action playAgainButtonPressed: sent by UIButton #82, image soloEndGame_playAgain.png, center 54.5, 54, size 109, 108

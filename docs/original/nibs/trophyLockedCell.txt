@@ -2,7 +2,7 @@ Nib: trophyLockedCell.nib
 Views:
 depth 0: UITableViewCell #7, center 134.5, 27.5, size 269, 55
 depth 1: UITableViewCellContentView #11, center 134.5, 27.5, size 269, 55
-depth 2: FontLabel #15, text "Trophy 1", center 83, 26, size 150, 52, not interactive, tag 1
-depth 2: UIImageView #28, image trophies_lockIcon.png, center 216.5, 24, size 91, 54, not interactive, tag 2
+depth 2: FontLabel #15, text "Trophy 1", center 83, 26, size 150, 52, not interactive, tag 1, screen center 83, 26
+depth 2: UIImageView #28, image trophies_lockIcon.png, center 216.5, 24, size 91, 54, not interactive, tag 2, screen center 216.5, 24
 Connections:
 outlet lockedCell is UITableViewCell #7, center 134.5, 27.5, size 269, 55

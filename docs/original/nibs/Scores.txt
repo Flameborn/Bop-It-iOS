@@ -3,46 +3,46 @@ Views:
 depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIImageView #11, image LeaderBoard_background.png, center 160, 240, size 320, 500, not interactive
 depth 1: TreeNode #18, center 257, 54.5, size 82, 77
-depth 2: UIImageView #22, image trophies_games.png, center 41, 38.5, size 68, 75, not interactive
-depth 2: FontLabel #29, text "games", center 40.5, 41, size 91, 40, not interactive
+depth 2: UIImageView #22, image trophies_games.png, center 41, 38.5, size 68, 75, not interactive, screen center 257, 54.5
+depth 2: FontLabel #29, text "games", center 40.5, 41, size 91, 40, not interactive, screen center 256.5, 57
 depth 1: TreeNode #45, center 72, 54.5, size 112, 103
-depth 2: UIImageView #49, image gameOptions_games.png, center 56.5, 51.5, size 105, 97, not interactive
-depth 2: FontLabel #54, text "scores", center 56.5, 55.5, size 129, 43, not interactive
+depth 2: UIImageView #49, image gameOptions_games.png, center 56.5, 51.5, size 105, 97, not interactive, screen center 72.5, 54.5
+depth 2: FontLabel #54, text "scores", center 56.5, 55.5, size 129, 43, not interactive, screen center 72.5, 58.5
 depth 1: TreeNode #63, center 160, 251.5, size 280, 287
-depth 2: UIImageView #67, image LeaderBoard_greyBase.png, center 140, 143.5, size 280, 301, not interactive
-depth 2: UIImageView #72, image LeaderBoard_topBar.png, center 140, 31.5, size 280, 71, not interactive
-depth 2: UIImageView #77, image LeaderBoard_subTitlesBar.png, center 140, 70, size 280, 40, not interactive
-depth 2: UIButton #82, image LeaderBoard_subTitle_leftDeselected.png, center 76, 68.5, size 140, 31
-depth 2: UIButton #103, image LeaderBoard_subTitle_rightDeselected.png, center 210, 68.5, size 128, 31
-depth 2: FontLabel #114, text "ALL TIME", center 211, 71.5, size 92, 27, not interactive
-depth 2: FontLabel #122, text "WEEKLY", center 78, 71.5, size 92, 27, not interactive
-depth 2: UITableView #128, center 140, 158.5, size 268, 151
-depth 2: UIImageView #134, image LeaderBoard_bottomBar.png, center 140, 254.5, size 280, 71, not interactive
-depth 2: UIView #139, center 139.5, 100.5, size 269, 35
-depth 3: UIImageView #143, image LeaderBoard_rightBar.png, center 135, 18, size 280, 48, not interactive
-depth 3: FontLabel #148, text "Time", center 223.5, 17.5, size 77, 29, not interactive, tag 3
-depth 3: FontLabel #156, text "Name", center 43.5, 17.5, size 71, 29, not interactive, tag 1
-depth 2: UIView #163, center 139.5, 100.5, size 269, 35
-depth 3: UIImageView #167, image LeaderBoard_middleBar.png, center 135, 18, size 280, 48, not interactive
-depth 3: FontLabel #172, text "Points", center 223.5, 17.5, size 77, 29, not interactive, tag 3
-depth 3: FontLabel #178, text "Moves", center 147.5, 18.5, size 65, 29, not interactive, tag 2
-depth 3: FontLabel #184, text "Name", center 43.5, 17.5, size 71, 29, not interactive, tag 1
-depth 2: UIButton #189, image LeaderBoard_topLeftDeselected.png, center 45.5, 30.5, size 79, 45
-depth 2: UIButton #200, image LeaderBoard_topCenterLeftDeselected.png, center 115.5, 31, size 61, 46
-depth 2: UIButton #211, image LeaderBoard_topCenterRightDeselected.png, center 183, 31, size 74, 46
-depth 2: UIButton #222, image LeaderBoard_topRightDeselected.png, center 247.5, 31, size 61, 46
-depth 2: FontLabel #233, text "Classic", center 43.5, 30.5, size 77, 27, not interactive
-depth 2: FontLabel #241, text "Basic", center 115.5, 30.5, size 77, 27, not interactive
-depth 2: FontLabel #247, text "Extreme", center 187, 30.5, size 82, 27, not interactive
-depth 2: FontLabel #253, text "Blitz", center 247.5, 30.5, size 77, 27, not interactive
-depth 2: UIButton #259, image LeaderBoard_bottomLeftDeselected.png, center 48, 256.5, size 88, 45
-depth 2: UIButton #270, image LeaderBoard_bottomMiddleDeselected.png, center 136, 256.5, size 94, 47
-depth 2: UIButton #281, image LeaderBoard_bottomRightDeselected.png, center 229, 257, size 98, 48
-depth 2: FontLabel #292, text "Local", center 45.5, 258.5, size 77, 27, not interactive
-depth 2: FontLabel #298, text "Friends", center 135.5, 258.5, size 77, 27, not interactive
-depth 2: FontLabel #304, text "Global", center 228.5, 258.5, size 77, 27, not interactive
-depth 2: UIView #310, center 141, 144, size 274, 274, HIDDEN, not interactive
-depth 3: UIActivityIndicatorView #314, center 136.5, 137.5, size 37, 37, not interactive
+depth 2: UIImageView #67, image LeaderBoard_greyBase.png, center 140, 143.5, size 280, 301, not interactive, screen center 160, 251.5
+depth 2: UIImageView #72, image LeaderBoard_topBar.png, center 140, 31.5, size 280, 71, not interactive, screen center 160, 139.5
+depth 2: UIImageView #77, image LeaderBoard_subTitlesBar.png, center 140, 70, size 280, 40, not interactive, screen center 160, 178
+depth 2: UIButton #82, image LeaderBoard_subTitle_leftDeselected.png, center 76, 68.5, size 140, 31, screen center 96, 176.5
+depth 2: UIButton #103, image LeaderBoard_subTitle_rightDeselected.png, center 210, 68.5, size 128, 31, screen center 230, 176.5
+depth 2: FontLabel #114, text "ALL TIME", center 211, 71.5, size 92, 27, not interactive, screen center 231, 179.5
+depth 2: FontLabel #122, text "WEEKLY", center 78, 71.5, size 92, 27, not interactive, screen center 98, 179.5
+depth 2: UITableView #128, center 140, 158.5, size 268, 151, screen center 160, 266.5
+depth 2: UIImageView #134, image LeaderBoard_bottomBar.png, center 140, 254.5, size 280, 71, not interactive, screen center 160, 362.5
+depth 2: UIView #139, center 139.5, 100.5, size 269, 35, screen center 159.5, 208.5
+depth 3: UIImageView #143, image LeaderBoard_rightBar.png, center 135, 18, size 280, 48, not interactive, screen center 160, 209
+depth 3: FontLabel #148, text "Time", center 223.5, 17.5, size 77, 29, not interactive, tag 3, screen center 248.5, 208.5
+depth 3: FontLabel #156, text "Name", center 43.5, 17.5, size 71, 29, not interactive, tag 1, screen center 68.5, 208.5
+depth 2: UIView #163, center 139.5, 100.5, size 269, 35, screen center 159.5, 208.5
+depth 3: UIImageView #167, image LeaderBoard_middleBar.png, center 135, 18, size 280, 48, not interactive, screen center 160, 209
+depth 3: FontLabel #172, text "Points", center 223.5, 17.5, size 77, 29, not interactive, tag 3, screen center 248.5, 208.5
+depth 3: FontLabel #178, text "Moves", center 147.5, 18.5, size 65, 29, not interactive, tag 2, screen center 172.5, 209.5
+depth 3: FontLabel #184, text "Name", center 43.5, 17.5, size 71, 29, not interactive, tag 1, screen center 68.5, 208.5
+depth 2: UIButton #189, image LeaderBoard_topLeftDeselected.png, center 45.5, 30.5, size 79, 45, screen center 65.5, 138.5
+depth 2: UIButton #200, image LeaderBoard_topCenterLeftDeselected.png, center 115.5, 31, size 61, 46, screen center 135.5, 139
+depth 2: UIButton #211, image LeaderBoard_topCenterRightDeselected.png, center 183, 31, size 74, 46, screen center 203, 139
+depth 2: UIButton #222, image LeaderBoard_topRightDeselected.png, center 247.5, 31, size 61, 46, screen center 267.5, 139
+depth 2: FontLabel #233, text "Classic", center 43.5, 30.5, size 77, 27, not interactive, screen center 63.5, 138.5
+depth 2: FontLabel #241, text "Basic", center 115.5, 30.5, size 77, 27, not interactive, screen center 135.5, 138.5
+depth 2: FontLabel #247, text "Extreme", center 187, 30.5, size 82, 27, not interactive, screen center 207, 138.5
+depth 2: FontLabel #253, text "Blitz", center 247.5, 30.5, size 77, 27, not interactive, screen center 267.5, 138.5
+depth 2: UIButton #259, image LeaderBoard_bottomLeftDeselected.png, center 48, 256.5, size 88, 45, screen center 68, 364.5
+depth 2: UIButton #270, image LeaderBoard_bottomMiddleDeselected.png, center 136, 256.5, size 94, 47, screen center 156, 364.5
+depth 2: UIButton #281, image LeaderBoard_bottomRightDeselected.png, center 229, 257, size 98, 48, screen center 249, 365
+depth 2: FontLabel #292, text "Local", center 45.5, 258.5, size 77, 27, not interactive, screen center 65.5, 366.5
+depth 2: FontLabel #298, text "Friends", center 135.5, 258.5, size 77, 27, not interactive, screen center 155.5, 366.5
+depth 2: FontLabel #304, text "Global", center 228.5, 258.5, size 77, 27, not interactive, screen center 248.5, 366.5
+depth 2: UIView #310, center 141, 144, size 274, 274, HIDDEN, not interactive, screen center 161, 252
+depth 3: UIActivityIndicatorView #314, center 136.5, 137.5, size 37, 37, not interactive, screen center 160.5, 252.5
 depth 1: UIButton #321, title "Back", image LeaderBoard_back.png, center 53, 434, size 72, 72
 depth 1: FontLabel #330, text "back", center 53, 437, size 68, 40, not interactive
 depth 1: UIButton #338, title "Back", image help_help.png, center 259, 434, size 72, 72

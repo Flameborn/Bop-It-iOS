@@ -56,8 +56,8 @@ class Voice:
 
 class Audio:
     def __init__(self, notify: Callable[[str], None], master_volume: float = 1.0,
-                 effects_volume: float = 1.0) -> None:
-        """notify is called with short spoken messages about device problems."""
+                 effects_volume: float = 1.0, music_volume: float = 1.0) -> None:
+        """notify is called with short spoken messages about device problems. Volumes are 0 to 1."""
         self._notify = notify
         self._sounds: dict[str, DecodedSound] = {}
         self._buffers: dict[str, object] = {}
@@ -70,6 +70,9 @@ class Audio:
         self._next_reconnect = 0.0
         self.master_volume = master_volume
         self.effects_volume = effects_volume
+        self.music_volume = music_volume
+        # Per source: the gain asked for at play time, and whether it is music.
+        self._source_mix: dict[int, tuple[float, bool]] = {}
 
     # Loading
 
@@ -182,8 +185,10 @@ class Audio:
     # Playback
 
     def play(self, name: str, *, gain: float = 1.0, pitch: float = 1.0, pan: float = 0.0,
-             loop: bool = False) -> Voice | None:
+             loop: bool = False, music: bool = False) -> Voice | None:
         """Play a loaded sound now. pan runs from -1 (left) to 1 (right), mono sounds only.
+
+        music selects the music volume instead of the effects volume.
 
         Returns None when the sound is unknown or there is no device.
         """
@@ -195,7 +200,8 @@ class Audio:
             return None
         source = self._claim_source()
         source.buffer = self._buffers[name]
-        source.gain = max(0.0, gain * self.effects_volume)
+        self._source_mix[id(source)] = (gain, music)
+        source.gain = self._mixed_gain(gain, music)
         source.pitch = pitch
         source.looping = loop
         source.relative = True
@@ -204,7 +210,8 @@ class Audio:
         source.position = (math.sin(angle), 0.0, -math.cos(angle))
         source.play()
         voice = Voice(source, self._generations[id(source)], self)
-        log.debug("play %s gain=%.2f pitch=%.2f pan=%.2f loop=%s", name, gain, pitch, pan, loop)
+        log.debug("play %s gain=%.2f pitch=%.2f pan=%.2f loop=%s music=%s",
+                  name, gain, pitch, pan, loop, music)
         return voice
 
     def stop_all(self) -> None:
@@ -218,6 +225,18 @@ class Audio:
     def set_master_volume(self, volume: float) -> None:
         self.master_volume = max(0.0, min(1.0, volume))
         self._apply_master_volume()
+
+    def set_mix(self, effects_volume: float, music_volume: float) -> None:
+        """Change effects and music volume, including sounds already playing."""
+        self.effects_volume = max(0.0, min(1.0, effects_volume))
+        self.music_volume = max(0.0, min(1.0, music_volume))
+        for source in self._sources:
+            mix = self._source_mix.get(id(source))
+            if mix is not None:
+                source.gain = self._mixed_gain(*mix)
+
+    def _mixed_gain(self, gain: float, music: bool) -> float:
+        return max(0.0, gain * (self.music_volume if music else self.effects_volume))
 
     def _apply_master_volume(self) -> None:
         if self._context is not None:

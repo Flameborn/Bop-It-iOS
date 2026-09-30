@@ -3,28 +3,28 @@ Views:
 depth 0: UIView #7, center 160, 240, size 320, 480
 depth 1: UIImageView #11, image settings_background.png, center 160, 240, size 320, 480, not interactive
 depth 1: TreeNode #18, center 68.5, 60.5, size 107, 99
-depth 2: UIImageView #22, image settings_settings.png, center 53, 49.5, size 112, 97, not interactive
-depth 2: FontLabel #27, text "settings", center 53, 55.5, size 138, 47, not interactive
+depth 2: UIImageView #22, image settings_settings.png, center 53, 49.5, size 112, 97, not interactive, screen center 68, 60.5
+depth 2: FontLabel #27, text "settings", center 53, 55.5, size 138, 47, not interactive, screen center 68, 66.5
 depth 1: TreeNode #44, center 253, 57, size 78, 74
-depth 2: UIImageView #48, image settings_options.png, center 39, 37.5, size 92, 77, not interactive
-depth 2: FontLabel #53, text "options", center 39.5, 39, size 91, 40, not interactive
+depth 2: UIImageView #48, image settings_options.png, center 39, 37.5, size 92, 77, not interactive, screen center 253, 57.5
+depth 2: FontLabel #53, text "options", center 39.5, 39, size 91, 40, not interactive, screen center 253.5, 59
 depth 1: TreeNode #62, center 159, 251.5, size 288, 279
-depth 2: UIImageView #66, image settings_greyBase.png, center 143.5, 124.5, size 285, 393, not interactive
-depth 2: UIImageView #71, image settings_settingsPanel.png, center 143.5, 130.5, size 285, 259, not interactive
-depth 2: FontLabel #76, text "Commands", center 109.5, 30.5, size 185, 43, not interactive
-depth 2: FontLabel #84, text "Banter", center 70.5, 80.5, size 107, 43, not interactive
-depth 2: FontLabel #90, text "Shout It", center 80, 134.5, size 126, 43, not interactive
-depth 2: FontLabel #96, text "Music", center 64.5, 190.5, size 95, 43, not interactive
-depth 2: UIButton #102, title "Silent", image settings_commandsSILENToff.png, center 249, 27, size 48, 34
-depth 2: UIButton #120, title "VOX", image settings_commandsVOXoff.png, center 170, 27.5, size 30, 37
-depth 2: UIButton #129, title "SFX", image settings_commandsSFXoff.png, center 205.5, 27.5, size 25, 37
-depth 2: UIButton #138, title "On", image settings_onSelected.png, center 185.5, 78.5, size 39, 37
-depth 2: UIButton #147, title "Off", image settings_offDeselected.png, center 239, 78.5, size 46, 37
-depth 2: UIButton #156, title "On", image settings_onDeselected.png, center 184.5, 131.5, size 37, 37
-depth 2: UIButton #164, title "Off", image settings_offSelected.png, center 240, 131.5, size 40, 37
-depth 2: UISlider #172, center 185, 239.5, size 146, 23
-depth 2: UISlider #176, center 185, 186.5, size 146, 23
-depth 2: FontLabel #179, text "SFX", center 64.5, 241.5, size 95, 43, not interactive
+depth 2: UIImageView #66, image settings_greyBase.png, center 143.5, 124.5, size 285, 393, not interactive, screen center 158.5, 236.5
+depth 2: UIImageView #71, image settings_settingsPanel.png, center 143.5, 130.5, size 285, 259, not interactive, screen center 158.5, 242.5
+depth 2: FontLabel #76, text "Commands", center 109.5, 30.5, size 185, 43, not interactive, screen center 124.5, 142.5
+depth 2: FontLabel #84, text "Banter", center 70.5, 80.5, size 107, 43, not interactive, screen center 85.5, 192.5
+depth 2: FontLabel #90, text "Shout It", center 80, 134.5, size 126, 43, not interactive, screen center 95, 246.5
+depth 2: FontLabel #96, text "Music", center 64.5, 190.5, size 95, 43, not interactive, screen center 79.5, 302.5
+depth 2: UIButton #102, title "Silent", image settings_commandsSILENToff.png, center 249, 27, size 48, 34, screen center 264, 139
+depth 2: UIButton #120, title "VOX", image settings_commandsVOXoff.png, center 170, 27.5, size 30, 37, screen center 185, 139.5
+depth 2: UIButton #129, title "SFX", image settings_commandsSFXoff.png, center 205.5, 27.5, size 25, 37, screen center 220.5, 139.5
+depth 2: UIButton #138, title "On", image settings_onSelected.png, center 185.5, 78.5, size 39, 37, screen center 200.5, 190.5
+depth 2: UIButton #147, title "Off", image settings_offDeselected.png, center 239, 78.5, size 46, 37, screen center 254, 190.5
+depth 2: UIButton #156, title "On", image settings_onDeselected.png, center 184.5, 131.5, size 37, 37, screen center 199.5, 243.5
+depth 2: UIButton #164, title "Off", image settings_offSelected.png, center 240, 131.5, size 40, 37, screen center 255, 243.5
+depth 2: UISlider #172, center 185, 239.5, size 146, 23, screen center 200, 351.5
+depth 2: UISlider #176, center 185, 186.5, size 146, 23, screen center 200, 298.5
+depth 2: FontLabel #179, text "SFX", center 64.5, 241.5, size 95, 43, not interactive, screen center 79.5, 353.5
 depth 1: UIButton #185, image settings_back.png, center 53, 433, size 72, 68
 depth 1: FontLabel #193, text "back", center 52.5, 436, size 79, 40, not interactive
 Connections:
