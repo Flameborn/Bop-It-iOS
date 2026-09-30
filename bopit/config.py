@@ -35,6 +35,8 @@ KEYS_PATH = USER_DIR / "keys.json"
 # kept here for reference but not offered, see docs/DEVIATIONS.md.
 COMMAND_MODES = ("VOX", "SFX", "Silent")
 SELECTABLE_COMMAND_MODES = ("VOX", "SFX")
+# The Text size setting's range and step, in points.
+TEXT_SIZE_MIN, TEXT_SIZE_MAX, TEXT_SIZE_STEP = 12, 32, 2
 
 
 @dataclass
@@ -56,6 +58,8 @@ class Settings:
     language: str = ""
     # Shout It X-Move through the microphone (the original's "shout Yeah!" move).
     microphone: bool = True
+    # The size of the caption text on screen, in points, for anyone watching (TEXT_SIZES).
+    text_size: int = 16
     master_volume: float = 1.0
     # Used to estimate how long protected speech lasts, since NVDA cannot report it.
     speech_chars_per_second: float = 18.0

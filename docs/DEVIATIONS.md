@@ -96,7 +96,7 @@ In the command picker each command reads "on", "off" or "locked" instead of the 
 
 In Head 2 Head each player's commands were on their half of the screen. Here each callout is panned toward its owner (Green, player one, left; Blue, player two, right) and Bop stays in the centre. Reason: the screen halves cannot be seen. Approved 2026-09-30.
 
-When the next command belongs to the other player than the last player's command, a short cue plays first: sounds/accessibility/green.wav or blue.wav, panned to that player's side, as the callout's voice starts (when the turn opens). Bop is shared, gets no cue and does not count as a change. Reason: panning alone is lost on speakers; the developer supplied the sounds. Approved 2026-09-30.
+When the next command belongs to the other player than the last player's command, a short cue plays first: sounds/accessibility/green.wav or blue.wav, panned to that player's side, as the callout's voice starts (when the turn opens). Bop is shared, gets no cue and does not count as a change. Reason: panning alone is lost on speakers; the developer supplied the sounds, which are from Game Master Audio's Retro Classic pack (Collectables). Approved 2026-09-30.
 
 ## Head 2 Head keys, points and a stray Bop
 
@@ -113,6 +113,10 @@ The original stopped the music and the success's "b" part at the passing success
 ## Keys in a file, and a Keys page in Help
 
 The original was played by touch. Here the game keys (every command, the score key, pause and the Head 2 Head keys) are read from keys.json in the game folder, written with the defaults on first run. A missing or broken entry uses its default, and every problem is logged, printed and summed up in speech. Menu keys are fixed so a broken file cannot lock anyone out. Help has a third item, Keys, after Overview and Tutorials, listing the keys in use. Reason: keyboard play, and the developer asked for keys a player can change. Approved 2026-09-30.
+
+## Text size setting
+
+Options>Settings has a Text size slider, last in the list, from 12 to 32 points in steps of 2, starting at 16. It sets the size of the caption strip at the bottom of the screen; long text wraps and the strip grows to fit, up to half the screen. The labels inside the original's buttons keep their original size. Changing it makes no sound; the new size is spoken. Reason: for low-vision players and anyone watching, who each need a different size. Approved 2026-09-30.
 
 ## Language setting
 

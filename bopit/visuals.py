@@ -24,7 +24,7 @@ log = logging.getLogger(__name__)
 IMAGES_DIR = PROJECT_ROOT / "images"
 LAYOUTS_DIR = PROJECT_ROOT / "layouts"
 SIZE = (320, 480)
-CAPTION_HEIGHT = 22
+DEFAULT_TEXT_SIZE = 16
 TEXT_COLOUR = (255, 255, 255)
 SHADOW_COLOUR = (0, 0, 0)
 HIGHLIGHT_COLOUR = (255, 220, 0)
@@ -81,6 +81,8 @@ class Renderer:
         # Rendered text and scaled images, so drawing a frame is only blitting.
         self._texts: dict[tuple, list[tuple[pygame.Surface, tuple[float, float]]]] = {}
         self._scaled: dict[tuple, pygame.Surface] = {}
+        self._captions: dict[tuple, tuple[pygame.Surface, list]] = {}
+        self._caption_fonts: dict[int, pygame.font.Font] = {}
 
     # Loading
 
@@ -130,7 +132,7 @@ class Renderer:
     # Drawing
 
     def draw(self, screen: object, theme: int, caption: str | None,
-             texts: dict[str, str] | None = None) -> None:
+             texts: dict[str, str] | None = None, text_size: int = DEFAULT_TEXT_SIZE) -> None:
         self._surface.fill((0, 0, 0))
         name = self.layout_for(screen)
         if name is not None:
@@ -139,7 +141,7 @@ class Renderer:
         if draw_game is not None:
             draw_game(self, theme)
         if caption:
-            self.caption(caption)
+            self.caption(caption, text_size)
 
     @staticmethod
     def layout_for(screen: object) -> str | None:
@@ -237,12 +239,54 @@ class Renderer:
             y += font.get_linesize()
         return pieces
 
-    def caption(self, text: str) -> None:
-        strip = pygame.Surface((SIZE[0], CAPTION_HEIGHT), pygame.SRCALPHA)
+    def caption(self, text: str, points: int = DEFAULT_TEXT_SIZE) -> None:
+        """The caption strip along the bottom, in the Text size setting's size. Long text
+        wraps, and the strip grows to fit it, up to half the screen."""
+        key = (text, points)
+        pieces = self._captions.get(key)
+        if pieces is None:
+            pieces = self._captions[key] = self._render_caption(text, points)
+        strip, lines = pieces
+        top = SIZE[1] - strip.get_height()
+        self._surface.blit(strip, (0, top))
+        for surface, (x, y) in lines:
+            self._surface.blit(surface, (x, top + y))
+
+    def _render_caption(self, text: str, points: int) -> tuple[pygame.Surface, list]:
+        font = self.caption_font(points)
+        width = SIZE[0] - 8
+        lines: list[str] = []
+        line = ""
+        for word in text.split(" "):
+            trial = f"{line} {word}".strip()
+            if line and font.size(trial)[0] > width:
+                lines.append(line)
+                line = word
+            else:
+                line = trial
+        lines.append(line)
+        max_lines = max(1, (SIZE[1] // 2 - 4) // font.get_linesize())
+        lines = lines[:max_lines]
+        height = font.get_linesize() * len(lines) + 4
+        strip = pygame.Surface((SIZE[0], height), pygame.SRCALPHA)
         strip.fill((0, 0, 0, 190))
-        self._surface.blit(strip, (0, SIZE[1] - CAPTION_HEIGHT))
-        self.text(text, pygame.Rect(4, SIZE[1] - CAPTION_HEIGHT, SIZE[0] - 8, CAPTION_HEIGHT),
-                  HIGHLIGHT_COLOUR)
+        rendered = []
+        y = 2
+        for line in lines:
+            surface = font.render(line, True, HIGHLIGHT_COLOUR)
+            if surface.get_width() > width:
+                surface = pygame.transform.smoothscale(
+                    surface, (width, max(1, surface.get_height() * width // surface.get_width())))
+            rendered.append((surface, ((SIZE[0] - surface.get_width()) / 2, y)))
+            y += font.get_linesize()
+        return strip, rendered
+
+    def caption_font(self, points: int) -> pygame.font.Font:
+        # pygame's default font runs small, so a point is taken as four thirds of its units.
+        size = round(points * 4 / 3)
+        if size not in self._caption_fonts:
+            self._caption_fonts[size] = pygame.font.Font(None, size)
+        return self._caption_fonts[size]
 
     def bopjects(self, locations: dict[str, int], current: str | None, theme: int) -> None:
         """The game screen: background, each active BopJect in its place, and a frame

@@ -351,7 +351,7 @@ class App:
                 texts = {"playLabel": i18n.tr(top), "playLabel2": i18n.tr(bottom)}
             elif screen.title in MODES:
                 texts = self._intro_texts(screen.title)
-            renderer.draw(screen, self.settings.theme, caption, texts)
+            renderer.draw(screen, self.settings.theme, caption, texts, self.settings.text_size)
             pygame.display.flip()
         except Exception:
             if not getattr(self, "_draw_failed", False):

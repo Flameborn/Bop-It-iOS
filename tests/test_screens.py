@@ -120,7 +120,7 @@ class ScreenTests(unittest.TestCase):
         self.assertEqual(labels(options), ["Help", "Settings", "Credits", "About"])
         settings = self.go(Nav.DOWN, Nav.SELECT)
         self.assertEqual(labels(settings), ["Commands", "Banter", "Shout It", "Music", "SFX", "Microphone",
-                                           "Language"])
+                                           "Language", "Text size"])
 
     def test_button_sounds_match_original(self) -> None:
         self.go(Nav.DOWN, Nav.SELECT)  # Games: SFX_Select
@@ -166,7 +166,7 @@ class ScreenTests(unittest.TestCase):
     def test_sfx_slider_previews_except_in_silent(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.UP, Nav.UP, Nav.LEFT)  # SFX is above Microphone and Language
+        self.focus("SFX"); self.go(Nav.LEFT)
         self.assertEqual((self.nav.settings.sfx_volume, self.nav.played), (50, ["SFX_Bop_R"]))
         self.nav.settings.commands = "Silent"
         self.go(Nav.LEFT)
@@ -175,22 +175,41 @@ class ScreenTests(unittest.TestCase):
     def test_music_slider_is_silent(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.UP, Nav.UP, Nav.UP, Nav.LEFT)
+        self.focus("Music"); self.go(Nav.LEFT)
         self.assertEqual((self.nav.settings.music_volume, self.nav.played), (90, []))
 
     def test_microphone_toggle(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.UP, Nav.SELECT)
+        self.focus("Microphone"); self.go(Nav.SELECT)
         self.assertFalse(self.nav.settings.microphone)
         self.assertEqual(self.nav.played, ["SFX_SettingsSelect"])
 
     def test_language_choice(self) -> None:
         self.open_settings()
         self.nav.played.clear()
-        self.go(Nav.LAST, Nav.RIGHT)
+        self.focus("Language"); self.go(Nav.RIGHT)
         self.assertEqual(self.nav.settings.language, "de")
         self.assertEqual(self.nav.played, ["SFX_SettingsSelect"])
+
+    def test_text_size_slider(self) -> None:
+        self.open_settings()
+        self.nav.played.clear()
+        self.focus("Text size")
+        self.go(Nav.RIGHT)
+        self.assertEqual(self.nav.settings.text_size, 18)
+        for _ in range(20):
+            self.go(Nav.LEFT)
+        self.assertEqual(self.nav.settings.text_size, 12)
+        for _ in range(20):
+            self.go(Nav.RIGHT)
+        self.assertEqual(self.nav.settings.text_size, 32)
+        self.assertEqual(self.nav.played, [])
+
+    def focus(self, label: str) -> None:
+        """Move the focus to a settings item by name."""
+        menu = self.nav.stack[-1]
+        menu.focus = [item.label for item in menu.items].index(label)
 
     def test_help_tabs_are_silent(self) -> None:
         self.go(Nav.DOWN, Nav.DOWN, Nav.SELECT, Nav.SELECT)

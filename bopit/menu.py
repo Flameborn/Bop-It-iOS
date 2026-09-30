@@ -64,18 +64,22 @@ class Choice:
 
 @dataclass
 class Slider:
-    """A value from 0 to 100 in fixed steps, adjusted with Left and Right."""
+    """A value in fixed steps between a minimum and a maximum, adjusted with Left and Right.
+    Volumes run from 0 to 100 percent."""
 
     label: str
     get: Callable[[], int]
     set: Callable[[int], None]
     step_size: int = 10
+    minimum: int = 0
+    maximum: int = 100
+    unit: str = "percent"
 
     def state(self) -> str | None:
-        return f"{self.get()} percent"
+        return f"{self.get()} {self.unit}"
 
     def step(self, delta: int) -> None:
-        self.set(max(0, min(100, self.get() + delta * self.step_size)))
+        self.set(max(self.minimum, min(self.maximum, self.get() + delta * self.step_size)))
 
 
 Item = Button | Choice | Slider

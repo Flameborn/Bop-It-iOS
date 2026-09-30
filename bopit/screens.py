@@ -9,7 +9,8 @@ from collections.abc import Callable, Sequence
 from typing import Protocol
 
 from bopit import i18n, input_map, port_texts, texts
-from bopit.config import SELECTABLE_COMMAND_MODES, Settings
+from bopit.config import (SELECTABLE_COMMAND_MODES, TEXT_SIZE_MAX, TEXT_SIZE_MIN,
+                          TEXT_SIZE_STEP, Settings)
 from bopit.menu import Button, Choice, Menu, Slider
 from bopit.progress import Progress
 from bopit.scores import Entry, Scores
@@ -456,6 +457,11 @@ def settings_menu(nav: Navigator) -> Menu:
         nav.language_changed()
         nav.play(SETTINGS_SELECT)
 
+    def set_text_size(v: int) -> None:
+        # Our addition. Only the picture changes, so there is no sound but the new size spoken.
+        s.text_size = v
+        nav.settings_changed()
+
     def set_sfx(v: int) -> None:
         # Settings::sfxValueChange previews with SFX_Bop_R, except in Silent.
         s.sfx_volume = v
@@ -473,4 +479,6 @@ def settings_menu(nav: Navigator) -> Menu:
         Choice("Microphone", ON_OFF, lambda: 0 if s.microphone else 1, set_microphone),
         Choice("Language", tuple(i18n.LANGUAGES.values()),
                lambda: codes.index(s.language) if s.language in codes else 0, set_language),
+        Slider("Text size", lambda: s.text_size, set_text_size, TEXT_SIZE_STEP, TEXT_SIZE_MIN,
+               TEXT_SIZE_MAX, "points"),
     ])
