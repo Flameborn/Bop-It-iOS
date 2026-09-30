@@ -207,6 +207,10 @@ class Game:
         self._timers: list[tuple[float, int, Callable[[float], None]]] = []
         self._sequence = itertools.count()
         self._events: list[ev.Event] = []
+        # When each event happened, for the debug log: the due time of the step or the time
+        # of the input that caused it.
+        self._event_times: list[float] = []
+        self._now = 0.0
         self._music = MusicClock()
         self.state = State.OVER
         self._bop_player: int | None = None
@@ -247,6 +251,7 @@ class Game:
 
     def prepare(self, now: float) -> None:
         """The "Bop It to start" screen. Any input starts the game."""
+        self._now = now
         self.state = State.WAITING_TO_START
         self._emit(ev.WaitingToStart())
 
@@ -341,6 +346,7 @@ class Game:
         """GameController::resumeGame: music back on, a new command, and a turn a beat later."""
         if self.state != State.PAUSED:
             return
+        self._now = now
         if self._paused_blitz_time is not None:
             # SoloSpeedMode::resumeGame: the stopwatch carries on from where it stopped.
             self._blitz_started = now - self._paused_blitz_time
@@ -410,22 +416,35 @@ class Game:
         """GO on the Blitz Challenge break screen (MultiBlitzMode::blitzBreakEnd)."""
         if self.state != State.BREAK or not self._waiting_to_win:
             return
+        self._now = now
         self._waiting_to_win = False
         self._schedule(now + CHALLENGE_RESTART_DELAY / self.pitch, self._challenge_restart)
 
     def dismiss_help(self, now: float) -> None:
         if self.state == State.HELP:
+            self._now = now
             self._fail_sound_done(now)
 
     def update(self, now: float) -> None:
         """Run every scheduled step that is due, each at its own due time."""
         while self._timers and self._timers[0][0] <= now:
             due, _, step = heapq.heappop(self._timers)
+            self._now = due
             step(due)
+        self._now = max(self._now, now)
 
     def pop_events(self) -> list[ev.Event]:
-        events, self._events = self._events, []
-        return events
+        return [event for _, event in self.pop_timed_events()]
+
+    def pop_timed_events(self) -> list[tuple[float, ev.Event]]:
+        """Events with the time each happened."""
+        timed = list(zip(self._event_times, self._events))
+        self._events, self._event_times = [], []
+        return timed
+
+    @property
+    def turn_opened_at(self) -> float:
+        return self._turn_opened_at
 
     @property
     def _timed(self) -> bool:
@@ -917,3 +936,4 @@ class Game:
 
     def _emit(self, event: ev.Event) -> None:
         self._events.append(event)
+        self._event_times.append(self._now)

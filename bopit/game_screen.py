@@ -10,6 +10,9 @@ import pygame
 
 from bopit.audio import Audio, Voice
 from bopit.config import Settings
+from bopit.debug.autoplay import Action, Bot
+from bopit.debug.event_log import EventLog
+from bopit.debug.options import DebugOptions
 from bopit.engine import events as ev
 from bopit.engine.game import PLAYER_NAMES, Game, ModeRules, Options
 from bopit.input_map import (GAME_SCORE_KEY, H2H_SCORE_KEY, game_command_for, h2h_key_name,
@@ -50,6 +53,7 @@ H2H_RESULTS_DELAY = 2.0
 H2H_BUTTONS_DELAY = 0.4
 # handleNewTrophy: the trophy appears after a 1.5 second delay and a 1 second animation.
 TROPHY_DELAY = 2.5
+BOT_BREAK_DELAY = 3.0       # Debug mode: time to hear the break screen before Next.
 TALLY_FRACTION = 0.05
 
 
@@ -65,6 +69,9 @@ class Host(Protocol):
     saved_game: SavedGame
     tips: Tips
     blitz_players: int
+    # Debug mode (--debug); None in normal play.
+    debug: DebugOptions | None
+    event_log: EventLog | None
 
     def open_trophies(self) -> None: ...
 
@@ -89,6 +96,13 @@ class GameScreen:
         self._host = host
         self._rules = rules
         s = host.settings
+        self._debug: DebugOptions | None = getattr(host, "debug", None)
+        self._log: EventLog | None = getattr(host, "event_log", None)
+        if self._debug is not None and seed is None:
+            # A fixed seed if given; otherwise a logged one, so any run can be repeated.
+            seed = self._debug.seed if self._debug.seed is not None else random.randrange(10**6)
+        self.seed = seed
+        self._bot = Bot(self._debug) if self._debug is not None and self._debug.bot else None
         self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
                                          self.picked, getattr(host, "blitz_players", 2)),
                           random.Random(seed), host.times_called)
@@ -111,6 +125,11 @@ class GameScreen:
             # Back from the pause menu; its Resume already restarted the game.
             return
         self._entered = True
+        if self._log is not None:
+            d = self._debug
+            bot = (f"bot reaction {d.reaction:.3f}, failure {d.failure.value} every "
+                   f"{d.fail_every} turns" if d is not None and d.bot else "no bot")
+            self._log.line(now, f"game screen: {self._rules.name}, seed {self.seed}, {bot}")
         if self._saved is not None:
             # Bop_ItAppDelegate::startLoadedSavedGame: the saved game comes back paused.
             self._game.load(self._saved, now)
@@ -226,14 +245,59 @@ class GameScreen:
         return " ".join(parts)
 
     def update(self, now: float) -> None:
+        if self._bot is not None:
+            # Each bot action runs at its own planned time, not at the frame's.
+            while (action := self._bot.due(now)) is not None:
+                self._game.update(action.at)
+                self._dispatch()
+                self._perform(action)
+                self._dispatch()
         self._game.update(now)
         if self._listening:
             self._game.hear(self._host.microphone.level(), now)
         self._dispatch()
 
+    def next_player_ready(self) -> bool:
+        """Debug mode: the bot presses Next on the Blitz Challenge break screen itself."""
+        return self._bot is not None
+
+    def _perform(self, action: Action) -> None:
+        g = self._game
+        state = g.state.name
+        if action.kind == "start":
+            if state == "WAITING_TO_START":
+                self._bot_press(action)
+        elif action.kind == "help":
+            if state == "HELP":
+                self._log_line(action.at, "bot: dismisses help")
+                g.dismiss_help(action.at)
+        elif action.note != "late" and (state != "IN_TURN"
+                                        or g.turn_opened_at != action.turn_opened):
+            # Planned for a turn that a pause cancelled.
+            self._log_line(action.at, f"bot: drops its press of {action.command}")
+        else:
+            self._bot_press(action)
+
+    def _bot_press(self, action: Action) -> None:
+        who = f"{PLAYER_NAMES[action.player]} " if action.player is not None else ""
+        note = f" ({action.note})" if action.note else ""
+        self._log_line(action.at, f"bot: {who}presses {action.command}{note}")
+        if action.player is not None:
+            self._game.press_by(action.player, action.command, action.at)
+        else:
+            self._game.press(action.command, action.at)
+
+    def _log_line(self, when: float, text: str) -> None:
+        if self._log is not None:
+            self._log.line(when, text)
+
     def _dispatch(self) -> None:
-        for event in self._game.pop_events():
+        for when, event in self._game.pop_timed_events():
             log.info("game %s", event)
+            if self._log is not None:
+                self._log.event(when, event)
+            if self._bot is not None:
+                self._bot.plan(when, event, self._game)
             self._handle(event)
 
     def _handle(self, event: ev.Event) -> None:
@@ -633,10 +697,12 @@ class ChallengeBreakScreen:
         self._player = player
         self._time = time
         self._now = 0.0
+        self._entered_at = 0.0
         self._menu = Menu("Break", [Button("Next", self._go, "SFX_Select")])
 
     def enter(self, now: float) -> None:
         self._now = now
+        self._entered_at = now
         self._host.audio.play("MUSIC_PayoffLoopShort", music=True)
         self._host.speech.speak(f"Player {self._player} time, {self._time:.3f} seconds.",
                                 interrupt=True, protect=True)
@@ -650,6 +716,10 @@ class ChallengeBreakScreen:
 
     def update(self, now: float) -> None:
         self._now = now
+        if (self._game_screen.next_player_ready()
+                and now >= self._entered_at + BOT_BREAK_DELAY):
+            self._go()
+            return
         self._game_screen.update(now)
 
     def _go(self) -> None:

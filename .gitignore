@@ -225,3 +225,6 @@ savegame.json
 
 # Decompiler output and Ghidra project, regenerate with tools/decompile.py
 research/
+
+# Log files, including debug mode event logs
+logs/

@@ -9,6 +9,8 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
+from bopit.debug.event_log import EventLog
+from bopit.debug.options import DebugOptions
 from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, HEAD_TO_HEAD,
                                PASS_IT_BASIC, PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
@@ -71,8 +73,11 @@ class MenuScreen:
 
 
 class App:
-    def __init__(self, speech: Speech, audio: Audio, settings: Settings) -> None:
+    def __init__(self, speech: Speech, audio: Audio, settings: Settings,
+                 debug: DebugOptions | None = None, event_log: EventLog | None = None) -> None:
         self.speech = speech
+        self.debug = debug
+        self.event_log = event_log
         self.audio = audio
         self.settings = settings
         self.scores = Scores()
@@ -236,4 +241,6 @@ class App:
     def _enter_top(self) -> None:
         screen = self._stack[-1]
         log.info("Screen: %s", screen.title)
+        if self.event_log is not None:
+            self.event_log.line(time.perf_counter(), f"screen: {screen.title}")
         screen.enter(time.perf_counter())
