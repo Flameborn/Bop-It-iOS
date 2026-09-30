@@ -33,7 +33,8 @@ OUTPUT = DIST / NAME
 DATA = (("sounds", "sounds"), ("images", "images"), ("layouts", "layouts"),
         ("bopit/lang", "bopit/lang"), ("vendor/openal/license.txt", "licenses/openal-soft"),
         ("vendor/nvda/license.txt", "licenses/nvda-controller-client"))
-BINARIES = (("vendor/openal/soft_oal.dll", "vendor/openal"),
+# OpenAL32.dll is the name bopit/openal_loader.py loads (soft_oal.dll in vendor is the same file).
+BINARIES = (("vendor/openal/OpenAL32.dll", "vendor/openal"),
             ("vendor/nvda/nvdaControllerClient64.dll", "vendor/nvda"))
 # Beside the executable, for the player to read: (source, name in the build).
 SIDE_FILES = (("VERSION", "VERSION"), ("LICENSE", "license.txt"),
