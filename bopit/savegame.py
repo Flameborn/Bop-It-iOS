@@ -5,11 +5,11 @@ import json
 import logging
 from pathlib import Path
 
-from bopit.config import PROJECT_ROOT
+from bopit.config import USER_DIR
 
 log = logging.getLogger(__name__)
 
-SAVE_PATH = PROJECT_ROOT / "savegame.json"
+SAVE_PATH = USER_DIR / "savegame.json"
 
 
 class SavedGame:

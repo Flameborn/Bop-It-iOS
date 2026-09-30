@@ -2,12 +2,20 @@
 
 import json
 import logging
+import sys
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
 
 log = logging.getLogger(__name__)
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if getattr(sys, "frozen", False):
+    # A build made by compiler.py: the game's own files are bundled in PyInstaller's folder,
+    # and the player's files (settings, scores, keys, logs) sit beside the executable.
+    PROJECT_ROOT = Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    USER_DIR = Path(sys.executable).resolve().parent
+else:
+    PROJECT_ROOT = Path(__file__).resolve().parent.parent
+    USER_DIR = PROJECT_ROOT
 ORIGINAL_APP_DIR = PROJECT_ROOT / "BopIt.app"
 ORIGINAL_LANG_DIR = ORIGINAL_APP_DIR / "English.lproj"
 SOUNDS_DIR = PROJECT_ROOT / "sounds"
@@ -18,9 +26,9 @@ LANGUAGE_SOUNDS_DIR = SOUNDS_DIR / "languages"
 # Folders under SOUNDS_DIR that are not loaded with the English sounds: the languages are
 # loaded separately.
 UNLOADED_SOUND_DIRS = ("languages",)
-LOG_DIR = PROJECT_ROOT / "logs"
-SETTINGS_PATH = PROJECT_ROOT / "settings.json"
-KEYS_PATH = PROJECT_ROOT / "keys.json"
+LOG_DIR = USER_DIR / "logs"
+SETTINGS_PATH = USER_DIR / "settings.json"
+KEYS_PATH = USER_DIR / "keys.json"
 
 
 # The original's three kinds of command. Silent showed commands as pictures only; it is

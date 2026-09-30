@@ -5,11 +5,11 @@ import logging
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from bopit.config import PROJECT_ROOT
+from bopit.config import USER_DIR
 
 log = logging.getLogger(__name__)
 
-SCORES_PATH = PROJECT_ROOT / "scores.json"
+SCORES_PATH = USER_DIR / "scores.json"
 LIST_LENGTH = 10
 
 

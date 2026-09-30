@@ -5,11 +5,11 @@ import json
 import logging
 from pathlib import Path
 
-from bopit.config import PROJECT_ROOT
+from bopit.config import USER_DIR
 
 log = logging.getLogger(__name__)
 
-PROGRESS_PATH = PROJECT_ROOT / "progress.json"
+PROGRESS_PATH = USER_DIR / "progress.json"
 
 # Verbatim from English.lproj/Localizable.strings.
 UNLOCK_MESSAGES = {
