@@ -26,9 +26,9 @@ The iPhone game had no way to quit. Here the back key on the main menu exits the
 
 The original's Commands setting had VOX, SFX and Silent. Silent showed each command as a picture with no sound, which cannot be played without sight. The Commands choice offers only VOX and SFX. The original's Silent behavior stays documented in ORIGINAL_BEHAVIOR.md and in code comments, in case it is added later. Reason: accessibility. Approved 2026-09-29.
 
-## Help pause speaks the command's key
+## Help popup speaks the command's key
 
-When a command called 2 times or fewer is failed, the original paused on a help popup with touch screen instructions until its back button was pressed. Here the pause speaks the command and its key, for example "Twist it. Key: left. Press Enter to continue.", and waits for Enter. The timing of the pause is unchanged. Reason: the touch instructions do not apply to a keyboard. Approved 2026-09-29.
+When a command called 2 times or fewer is failed, the original paused on a help popup showing the command's tutorial text, with Continue and Try It. Here the popup is a menu with the same two buttons, and the text names the command and its key, for example "Twist It: press Left.". The timing of the pause is unchanged. Reason: the touch instructions do not apply to a keyboard. Approved 2026-09-29; Try It added 2026-09-30.
 
 ## A key speaks the score during play
 
@@ -46,9 +46,15 @@ The original showed a "25 PERFECT streak" or "25 GOOD streak" banner. Here it is
 
 In Basic and Extreme a new BopJect appeared on screen when a command entered play. Here its entrance is spoken, for example "Spin added." The first time a command is ever unlocked, the original's unlock message is spoken instead, for example "Spin to Win! Spin Unlocked", and remembered in progress.json so it is only heard once, as in the original. Reason: accessibility. Approved 2026-09-29.
 
-## Tutorial popup left out for now
+## Tutorials for the keyboard
 
-The original asked "Would you like to see the tutorials and try the moves before playing?" before the very first game. It is left out until tutorials are designed for this port. Approved 2026-09-29.
+The tutorials are built as the original's: Help's Tutorials list, one practice screen per command, Try It on the help popup, and the one-time question before the first game. The differences:
+
+- Each tutorial text names the command and its key, for example "Twist It: press Left.", instead of the original's touch and phone-movement instructions. Shout keeps its microphone X-Move line when the microphone setting is on. The same text is used on the help popup.
+- The original's Help button replayed an animation of the move, and one also played while the tutorial was open. Here Help reads the tutorial text again.
+- While practicing, every key goes to the game, and the pause key (Escape) stops, like the original's Try button turning into Stop. Starting practice says "Practice. Escape to stop."; stopping says "Stopped.".
+
+Reason: the original's tutorials were visual and touch based. Approved 2026-09-30.
 
 ## Microphone setting for the Shout It X-Move
 

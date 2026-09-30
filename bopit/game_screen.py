@@ -23,6 +23,7 @@ from bopit.progress import Progress
 from bopit.savegame import SavedGame
 from bopit.tips import Tips
 from bopit.trophies import all_trophies, newly_earned
+from bopit.tutorials import tutorial_text
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -85,11 +86,25 @@ class Host(Protocol):
 
     def play_themed(self, name: str) -> None: ...
 
+    def stop_menu_music(self) -> None: ...
+
+    def leave_game(self) -> None: ...
+
+    def clear_tutorial_return(self) -> None: ...
+
+    def try_tutorial(self, command: str) -> None: ...
+
+    def tutorial_back(self) -> None: ...
+
 
 class GameScreen:
     def __init__(self, host: Host, rules: ModeRules, start_now: bool = False,
                  seed: int | None = None, saved: dict | None = None,
-                 picked: tuple[str, ...] = (), wins: tuple[int, int] = (0, 0)) -> None:
+                 picked: tuple[str, ...] = (), wins: tuple[int, int] = (0, 0),
+                 times_called: dict[str, int] | None = None,
+                 announce_start: bool = True) -> None:
+        """times_called: a tutorial made its own new command, with its own count.
+        announce_start: False where the game starts at once with no "Bop It to start"."""
         self.title = rules.name
         self.rules = rules
         self.picked = tuple(saved.get("picked", ())) if saved is not None else picked
@@ -105,7 +120,9 @@ class GameScreen:
         self._bot = Bot(self._debug) if self._debug is not None and self._debug.bot else None
         self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it, s.microphone,
                                          self.picked, getattr(host, "blitz_players", 2)),
-                          random.Random(seed), host.times_called)
+                          random.Random(seed),
+                          host.times_called if times_called is None else times_called)
+        self._announce_start = announce_start
         # Head 2 Head's wins carry over to Play Again, as the mode object did.
         self._game.total_wins = list(wins)
         self._listening = False
@@ -152,6 +169,28 @@ class GameScreen:
     def next_player(self, now: float) -> None:
         self._game.next_player(now)
         self._dispatch()
+
+    def stop(self, now: float) -> None:
+        """A tutorial's Stop."""
+        self._game.stop(now)
+        self._dispatch()
+
+    def dismiss_help(self, now: float) -> None:
+        self._game.dismiss_help(now)
+        self._dispatch()
+
+    @property
+    def in_help(self) -> bool:
+        return self._game.state.name == "HELP"
+
+    def record_score(self) -> None:
+        """GameViewController::saveScores, when Try It leaves the game from the help popup:
+        the score is kept as if the game had ended."""
+        g = self._game
+        if self._rules.tracks_trophies and self._rules.blitz_target is None:
+            end_bonus = g.end_bonus if self._rules.keeps_end_bonus else 0
+            self._host.scores.add(self._rules.name, g.moves + g.bonus + end_bonus, g.moves)
+        self._host.progress.save()
 
     def save(self) -> None:
         """PauseMenu::exitButtonPressed saved the game only once a move had been made."""
@@ -339,6 +378,8 @@ class GameScreen:
             case ev.GameStarted():
                 # "Once you start any new game, your saved game is lost."
                 self._host.saved_game.remove()
+            case ev.WaitingToStart() if not self._announce_start:
+                pass
             case ev.WaitingToStart() if self._rules.head_to_head:
                 speech.speak(self._h2h_keys_text() + " Bop it to start.", interrupt=True)
             case ev.WaitingToStart():
@@ -367,9 +408,7 @@ class GameScreen:
                 speech.speak(self._unlock_message or f"{command} added.")
                 self._unlock_message = None
             case ev.HelpNeeded(command):
-                # Replaces the original's touch instructions (see docs/DEVIATIONS.md).
-                key = key_name_for(command) or "no key"
-                speech.speak(f"{command} it. Key: {key}. Press Enter to continue.", interrupt=True)
+                self._host.push(HelpPopupScreen(self._host, self, command))
             case ev.MoveMade(command, _, True) if (self._rules.tracks_trophies
                                                   and self._rules.blitz_target is None):
                 # Classic, Basic and Extreme count lifetime moves (their winTurn); Blitz does not.
@@ -459,7 +498,7 @@ class _EndScreenBase:
         self._announced = False
         self._menu = Menu(title, [
             Button("Play again", self._play_again, "SFX_Select"),
-            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Menu", host.leave_game, "SFX_Select"),
         ])
 
     def key(self, key: int, now: float) -> None:
@@ -478,7 +517,12 @@ class _EndScreenBase:
         self._host.audio.play("SFX_HighScore")
         self._host.speech.speak("New trophy.", protect=True)
         # The trophies button made no sound (trophiesButtonPress).
-        self._menu.items.insert(0, Button("Trophies", self._host.open_trophies))
+        self._menu.items.insert(0, Button("Trophies", self._trophies))
+
+    def _trophies(self) -> None:
+        # SoloEndGame::trophiesButtonPress also forgot the mode to return to from a tutorial.
+        self._host.clear_tutorial_return()
+        self._host.open_trophies()
 
     def _show_tip(self) -> None:
         tip = self._host.tips.maybe_tip()
@@ -619,7 +663,7 @@ class PassItEndScreen:
         self._announced = False
         self._menu = Menu("Game over", [
             Button("Play again", self._play_again, "SFX_Select"),
-            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Menu", host.leave_game, "SFX_Select"),
         ])
 
     def enter(self, now: float) -> None:
@@ -743,7 +787,7 @@ class HeadToHeadEndScreen:
         self._announced = False
         self._buttons_at = 0.0
         self._menu = Menu("Winner", [
-            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Menu", host.leave_game, "SFX_Select"),
             Button("Play again", self._play_again, "SFX_Select"),
         ])
 
@@ -802,7 +846,7 @@ class ChallengeEndScreen:
         self._timeline = _Timeline()
         self._announced = False
         self._menu = Menu("Results", [
-            Button("Menu", host.return_to_menu, "SFX_Select"),
+            Button("Menu", host.leave_game, "SFX_Select"),
             Button("Play again", self._play_again, "SFX_Select"),
         ])
 
@@ -839,3 +883,47 @@ def _tally_seconds(result: ev.GameOver) -> float:
         return 0.0
     step = math.ceil(remaining * TALLY_FRACTION)
     return math.ceil(remaining / step) * TALLY_INTERVAL
+
+
+class HelpPopupScreen:
+    """The help popup (GameViewController displayError), shown when a command called only a
+    couple of times is failed: the command's tutorial text, then Continue (left) and Try It
+    (right). Continue carries on to the game over; Try It keeps the score and opens that
+    command's tutorial. Neither button made a sound."""
+
+    def __init__(self, host: Host, game_screen: GameScreen, command: str) -> None:
+        self.title = "Help"
+        self._host = host
+        self._game_screen = game_screen
+        self._command = command
+        self._text = tutorial_text(command, host.settings.microphone)
+        self._now = 0.0
+        self._menu = Menu(self._text, [
+            Button("Continue", self._continue),
+            Button("Try it", self._try_it),
+        ])
+
+    def enter(self, now: float) -> None:
+        self._now = now
+        self._host.speech.speak(f"{self._text} {self._menu.describe()}", interrupt=True)
+
+    def key(self, key: int, now: float) -> None:
+        self._now = now
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        self._now = now
+        self._game_screen.update(now)
+        if not self._game_screen.in_help:
+            # Debug mode's bot continued the game itself.
+            self._host.pop()
+
+    def _continue(self) -> None:
+        self._host.pop()
+        self._game_screen.dismiss_help(self._now)
+
+    def _try_it(self) -> None:
+        self._game_screen.record_score()
+        self._host.try_tutorial(self._command)

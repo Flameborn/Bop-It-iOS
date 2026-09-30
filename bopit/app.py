@@ -14,6 +14,7 @@ from bopit.debug.options import DebugOptions
 from bopit.engine.game import (BASIC, BLITZ, BLITZ_CHALLENGE, CLASSIC, EXTREME, HEAD_TO_HEAD,
                                PASS_IT_BASIC, PASS_IT_EXTREME, ModeRules)
 from bopit.game_screen import GameScreen
+from bopit.tutorial_screen import TutorialScreen
 from bopit.input_map import load_bindings, menu_nav_for
 from bopit.menu import Menu
 from bopit.microphone import Microphone
@@ -95,6 +96,10 @@ class App:
         # objects, which lived across games until the command list was rebuilt.
         self.times_called: dict[str, int] = {}
         self._commands_key = (settings.theme, settings.shout_it)
+        # GameSettings modeToReturnFromTutorial: set whenever a game mode is entered, and
+        # forgotten only by an end screen's Menu, the intro's Back or the end screen's
+        # Trophies button. While set, Back from any tutorial starts that mode again.
+        self.tutorial_return: tuple[ModeRules, tuple[str, ...]] | None = None
 
     # Navigation
 
@@ -120,6 +125,44 @@ class App:
         self.start_menu_music()
         self._enter_top()
 
+    def leave_game(self) -> None:
+        """An end screen's Menu, or the intro's Back (releaseModeString, returnToMenu)."""
+        self.clear_tutorial_return()
+        self.return_to_menu()
+
+    def clear_tutorial_return(self) -> None:
+        self.tutorial_return = None
+
+    def open_tutorial(self, command: str) -> None:
+        self.push(TutorialScreen(self, command))
+
+    def try_tutorial(self, command: str) -> None:
+        """Try It on the help popup (GameViewController::errorHelpPressed): out of the game
+        to Help's tutorials and into this command's tutorial."""
+        self._to_tutorials()
+        self.push(TutorialScreen(self, command))
+
+    def tutorial_back(self) -> None:
+        """Back from a tutorial: into the mode it came from, or back to the tutorials."""
+        if self.tutorial_return is not None:
+            rules, picked = self.tutorial_return
+            del self._stack[1:]
+            self._stack[0] = self._as_screen(screens.main_menu(self))
+            self._begin(rules, picked)
+            return
+        self.pop()
+        self.start_menu_music()
+
+    def _to_tutorials(self) -> None:
+        """Main menu, Options, Help and its Tutorials tab, as the original rebuilt its
+        screens, with the menu music back on (GameController::returnBack)."""
+        del self._stack[1:]
+        self._stack[0] = self._as_screen(screens.main_menu(self))
+        self._stack.append(self._as_screen(screens.options_menu(self)))
+        self._stack.append(self._as_screen(screens.help_menu(self)))
+        self.start_menu_music()
+        self.push(screens.tutorials_menu(self))
+
     def first_time(self, flag: str) -> bool:
         return self.progress.first_time(flag)
 
@@ -134,7 +177,9 @@ class App:
         saved = self.saved_game.take()
         if saved is not None and saved.get("mode") in MODES:
             self.stop_menu_music()
-            self.push(GameScreen(self, MODES[saved["mode"]], saved=saved))
+            rules = MODES[saved["mode"]]
+            self.tutorial_return = (rules, tuple(saved.get("picked", ())))
+            self.push(GameScreen(self, rules, saved=saved))
             return
         self.start_mode(self.settings.quick_play)
 
@@ -161,6 +206,14 @@ class App:
     def _begin(self, rules: ModeRules, picked: tuple[str, ...]) -> None:
         # Choosing a mode stops the menu music (GameController::init).
         self.stop_menu_music()
+        self.tutorial_return = (rules, picked)
+        if self.first_time("tutorial_popup"):
+            # The first game ever asks about the tutorials instead of showing its intro.
+            self.push(screens.tutorial_popup(
+                self, lambda: self.replace(GameScreen(self, rules, start_now=True, picked=picked,
+                                                      announce_start=False)),
+                self._to_tutorials))
+            return
         best = self.scores.best(rules.name) if rules.tracks_trophies else None
         self.push(screens.intro_menu(self, rules.name, best,
                                      lambda: self.replace(GameScreen(self, rules, picked=picked))))

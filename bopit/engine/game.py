@@ -112,6 +112,8 @@ class ModeRules:
     challenge_target: int | None = None
     # Head 2 Head: two players, each owning some of the picked commands.
     head_to_head: bool = False
+    # A tutorial's practice: one command over and over; mistakes do not end it.
+    tutorial: bool = False
 
     @property
     def uses_picked(self) -> bool:
@@ -134,6 +136,12 @@ BLITZ_CHALLENGE = ModeRules("Blitz Challenge", BLITZ.commands, pitch_shift_amoun
                             tracks_trophies=False, challenge_target=15)
 HEAD_TO_HEAD = ModeRules("Head 2 Head", (("Bop", 4),), pitch_shift_amount=0.02,
                          pitch_shift_frequency=8, tracks_trophies=False, head_to_head=True)
+def tutorial_rules(command: str) -> ModeRules:
+    """TutorialMode: the featured command alone, never speeding up or unlocking."""
+    return ModeRules("Tutorial", ((command, 4),), pitch_shift_amount=0.0,
+                     pitch_shift_frequency=50_000_000, tracks_trophies=False, tutorial=True)
+
+
 EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
                     scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
@@ -411,6 +419,17 @@ class Game:
         self._waiting_to_win = False
         self._next = None
         self.state = State.PAUSED
+
+    def stop(self, now: float) -> None:
+        """TutorialMode::stopTutorial: the turn ends, the queued callout and the music stop."""
+        self.update(now)
+        self._cancel_timers()
+        self._stop_listening()
+        if self._next is not None:
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
+        self._emit(ev.MusicStop())
+        self.state = State.OVER
 
     def next_player(self, now: float) -> None:
         """GO on the Blitz Challenge break screen (MultiBlitzMode::blitzBreakEnd)."""
@@ -863,8 +882,9 @@ class Game:
     def _fail_turn(self, now: float) -> None:
         self._cancel_timers()
         self._stop_listening()
-        if self._timed:
-            # MultiBlitzMode::failTurn is the same as SoloSpeedMode::failTurn.
+        if self._timed or self.rules.tutorial:
+            # MultiBlitzMode::failTurn and TutorialMode::failTurn are the same as
+            # SoloSpeedMode::failTurn: the play goes on.
             self._fail_blitz_turn(now)
             return
         self.state = State.FAILING

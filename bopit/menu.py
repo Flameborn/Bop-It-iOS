@@ -104,7 +104,9 @@ class Menu:
         return ", ".join(parts)
 
     def enter(self, speaker: Speaker) -> None:
-        speaker.speak(f"{self.title}. {self.describe()}", interrupt=True)
+        # A title that already ends a sentence, like a question, gets no extra full stop.
+        separator = " " if self.title[-1:] in ".?!" else ". "
+        speaker.speak(f"{self.title}{separator}{self.describe()}", interrupt=True)
 
     def handle(self, nav: Nav, speaker: Speaker, play: Callable[[str], None],
                now: float = 0.0) -> None:

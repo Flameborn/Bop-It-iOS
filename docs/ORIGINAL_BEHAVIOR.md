@@ -283,6 +283,20 @@ Source: MultiPlayerChallengeMode, Command_Bop::checkMove, GameController::gotTou
 - Total wins belong to the mode object: Play Again and Restart keep them, a new game from the menu starts them at 0. The saved game keeps the points and the total wins.
 - Pausing (its own pauseGame) works even between a fail and the next turn, and always cuts off the queued callout.
 
+### Tutorials
+
+Source: Help (tutorialObjectButtonPressed, enterTutorial, tutorialButtonPressed), TutorialMode, GameViewController (tutorialBackPressed, tutorialPlayPressed, tutorialTryPressed, errorHelpPressed, errorBackPressed, displayError, saveScores), TutorialPopUp, GameSettings (modeToReturnFromTutorial, releaseModeString), each Command's tutorialText, and English.lproj/Localizable.strings.
+
+- Help opens on its Tutorials tab. The tab is a grid of all 12 commands, whether unlocked or not, in rows of four: Bop, Twist, Pull, Spin; Flick, Shout, Squeeze, Crank; Shake, Nail, Brush, Poke. The buttons make no sound.
+- A tutorial is TutorialMode with just that command. Entering it stops the menu music (GameController::init). Its screen shows the command's tutorial text at the top, a looping silent animation of the move (starting 1.5 seconds in), and three buttons along the bottom: Back, Help (a question mark) and Try. None makes a sound.
+- Try starts play at once, with no "Bop It to start": GameController::startGame (which also removes any saved game), the game loop music (MUSIC_GameLoop_01a and 01b, themed), and the command called over and over. It never speeds up or unlocks, and the score and pause button are hidden. A mistake plays a death line and play goes on, as in Blitz (the next turn 0.81 per pitch later). Try's label becomes Stop; Stop ends the turn and stops the music (stopTutorial).
+- Help stops any play and replays the animation.
+- Back stops the sounds. If a game mode is remembered (modeToReturnFromTutorial), that mode starts again from its intro; otherwise it goes back to Help and the menu music plays (returnBack).
+- A mode is remembered whenever one is entered, including a resumed saved game, and forgotten only by an end screen's Menu button, the intro's Back button and the solo end screen's Trophies button. Leaving through the pause menu keeps it, so a later Back from any tutorial starts that mode.
+- The help popup during a game shows the failed command's tutorial text, with Continue (left) and Try It (right), neither with a sound. Continue goes on to the game over. Try It saves the score as a game over would (saveScores), leaves the game (returnBack) and opens Help's tutorial for that command.
+- Tutorial texts, verbatim: "Bop It: Tap on the Bop with 1 or 2 fingers"; "Twist It: Swipe 2 fingers on the Twister in opposite directions. Or quickly twist the iPhone for an X-Move Bonus!"; "Pull It: Swipe along the Puller. Or quickly pull the iPhone towards you for an X-Move Bonus!"; "Spin It: Swipe along the Spinner. Or quickly spin the iPhone for an X-Move Bonus!"; "Flick It: Swipe across the Spring. Or quickly flick the iPhone forward for an X-Move Bonus!"; "Shout It: Tap on the Microphone. Or shout “Yeah!” into the iPhone for an X-Move Bonus!"; "Squeeze It: Pinch the Bulb with 2 fingers"; "Crank It: Swipe the Crank handle in an arc with 1 or 2 fingers"; "Shake It: Swipe back and forth across the Maraca. Or quickly shake the iPhone for an X-Move Bonus!"; "Poke It: Using 2 fingers, tap on both Blobs at the same time"; "Nail It: Tap on the Nail with 1 or 2 fingers"; "Brush It: Swipe along the Brush Pad".
+- The tutorial popup appears once ever (hasShownTutorialPopup), the first time any game mode is started, in place of the intro. No starts the game at once, with no "Bop It to start". Yes goes to Help's Tutorials tab with the menu music, and the mode is remembered, so Back from a tutorial starts it.
+
 ### Pause, saved game and Quick Play
 
 - Pausing (GameController::pauseGame) does nothing once the player has failed. Otherwise it cancels the turn, activates any forced command, cuts off the queued callout (only if that command was not the last in the active list), stops the music and shows the pause menu. Blitz also stops its stopwatch.
@@ -354,7 +368,7 @@ Source: Help.nib. The full text is in `docs/original/nibs/Help.txt`. Facts it ad
 
 Source: the decoded nibs.
 
-- Tutorial popup: "Would you like to see the tutorials and try the moves before playing?" with yes and no, and "access tutorials any time in options>help". When it appears is unknown.
+- Tutorial popup: "Would you like to see the tutorials and try the moves before playing?" with yes and no, and "access tutorials any time in options>help". It appears once, the first time any game mode is started (see Tutorials).
 - Command picker, titled "customize game": one toggle per command, with Bop It marked "(X)" (probably always on), a GO button, Back, and the hint "Add 2-4 BopJects to Bop It". Which mode uses it is unknown.
 - Scores: mode tabs Classic, Basic, Extreme, Blitz; WEEKLY and ALL TIME tabs; Local, Friends and Global tabs; columns Name, Moves, Points, or Name and Time for Blitz; Back and a reset button.
 - Trophies: a list with Back. Locked and unlocked trophy cells exist. Badge images badge_1 to badge_10 exist.

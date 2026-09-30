@@ -15,6 +15,7 @@ from bopit.progress import Progress
 from bopit.scores import Entry, Scores
 from bopit.trophies import all_trophies
 from bopit.themes import THEMES
+from bopit.tutorials import TUTORIAL_ORDER
 
 ON_OFF = ("On", "Off")
 SELECT = "SFX_Select"
@@ -47,6 +48,10 @@ class Navigator(Protocol):
     def has_saved_game(self) -> bool: ...
 
     def return_to_menu(self) -> None: ...
+
+    def leave_game(self) -> None: ...
+
+    def open_tutorial(self, command: str) -> None: ...
 
     def settings_changed(self) -> None: ...
 
@@ -237,7 +242,8 @@ def intro_menu(nav: Navigator, mode: str, best: Entry | None, on_start: Callable
     if best is not None:
         items.append(Button(high_score_text(mode, best), lambda: None))
     items.append(Button("Start", on_start, SELECT))
-    return Menu(mode, items, on_back=nav.return_to_menu)
+    # GameModeIntro::backButtonPressed also forgot the mode to return to from a tutorial.
+    return Menu(mode, items, on_back=nav.leave_game)
 
 
 def _modes(nav: Navigator, names: Sequence[str]) -> list[Button | Choice | Slider]:
@@ -374,9 +380,33 @@ def help_menu(nav: Navigator) -> Menu:
     # The original's Overview and Tutorials tabs played no sound.
     return submenu(nav, "Help", [
         Button("Overview", lambda: nav.push(text_screen(nav, "Overview", port_texts.HELP_OVERVIEW))),
-        Button("Tutorials", lambda: nav.not_built("Tutorials")),
+        Button("Tutorials", lambda: nav.push(tutorials_menu(nav))),
         # Our addition: the keys, as this port is played on a keyboard (docs/DEVIATIONS.md).
         Button("Keys", lambda: nav.push(text_screen(nav, "Keys", input_map.describe_bindings()))),
+    ])
+
+
+def tutorials_menu(nav: Navigator) -> Menu:
+    """Help's Tutorials tab: all twelve commands, locked or not, row by row as on screen.
+    The buttons made no sound."""
+    def opener(command: str) -> Callable[[], None]:
+        return lambda: nav.open_tutorial(command)
+    return Menu("Tutorials", [Button(c, opener(c)) for c in TUTORIAL_ORDER], on_back=nav.pop)
+
+
+TUTORIAL_POPUP_QUESTION = "Would you like to see the tutorials and try the moves before playing?"
+TUTORIAL_POPUP_NOTE = "access tutorials any time in options>help"
+
+
+def tutorial_popup(nav: Navigator, on_no: Callable[[], None],
+                   on_yes: Callable[[], None]) -> Menu:
+    """TutorialPopUp, shown once instead of the first game's intro: the question, No (left)
+    and Yes (right), then the note. No starts the game at once; Yes opens Help's tutorials.
+    Neither made a sound."""
+    return Menu(TUTORIAL_POPUP_QUESTION, [
+        Button("No", on_no),
+        Button("Yes", on_yes),
+        Button(TUTORIAL_POPUP_NOTE, lambda: None),
     ])
 
 
