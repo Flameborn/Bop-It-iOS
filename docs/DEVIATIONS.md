@@ -54,6 +54,14 @@ The original asked "Would you like to see the tutorials and try the moves before
 
 The original always used the microphone for the Shout It X-Move. It is kept here with the original's timing (listening starts 0.46 seconds per pitch into a Shout turn), threshold (0.6 linear average level) and bonus (25), but only the level is measured and nothing is played back. A Microphone setting, added as the last Settings item, turns it on or off; it defaults to on. If no microphone can be opened, "No microphone found. Use the Shout key." is spoken once and the key still works. Reason: desktop speakers can leak game sound into a microphone, which the phone's hardware did not. Approved 2026-09-29.
 
+## Pause key and the back key in the pause menu
+
+The original paused with an on-screen pause button. Here the back key (Escape) pauses during a game. In the pause menu the back key resumes, as pressing the original's pause button again closed the menu. On the "Bop It to start" screen, where there is nothing to pause yet, the back key returns to the main menu. Reason: keyboard operation. Approved 2026-09-29.
+
+## Quick Play is chosen by holding Enter
+
+The original chose the Quick Play mode by holding a mode button. Here Enter (or Space) is held on a mode, with the original's timings: 1.2 seconds sets it, a release within 1.1 seconds starts the mode. The original's "default selected" marker is spoken as the item's state ("Classic, Quick Play, 1 of 4") and the change is announced ("Classic is now your Quick Play game."). The first-visit popup reads "Press and hold Enter on any game mode to make it your Quick Play game" instead of "press and hold any game mode button". Reason: keyboard operation and accessibility. Approved 2026-09-29.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

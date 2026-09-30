@@ -233,6 +233,20 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - The intro's Back and the end screen's Menu both return to the main menu, not the mode list, and restart the menu music (GameController::returnToMenu).
 - The end screen's Play Again goes straight into a new game without the "Bop It to start" screen (SoloEndGame::playAgainButtonPressed calls prepBopItToStart then startGame). On screen, Play Again is just above Menu and Submit Score.
 
+### Pause, saved game and Quick Play
+
+- Pausing (GameController::pauseGame) does nothing once the player has failed. Otherwise it cancels the turn, activates any forced command, cuts off the queued callout (only if that command was not the last in the active list), stops the music and shows the pause menu. Blitz also stops its stopwatch.
+- Pause menu, top to bottom: Resume, then Menu and Restart side by side, then the label "game progress saved". Each button plays SFX_Select.
+- Resume (GameController::resumeGame): the game music restarts at the current pitch and jumps to the loop offset, a new random command (or the forced one) is called, and the turn opens 0.81 per pitch later. Blitz's stopwatch carries on from where it stopped.
+- Menu (PauseMenu::exitButtonPressed): if at least one move was made, the game is saved to saveGame.dat; then back to the main menu.
+- Restart: straight into a new game.
+- The saved game keeps mode, moves, bonus, end bonus, unlock progress, pitch, active commands, Blitz time, X-Move count, rhythm counts, base bonus and music track (GameController::encodeWithCoder). It does not keep the speed up count within the current track or the streak state.
+- Loading the saved game removes the file. Starting any new game also removes it ("Once you start any new game, your saved game is lost.").
+- The main menu's Play button reads "Quick Play", or "Resume Game" while a saved game exists (LandingPage::setPlayButtonLabel). Pressed, it resumes the saved game, paused; otherwise it starts the Quick Play mode through its intro, which is Basic unless another mode was chosen (LandingPage::executePlayButtonPressed).
+- At launch, a saved game is resumed straight away, paused (Bop_ItAppDelegate::doFinishLaunching).
+- Choosing the Quick Play mode (SoloGameOptions classicButtonDown and friends): pressing a mode button starts a 1.2 second timer. If it fires while the button is still held, that mode becomes the Quick Play mode (saved as PlayButtonMode), SFX_SelectGame plays, and the button gets a "default selected" marker. On release, the mode starts only if the button was held 1.1 seconds or less. The help text says "2 seconds", but the code uses 1.2.
+- The first time the Solo screen is ever opened, a popup says "press and hold any game mode button to make it your Quick Play game" with a close button (popupForDefaultButton). Closing it plays no sound.
+
 ### High scores
 
 - Each mode keeps a top 10 list of entries with a score (the total) and moves, highest first. A new mode starts with one placeholder entry of 0 and 0. A new score is inserted above the first entry it ties or beats, and the list is cut to 10 (GameSettings::saveGameModeScore, getGameModeScore).

@@ -15,6 +15,7 @@ from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
+from bopit.savegame import SavedGame
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -51,10 +52,15 @@ class MenuScreen:
     def key(self, key: int, now: float) -> None:
         nav = menu_nav_for(key)
         if nav is not None:
-            self._menu.handle(nav, self._app.speech, self._app.play_themed)
+            self._menu.handle(nav, self._app.speech, self._app.play_themed, now)
+
+    def key_up(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.release(nav, self._app.play_themed, now)
 
     def update(self, now: float) -> None:
-        pass
+        self._menu.update(now)
 
 
 class App:
@@ -65,6 +71,7 @@ class App:
         self.scores = Scores()
         self.progress = Progress()
         self.microphone = Microphone()
+        self.saved_game = SavedGame()
         self.announced_no_microphone = False
         self._stack: list[Screen] = []
         self._running = False
@@ -93,8 +100,25 @@ class App:
     def return_to_menu(self) -> None:
         """GameController::returnToMenu: back to the main menu with the menu music."""
         del self._stack[1:]
+        # Rebuilt so the Play item shows Quick Play or Resume Game correctly.
+        self._stack[0] = self._as_screen(screens.main_menu(self))
         self.start_menu_music()
         self._enter_top()
+
+    def first_time(self, flag: str) -> bool:
+        return self.progress.first_time(flag)
+
+    def has_saved_game(self) -> bool:
+        return self.saved_game.exists()
+
+    def play_pressed(self) -> None:
+        """LandingPage::executePlayButtonPressed: resume a saved game, else Quick Play."""
+        saved = self.saved_game.take()
+        if saved is not None and saved.get("mode") in MODES:
+            self.stop_menu_music()
+            self.push(GameScreen(self, MODES[saved["mode"]], saved=saved))
+            return
+        self.start_mode(self.settings.quick_play)
 
     def quit(self) -> None:
         log.info("Quit from main menu")
@@ -128,6 +152,9 @@ class App:
     def play(self, name: str) -> None:
         self.audio.play(name)
 
+    def speak(self, text: str) -> None:
+        self.speech.speak(text, interrupt=True)
+
     def play_themed(self, name: str) -> None:
         """For sounds the original passed through GetSkinFilename, like menu buttons."""
         self.audio.play(themed(name, self.settings.theme))
@@ -154,6 +181,9 @@ class App:
         # The original starts the menu music at launch whatever the Commands setting.
         self.start_menu_music()
         self.push(screens.main_menu(self))
+        if self.saved_game.exists():
+            # Bop_ItAppDelegate::doFinishLaunching: a saved game resumes at launch, paused.
+            self.play_pressed()
         self._running = True
         while self._running:
             for event in pygame.event.get():
@@ -161,6 +191,10 @@ class App:
                     self._running = False
                 elif event.type == pygame.KEYDOWN:
                     self._key_down(event, time.perf_counter())
+                elif event.type == pygame.KEYUP:
+                    key_up = getattr(self._stack[-1], "key_up", None)
+                    if key_up is not None:
+                        key_up(event.key, time.perf_counter())
             self._stack[-1].update(time.perf_counter())
             self.audio.update()
             clock.tick(FRAMES_PER_SECOND)

@@ -29,9 +29,13 @@ class Progress:
     def __init__(self, path: Path = PROGRESS_PATH) -> None:
         self._path = path
         self.unlocked: set[str] = set()
+        # One-time things already shown, such as the Quick Play hint.
+        self.seen: set[str] = set()
         if path.exists():
             try:
-                self.unlocked = set(json.loads(path.read_text(encoding="utf-8")).get("unlocked", []))
+                raw = json.loads(path.read_text(encoding="utf-8"))
+                self.unlocked = set(raw.get("unlocked", []))
+                self.seen = set(raw.get("seen", []))
             except (OSError, ValueError, AttributeError) as exc:
                 log.error("Could not read progress from %s: %s", path, exc)
 
@@ -40,9 +44,20 @@ class Progress:
         if command in self.unlocked or command not in UNLOCK_MESSAGES:
             return None
         self.unlocked.add(command)
+        self._save()
+        return UNLOCK_MESSAGES[command]
+
+    def first_time(self, flag: str) -> bool:
+        """True the first time a flag is asked about, then never again."""
+        if flag in self.seen:
+            return False
+        self.seen.add(flag)
+        self._save()
+        return True
+
+    def _save(self) -> None:
+        raw = {"unlocked": sorted(self.unlocked), "seen": sorted(self.seen)}
         try:
-            self._path.write_text(json.dumps({"unlocked": sorted(self.unlocked)}, indent=2),
-                                  encoding="utf-8")
+            self._path.write_text(json.dumps(raw, indent=2), encoding="utf-8")
         except OSError as exc:
             log.error("Could not save progress to %s: %s", self._path, exc)
-        return UNLOCK_MESSAGES[command]

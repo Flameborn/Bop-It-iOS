@@ -100,6 +100,7 @@ class State(Enum):
     WAITING_TO_START = auto()
     BETWEEN_TURNS = auto()
     IN_TURN = auto()
+    PAUSED = auto()
     HELP = auto()
     FAILING = auto()
     OVER = auto()
@@ -169,6 +170,7 @@ class Game:
         self._waiting_to_win = False
         self._listening = False
         self.x_moves = 0
+        self._paused_blitz_time: float | None = None
 
     # Public interface
 
@@ -204,6 +206,85 @@ class Game:
             self._emit(ev.XMove("Shout"))
             self._emit(ev.MoveMade("Shout", "Shout", True, now - self._turn_opened_at))
             self._win_turn(now)
+
+    @property
+    def can_pause(self) -> bool:
+        # GameController::pauseGame does nothing once the player has failed.
+        return self.state in (State.BETWEEN_TURNS, State.IN_TURN)
+
+    def pause(self, now: float) -> None:
+        """GameController::pauseGame: stop the turn, the queued callout and the music."""
+        self.update(now)
+        if not self.can_pause:
+            return
+        self._cancel_timers()
+        self._stop_listening()
+        if self._forced is not None:
+            self._activate(self._forced, self.locations.get(self._forced, 0))
+        # The original only cut off the queued callout when it was not the last active command.
+        if self._next in self.active and self.active.index(self._next) < len(self.active) - 1:
+            self._emit(ev.StopSound(callout_sound(self._next, self.options.commands_mode,
+                                                  self.options.theme)))
+        self._emit(ev.MusicStop())
+        if self.rules.blitz_target is not None and self.blitz_time is None:
+            self._paused_blitz_time = now - self._blitz_started
+        self.state = State.PAUSED
+
+    def resume(self, now: float) -> None:
+        """GameController::resumeGame: music back on, a new command, and a turn a beat later."""
+        if self.state != State.PAUSED:
+            return
+        if self._paused_blitz_time is not None:
+            # SoloSpeedMode::resumeGame: the stopwatch carries on from where it stopped.
+            self._blitz_started = now - self._paused_blitz_time
+            self._paused_blitz_time = None
+        self._start_music(self._music_name(self._music_index), LOOP_OFFSET, now)
+        if self._forced is None:
+            self._next = self._rng.choice(self.active)
+            self._call(self._next)
+        else:
+            self._call(self._forced)
+        self.state = State.BETWEEN_TURNS
+        self._schedule(now + BEAT / self.pitch, self._start_turn)
+
+    def save(self) -> dict:
+        """What the original's saved game kept (GameController::encodeWithCoder). Only a
+        paused game is saved."""
+        return {
+            "mode": self.rules.name, "moves": self.moves, "bonus": self.bonus,
+            "end_bonus": self.rhythm.end_bonus, "num_to_next_unlock": self._num_to_next_unlock,
+            "next_unlock_index": self._next_unlock_index, "unlock_counter": self._unlock_counter,
+            "pitch": self.pitch, "active": [[c, self.locations[c]] for c in self.active],
+            "forced": self._forced, "blitz_time": self._paused_blitz_time or 0.0,
+            "x_moves": self.x_moves, "perfect_count": self.rhythm.perfect_count,
+            "good_count": self.rhythm.good_count, "ok_count": self.rhythm.ok_count,
+            "base_bonus": self._base_bonus, "music_index": self._music_index,
+        }
+
+    def load(self, data: dict, now: float) -> None:
+        """Restore a saved game, paused. Fields the original did not save start fresh."""
+        self.moves = data["moves"]
+        self.bonus = data["bonus"]
+        self.rhythm = RhythmState(perfect_count=data["perfect_count"],
+                                  good_count=data["good_count"], ok_count=data["ok_count"],
+                                  end_bonus=data["end_bonus"])
+        self._num_to_next_unlock = data["num_to_next_unlock"]
+        self._next_unlock_index = data["next_unlock_index"]
+        self._unlock_counter = data["unlock_counter"]
+        self.pitch = data["pitch"]
+        self.active = [c for c, _ in data["active"]]
+        self.locations = {c: loc for c, loc in data["active"]}
+        self._forced = data["forced"]
+        self.x_moves = data["x_moves"]
+        self._base_bonus = data["base_bonus"]
+        self._music_index = data["music_index"]
+        self._speed_ups = 0
+        self._paused_blitz_time = data["blitz_time"]
+        self._blitz_started = now - self._paused_blitz_time
+        self.blitz_time = None
+        self._waiting_to_win = False
+        self._next = None
+        self.state = State.PAUSED
 
     def dismiss_help(self, now: float) -> None:
         if self.state == State.HELP:

@@ -20,6 +20,12 @@ class Nav(Enum):
     BACK = auto()
 
 
+# The original's mode buttons (SoloGameOptions): holding for 1.2 seconds does the hold
+# action; a release within 1.1 seconds is a normal press; anything between does nothing.
+HOLD_AFTER = 1.2
+TAP_WITHIN = 1.1
+
+
 class Speaker(Protocol):
     def speak(self, text: str, interrupt: bool = False, protect: bool = False) -> None: ...
 
@@ -30,9 +36,12 @@ class Button:
     on_select: Callable[[], None]
     # Played on select. The original's buttons each chose their own sound, or none.
     sound: str | None = None
+    # A button with a hold action is selected on release, not on press.
+    hold: Callable[[], None] | None = None
+    get_state: Callable[[], str | None] | None = None
 
     def state(self) -> str | None:
-        return None
+        return self.get_state() if self.get_state is not None else None
 
 
 @dataclass
@@ -81,6 +90,8 @@ class Menu:
     back_sound: str | None = None
     wrap: bool = True
     focus: int = 0
+    # (item index, press time, hold already done) while a hold button is held down.
+    _held: tuple[int, float, bool] | None = None
 
     def describe(self, index: int | None = None) -> str:
         index = self.focus if index is None else index
@@ -95,8 +106,14 @@ class Menu:
     def enter(self, speaker: Speaker) -> None:
         speaker.speak(f"{self.title}. {self.describe()}", interrupt=True)
 
-    def handle(self, nav: Nav, speaker: Speaker, play: Callable[[str], None]) -> None:
+    def handle(self, nav: Nav, speaker: Speaker, play: Callable[[str], None],
+               now: float = 0.0) -> None:
         item = self.items[self.focus]
+        if nav == Nav.SELECT and isinstance(item, Button) and item.hold is not None:
+            if self._held is None:
+                self._held = (self.focus, now, False)
+            return
+        self._held = None
         if nav in (Nav.UP, Nav.DOWN, Nav.FIRST, Nav.LAST):
             self._move(nav, speaker)
         elif nav == Nav.SELECT:
@@ -110,6 +127,26 @@ class Menu:
         elif nav == Nav.BACK and self.on_back is not None:
             self._play(play, self.back_sound)
             self.on_back()
+
+    def release(self, nav: Nav, play: Callable[[str], None], now: float) -> None:
+        """A key was let go. Completes a short press of a hold button."""
+        if nav != Nav.SELECT or self._held is None:
+            return
+        index, pressed_at, held = self._held
+        self._held = None
+        item = self.items[index]
+        if not held and now - pressed_at <= TAP_WITHIN and isinstance(item, Button):
+            self._play(play, item.sound)
+            item.on_select()
+
+    def update(self, now: float) -> None:
+        if self._held is None:
+            return
+        index, pressed_at, held = self._held
+        item = self.items[index]
+        if not held and now - pressed_at >= HOLD_AFTER and isinstance(item, Button) and item.hold:
+            self._held = (index, pressed_at, True)
+            item.hold()
 
     def _move(self, nav: Nav, speaker: Speaker) -> None:
         last = len(self.items) - 1

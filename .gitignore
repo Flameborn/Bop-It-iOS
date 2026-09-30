@@ -221,6 +221,7 @@ __marimo__/
 settings.json
 scores.json
 progress.json
+savegame.json
 
 # Decompiler output and Ghidra project, regenerate with tools/decompile.py
 research/

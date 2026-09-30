@@ -16,6 +16,7 @@ from bopit.input_map import GAME_SCORE_KEY, game_command_for, key_name_for, menu
 from bopit.menu import Button, Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
+from bopit.savegame import SavedGame
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -46,6 +47,11 @@ class Host(Protocol):
     progress: Progress
     microphone: Microphone
     announced_no_microphone: bool
+    saved_game: SavedGame
+
+    def push(self, screen: object) -> None: ...
+
+    def pop(self) -> None: ...
 
     def replace(self, screen: object) -> None: ...
 
@@ -56,8 +62,9 @@ class Host(Protocol):
 
 class GameScreen:
     def __init__(self, host: Host, rules: ModeRules, start_now: bool = False,
-                 seed: int | None = None) -> None:
+                 seed: int | None = None, saved: dict | None = None) -> None:
         self.title = rules.name
+        self.rules = rules
         self._host = host
         self._rules = rules
         s = host.settings
@@ -71,20 +78,43 @@ class GameScreen:
         self._x_move_pending = False
         self._unlock_message: str | None = None
         self._start_now = start_now
+        self._saved = saved
+        self._entered = False
 
     def enter(self, now: float) -> None:
+        if self._entered:
+            # Back from the pause menu; its Resume already restarted the game.
+            return
+        self._entered = True
+        if self._saved is not None:
+            # Bop_ItAppDelegate::startLoadedSavedGame: the saved game comes back paused.
+            self._game.load(self._saved, now)
+            self._host.push(PauseScreen(self._host, self))
+            return
         self._game.prepare(now)
         if self._start_now:
             # Play Again goes straight into the game, as in the original.
             self._game.press("Bop", now)
         self._dispatch()
 
+    def resume(self, now: float) -> None:
+        self._game.resume(now)
+        self._dispatch()
+
+    def save(self) -> None:
+        """PauseMenu::exitButtonPressed saved the game only once a move had been made."""
+        if self._game.moves > 0:
+            self._host.saved_game.write(self._game.save())
+
     def key(self, key: int, now: float) -> None:
         if key == pygame.K_ESCAPE:
-            # Temporary until the pause menu is built.
-            self._set_listening(False)
-            self._stop_music()
-            self._host.return_to_menu()
+            if self._game.can_pause:
+                self._game.pause(now)
+                self._dispatch()
+                self._host.push(PauseScreen(self._host, self))
+            elif self._game.state.name == "WAITING_TO_START":
+                # Nothing to pause yet on "Bop It to start"; leave for the menu.
+                self._host.return_to_menu()
             return
         if key == GAME_SCORE_KEY:
             # The original showed the score on screen during play.
@@ -154,6 +184,9 @@ class GameScreen:
             case ev.XMove():
                 # The original showed an X-Move banner; spoken on request with the grade.
                 self._x_move_pending = True
+            case ev.GameStarted():
+                # "Once you start any new game, your saved game is lost."
+                self._host.saved_game.remove()
             case ev.WaitingToStart():
                 # The original showed "Bop It to start" on screen.
                 speech.speak("Bop it to start.", interrupt=True)
@@ -275,6 +308,54 @@ class EndScreen:
 
     def _play_again(self) -> None:
         self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+
+
+class PauseScreen:
+    """PauseMenu, top to bottom: Resume, then Menu and Restart side by side, then the
+    "game progress saved" label. All three buttons play SFX_Select."""
+
+    def __init__(self, host: Host, game_screen: GameScreen) -> None:
+        self.title = "Paused"
+        self._host = host
+        self._game_screen = game_screen
+        self._now = 0.0
+        self._menu = Menu("Paused", [
+            Button("Resume", self._resume, "SFX_Select"),
+            Button("Menu", self._exit, "SFX_Select"),
+            Button("Restart", self._restart, "SFX_Select"),
+            Button("game progress saved", lambda: None),
+        ], on_back=self._resume_from_back)
+
+    def enter(self, now: float) -> None:
+        self._now = now
+        self._menu.enter(self._host.speech)
+
+    def key(self, key: int, now: float) -> None:
+        self._now = now
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        self._now = now
+
+    def _resume(self) -> None:
+        self._host.pop()
+        self._game_screen.resume(self._now)
+
+    def _resume_from_back(self) -> None:
+        # The back key resumes, as pressing the original's pause button again closed the menu.
+        self._host.play_themed("SFX_Select")
+        self._resume()
+
+    def _exit(self) -> None:
+        self._game_screen.save()
+        self._host.return_to_menu()
+
+    def _restart(self) -> None:
+        # PauseMenu::restartButtonPressed: straight into a new game.
+        self._host.pop()
+        self._host.replace(GameScreen(self._host, self._game_screen.rules, start_now=True))
 
 
 class BlitzEndScreen:

@@ -32,8 +32,8 @@ class Settings:
     sfx_volume: int = 60
     # Index into themes.THEMES. The original starts on Original (SkinsManager::init).
     theme: int = 0
-    # UNCONFIRMED default, not yet found in the binary.
-    quick_play: str = "Classic"
+    # With no choice saved, Play started Basic (LandingPage::executePlayButtonPressed).
+    quick_play: str = "Basic"
     # Our additions.
     # Shout It X-Move through the microphone (the original's "shout Yeah!" move).
     microphone: bool = True

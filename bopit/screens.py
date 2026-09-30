@@ -34,6 +34,12 @@ class Navigator(Protocol):
 
     def start_mode(self, name: str) -> None: ...
 
+    def play_pressed(self) -> None: ...
+
+    def first_time(self, flag: str) -> bool: ...
+
+    def has_saved_game(self) -> bool: ...
+
     def return_to_menu(self) -> None: ...
 
     def settings_changed(self) -> None: ...
@@ -41,6 +47,10 @@ class Navigator(Protocol):
     def play(self, name: str) -> None:
         """Play a sound as named, with no theme variant."""
         ...
+
+    def play_themed(self, name: str) -> None: ...
+
+    def speak(self, text: str) -> None: ...
 
     def start_menu_music(self) -> None: ...
 
@@ -67,7 +77,9 @@ def main_menu(nav: Navigator) -> Menu:
         nav.start_menu_music()
 
     return Menu("Bop It", [
-        Button("Play", lambda: nav.not_built("Quick Play"), SELECT_GAME),
+        # The original's Play button read "Quick Play", or "Resume Game" with a saved game.
+        Button("Resume Game" if nav.has_saved_game() else "Quick Play", nav.play_pressed,
+               SELECT_GAME),
         Button("Games", lambda: nav.push(games_menu(nav)), SELECT),
         Button("Options", lambda: nav.push(options_menu(nav)), SELECT),
         Choice("Theme", THEMES, lambda: s.theme, set_theme),
@@ -76,7 +88,7 @@ def main_menu(nav: Navigator) -> Menu:
 
 def games_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Games", [
-        Button("Solo", lambda: nav.push(solo_menu(nav)), SELECT),
+        Button("Solo", lambda: open_solo(nav), SELECT),
         Button("Multiplayer", lambda: nav.push(multiplayer_menu(nav)), SELECT),
         Button("Trophies", lambda: nav.not_built("Trophies"), SELECT),
         Button("Scores", lambda: nav.not_built("Scores"), SELECT),
@@ -114,10 +126,41 @@ def intro_menu(nav: Navigator, mode: str, best: Entry, on_start: Callable[[], No
 
 
 def _modes(nav: Navigator, names: Sequence[str]) -> list[Button | Choice | Slider]:
+    """Mode buttons. A tap starts the mode; holding Enter makes it the Quick Play mode."""
+    s = nav.settings
+
     def starter(name: str) -> Callable[[], None]:
         return lambda: nav.start_mode(name)
 
-    return [Button(name, starter(name), SELECT_GAME) for name in names]
+    def make_default(name: str) -> Callable[[], None]:
+        def hold() -> None:
+            # SoloGameOptions::setNewDefaultButton plays SFX_SelectGame and saves the mode.
+            s.quick_play = name
+            nav.settings_changed()
+            nav.play_themed(SELECT_GAME)
+            # The original marked the button; here the change is spoken.
+            nav.speak(f"{name} is now your Quick Play game.")
+        return hold
+
+    def state(name: str) -> Callable[[], str | None]:
+        return lambda: "Quick Play" if s.quick_play == name else None
+
+    return [Button(name, starter(name), SELECT_GAME, hold=make_default(name), get_state=state(name))
+            for name in names]
+
+
+def open_solo(nav: Navigator) -> None:
+    nav.push(solo_menu(nav))
+    # The first visit shows the Quick Play hint (SoloGameOptions::viewDidLoad,
+    # popupForDefaultButton). Its close button made no sound.
+    if nav.first_time("quick_play_hint"):
+        nav.push(Menu(QUICK_PLAY_HINT, [Button("Close", nav.pop)], on_back=nav.pop))
+
+
+# The original's popup said "press and hold any game mode button to make it your Quick Play
+# game"; the keyboard wording is recorded in docs/DEVIATIONS.md.
+QUICK_PLAY_HINT = "Press and hold Enter on any game mode to make it your Quick Play game"
+
 
 
 def solo_menu(nav: Navigator) -> Menu:
