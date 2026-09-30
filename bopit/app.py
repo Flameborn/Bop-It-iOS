@@ -16,6 +16,7 @@ from bopit.menu import Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
 from bopit.savegame import SavedGame
+from bopit.tips import PORT_TIPS, Tips
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -72,6 +73,7 @@ class App:
         self.progress = Progress()
         self.microphone = Microphone()
         self.saved_game = SavedGame()
+        self.tips = Tips(PORT_TIPS)
         self.announced_no_microphone = False
         self._stack: list[Screen] = []
         self._running = False
@@ -107,6 +109,9 @@ class App:
 
     def first_time(self, flag: str) -> bool:
         return self.progress.first_time(flag)
+
+    def open_trophies(self) -> None:
+        self.push(screens.trophies_menu(self))
 
     def has_saved_game(self) -> bool:
         return self.saved_game.exists()

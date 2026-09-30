@@ -62,6 +62,22 @@ The original paused with an on-screen pause button. Here the back key (Escape) p
 
 The original chose the Quick Play mode by holding a mode button. Here Enter (or Space) is held on a mode, with the original's timings: 1.2 seconds sets it, a release within 1.1 seconds starts the mode. The original's "default selected" marker is spoken as the item's state ("Classic, Quick Play, 1 of 4") and the change is announced ("Classic is now your Quick Play game."). The first-visit popup reads "Press and hold Enter on any game mode to make it your Quick Play game" instead of "press and hold any game mode button". Reason: keyboard operation and accessibility. Approved 2026-09-29.
 
+## Scores page adaptations
+
+Only the local list is kept (the Friends, Global, Weekly and All Time tabs were online). The mode tabs are a Mode choice at the top. An empty list reads "No scores" rather than being silent. Reason: online services are gone; an empty table must be spoken. Approved 2026-09-29 as part of dropping online features.
+
+## Trophy notices are spoken
+
+The original's "new trophy" image during play, and the trophy shown on the end screen, are spoken as "New trophy." The end screen's trophy button becomes a "Trophies" item at the top of its menu. On the Trophies page, earned trophies read their medal ("bronze trophy") and the rest read "locked". Reason: accessibility. Approved 2026-09-29.
+
+## Tips adapted for this port
+
+Of the original's 12 end-screen tips: the two about Submit Score (Facebook and the leaderboard) are removed; three touch-screen and phone tips are rewritten: "Try holding the device flat, like it's on a table" became "Trouble with X-Moves? Shout it loud and close to your microphone", "Try Silent Mode" became "Turn the Microphone off in Options>Settings", and "Try doing the finger gesture directly on top of it" became "Wait for the command to finish, then press its key". The Tutorials tip is left out until tutorials exist. The rest, including the two Bop It XT and Bop It HD tips, are verbatim. The original's 26 percent chance and no-repeat order are kept. Reason: the originals referred to things this port does not have. Approved 2026-09-29.
+
+## Help overview adapted for this port
+
+The Help overview keeps the original's sections, order and wording except where it described the phone, the touch screen or online features (the port's text is in bopit/port_texts.py, the original in bopit/texts.py): the Zoom set-up note became a headphones note; "using the touch screen" became "using the keyboard"; the X-Move section describes the microphone shout; Basic's hint about the dancing BopJects became "listen to the music: time your move with the second beat after the command"; the Scoring section points to Games>Scores instead of the leaderboard and Facebook; the Facebook section is removed; the pause button became Escape; Silent is removed from the Commands line, "Tap Off" became "Set it to Off" and a Microphone line is added; Quick Play says "Press and hold Enter on any game mode for about a second" (the original said 2 seconds; its code used 1.2). The multiplayer descriptions are unchanged until multiplayer is built. Reason: the original text described things this port does not have. Approved 2026-09-30.
+
 ## Sliders move in 10 percent steps
 
 The Music and SFX sliders were continuous touch sliders. With the keyboard, each press moves them 10 percent. Reason: keyboard operation. Approved 2026-09-29.

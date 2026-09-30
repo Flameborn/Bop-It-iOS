@@ -17,6 +17,8 @@ from bopit.menu import Button, Menu
 from bopit.microphone import Microphone
 from bopit.progress import Progress
 from bopit.savegame import SavedGame
+from bopit.tips import Tips
+from bopit.trophies import all_trophies, newly_earned
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -35,6 +37,9 @@ TALLY_INTERVAL = 1 / 60
 BLITZ_PAYOFF_DELAY = 0.7
 BLITZ_TIME_DELAY = 1.0
 BLITZ_HIGH_SCORE_DELAY = 0.5
+BLITZ_TIP_DELAY = 0.5
+# handleNewTrophy: the trophy appears after a 1.5 second delay and a 1 second animation.
+TROPHY_DELAY = 2.5
 TALLY_FRACTION = 0.05
 
 
@@ -48,6 +53,9 @@ class Host(Protocol):
     microphone: Microphone
     announced_no_microphone: bool
     saved_game: SavedGame
+    tips: Tips
+
+    def open_trophies(self) -> None: ...
 
     def push(self, screen: object) -> None: ...
 
@@ -76,6 +84,7 @@ class GameScreen:
         # The latest voice for each one-shot sound, so the engine can cut one off.
         self._voices: dict[str, Voice] = {}
         self._x_move_pending = False
+        self._new_trophy = False
         self._unlock_message: str | None = None
         self._start_now = start_now
         self._saved = saved
@@ -197,8 +206,11 @@ class GameScreen:
             case ev.StreakEarned(kind):
                 speech.speak(f"25 {kind} streak.")
             case ev.CommandUnlocked(command):
-                # Comes just before the same command's introduction.
+                # Comes just before the same command's introduction. A first unlock is also
+                # that BopJect's trophy.
                 self._unlock_message = self._host.progress.unlock(command)
+                if self._unlock_message is not None:
+                    self._new_trophy = True
             case ev.CommandIntroduced(command):
                 # A first ever unlock gets the original's message instead.
                 speech.speak(self._unlock_message or f"{command} added.")
@@ -207,12 +219,32 @@ class GameScreen:
                 # Replaces the original's touch instructions (see docs/DEVIATIONS.md).
                 key = key_name_for(command) or "no key"
                 speech.speak(f"{command} it. Key: {key}. Press Enter to continue.", interrupt=True)
+            case ev.MoveMade(command, _, True) if self._rules.blitz_target is None:
+                # Classic, Basic and Extreme count lifetime moves (their winTurn); Blitz does not.
+                self._host.progress.hit(command)
+            case ev.ScoreChanged() if self._rules.blitz_target is None:
+                self._check_trophies()
             case ev.GameOver():
-                self._host.replace(EndScreen(self._host, self._rules, event))
+                # failDone saved the move history.
+                self._host.progress.save()
+                self._host.replace(EndScreen(self._host, self._rules, event, self._new_trophy))
             case ev.BlitzFinished():
-                self._host.replace(BlitzEndScreen(self._host, self._rules, event))
+                # winBlitz checks trophies once, at the finish.
+                self._check_trophies(event.time)
+                self._host.replace(BlitzEndScreen(self._host, self._rules, event, self._new_trophy))
             case _:
                 pass
+
+    def _check_trophies(self, blitz_time: float | None = None) -> None:
+        """TrophyManager::checkForTrophySuccess. The original flashed a "new trophy" image."""
+        g = self._game
+        progress = self._host.progress
+        found = newly_earned(all_trophies(self._host.settings.shout_it), progress.trophies,
+                             g.moves, g.x_moves, progress.hits, blitz_time)
+        if found:
+            progress.earn([t.title for t in found])
+            self._new_trophy = True
+            self._host.speech.speak("New trophy.")
 
     def _set_listening(self, listening: bool) -> None:
         mic = self._host.microphone
@@ -237,22 +269,77 @@ def _grouped(number: int) -> str:
     return f"{number:,}"
 
 
-class EndScreen:
-    """SoloEndGame. The screen slides in, then the scores appear with sounds on the
-    original's schedule (SoloEndGame::doShowScores, showBonusPoints, showTotalScore,
-    tallyTotalScore, showFeedback). Each value is spoken as it appears."""
+class _Timeline:
+    """Steps that run at set times, in order; steps may add later steps. When the last step
+    has run, the end screen's menu is announced."""
 
-    def __init__(self, host: Host, rules: ModeRules, result: ev.GameOver) -> None:
-        self.title = "Game over"
+    def __init__(self) -> None:
+        self._steps: list[tuple[float, Callable[[], None]]] = []
+        self.now = 0.0
+
+    def at(self, when: float, step: Callable[[], None]) -> None:
+        self._steps.append((when, step))
+        self._steps.sort(key=lambda s: s[0])
+
+    def run(self, now: float) -> bool:
+        """Run what is due. True once everything has run."""
+        self.now = now
+        while self._steps and self._steps[0][0] <= now:
+            _, step = self._steps.pop(0)
+            step()
+        return not self._steps
+
+
+class _EndScreenBase:
+    def __init__(self, host: Host, rules: ModeRules, title: str, new_trophy: bool) -> None:
+        self.title = title
         self._host = host
         self._rules = rules
-        self._result = result
-        self._previous_best = host.scores.add(rules.name, result.total, result.moves)
-        self._timeline: list[tuple[float, Callable[[], None]]] = []
-        self._menu = Menu("Game over", [
+        self._new_trophy = new_trophy
+        self._timeline = _Timeline()
+        self._announced = False
+        self._menu = Menu(title, [
             Button("Play again", self._play_again, "SFX_Select"),
             Button("Menu", host.return_to_menu, "SFX_Select"),
         ])
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._host.speech, self._host.play_themed)
+
+    def update(self, now: float) -> None:
+        if self._timeline.run(now) and not self._announced:
+            self._announced = True
+            self._host.speech.speak(self._menu.describe(), protect=True)
+
+    def _show_trophy(self) -> None:
+        """displayTrophy: SFX_HighScore, the trophy, and its button to the Trophies page, which
+        sits above Play Again on screen. The original named no trophy here."""
+        self._host.audio.play("SFX_HighScore")
+        self._host.speech.speak("New trophy.", protect=True)
+        # The trophies button made no sound (trophiesButtonPress).
+        self._menu.items.insert(0, Button("Trophies", self._host.open_trophies))
+
+    def _show_tip(self) -> None:
+        tip = self._host.tips.maybe_tip()
+        if tip is not None:
+            self._host.speech.speak(tip, protect=True)
+
+    def _play_again(self) -> None:
+        self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+
+
+class EndScreen(_EndScreenBase):
+    """SoloEndGame. The screen slides in, then the scores appear with sounds on the
+    original's schedule (SoloEndGame::doShowScores, showBonusPoints, showTotalScore,
+    tallyTotalScore, showFeedback, handleNewTrophy). Each value is spoken as it appears."""
+
+    def __init__(self, host: Host, rules: ModeRules, result: ev.GameOver, new_trophy: bool) -> None:
+        super().__init__(host, rules, "Game over", new_trophy)
+        self._result = result
+        self._previous_best = host.scores.add(rules.name, result.total, result.moves)
+        self._new_best = result.total > self._previous_best
 
     def enter(self, now: float) -> None:
         r = self._result
@@ -264,8 +351,11 @@ class EndScreen:
         def scores() -> None:
             play("SFX_BonusScore")
             speech.speak(f"Moves {r.moves}. Points {_grouped(r.moves + r.bonus)}.", protect=True)
+            # doShowScores: without a new best, a trophy shows now (after its animation).
+            if not self._new_best and self._new_trophy:
+                self._timeline.at(self._timeline.now + TROPHY_DELAY, self._show_trophy)
 
-        steps: list[tuple[float, Callable[[], None]]] = [(t, scores)]
+        self._timeline.at(t, scores)
         if self._rules.rhythm_graded:
             def bonus() -> None:
                 play("SFX_BonusScore")
@@ -282,32 +372,25 @@ class EndScreen:
 
             tally_at = t + END_BONUS_DELAY + END_TOTAL_DELAY
             tally_end = tally_at + _tally_seconds(r)
-            steps += [(t + END_BONUS_DELAY, bonus), (tally_at, total), (tally_end, tallied)]
+            self._timeline.at(t + END_BONUS_DELAY, bonus)
+            self._timeline.at(tally_at, total)
+            self._timeline.at(tally_end, tallied)
             feedback_at = tally_end + END_FEEDBACK_DELAY
         else:
             # Classic leaves Bonus blank and goes straight to the feedback.
             feedback_at = t + END_BONUS_DELAY + END_FEEDBACK_DELAY
-        steps.append((feedback_at, self._feedback))
-        self._timeline = steps
-
-    def key(self, key: int, now: float) -> None:
-        nav = menu_nav_for(key)
-        if nav is not None:
-            self._menu.handle(nav, self._host.speech, self._host.play_themed)
-
-    def update(self, now: float) -> None:
-        while self._timeline and self._timeline[0][0] <= now:
-            _, step = self._timeline.pop(0)
-            step()
+        self._timeline.at(feedback_at, self._feedback)
 
     def _feedback(self) -> None:
-        if self._result.total > self._previous_best:
+        """showFeedback: a new best gets SFX_HighScore and then any trophy; otherwise, with
+        no trophy, a tip may be shown."""
+        if self._new_best:
             self._host.audio.play("SFX_HighScore")
             self._host.speech.speak("New high score.", protect=True)
-        self._host.speech.speak(self._menu.describe(), protect=True)
-
-    def _play_again(self) -> None:
-        self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+            if self._new_trophy:
+                self._timeline.at(self._timeline.now + TROPHY_DELAY, self._show_trophy)
+        elif not self._new_trophy:
+            self._show_tip()
 
 
 class PauseScreen:
@@ -350,6 +433,8 @@ class PauseScreen:
 
     def _exit(self) -> None:
         self._game_screen.save()
+        # returnToMenu saved the move history.
+        self._host.progress.save()
         self._host.return_to_menu()
 
     def _restart(self) -> None:
@@ -358,58 +443,44 @@ class PauseScreen:
         self._host.replace(GameScreen(self._host, self._game_screen.rules, start_now=True))
 
 
-class BlitzEndScreen:
+class BlitzEndScreen(_EndScreenBase):
     """SoloBlitzEndGame. The screen slides in and the short payoff music plays; a second
-    later the time appears; half a second after that, SFX_HighScore for a new best."""
+    later the time appears; half a second after that, SFX_HighScore for a new best. Then a
+    trophy (after its animation) or a tip, as SoloBlitzEndGame::doShowScores decides."""
 
-    def __init__(self, host: Host, rules: ModeRules, result: ev.BlitzFinished) -> None:
-        self.title = "Finished"
-        self._host = host
-        self._rules = rules
+    def __init__(self, host: Host, rules: ModeRules, result: ev.BlitzFinished,
+                 new_trophy: bool) -> None:
+        super().__init__(host, rules, "Finished", new_trophy)
         self._result = result
-        compared = host.scores.add_time(rules.name, result.time)
-        self._new_best = result.time < compared or compared == 0
-        self._timeline: list[tuple[float, Callable[[], None]]] = []
-        self._menu = Menu("Finished", [
-            Button("Play again", self._play_again, "SFX_Select"),
-            Button("Menu", host.return_to_menu, "SFX_Select"),
-        ])
+        self._compared = host.scores.add_time(rules.name, result.time)
+        self._new_best = result.time < self._compared or self._compared == 0
 
     def enter(self, now: float) -> None:
         speech = self._host.speech
         audio = self._host.audio
         speech.speak("Finished.", interrupt=True, protect=True)
         shown = now + BLITZ_PAYOFF_DELAY
+        time_at = shown + BLITZ_TIME_DELAY
 
         def payoff() -> None:
             audio.play("MUSIC_PayoffLoopShort", music=True)
 
         def time_shown() -> None:
             speech.speak(f"Time {self._result.time:.3f} seconds.", protect=True)
-            if not self._new_best:
-                speech.speak(self._menu.describe(), protect=True)
 
         def high_score() -> None:
             audio.play("SFX_HighScore")
             speech.speak("New high score.", protect=True)
-            speech.speak(self._menu.describe(), protect=True)
 
-        self._timeline = [(shown, payoff), (shown + BLITZ_TIME_DELAY, time_shown)]
+        self._timeline.at(shown, payoff)
+        self._timeline.at(time_at, time_shown)
         if self._new_best:
-            self._timeline.append((shown + BLITZ_TIME_DELAY + BLITZ_HIGH_SCORE_DELAY, high_score))
-
-    def key(self, key: int, now: float) -> None:
-        nav = menu_nav_for(key)
-        if nav is not None:
-            self._menu.handle(nav, self._host.speech, self._host.play_themed)
-
-    def update(self, now: float) -> None:
-        while self._timeline and self._timeline[0][0] <= now:
-            _, step = self._timeline.pop(0)
-            step()
-
-    def _play_again(self) -> None:
-        self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+            self._timeline.at(time_at + BLITZ_HIGH_SCORE_DELAY, high_score)
+        if self._compared <= self._result.time or self._compared == 0 or self._new_trophy:
+            if self._new_trophy:
+                self._timeline.at(time_at + TROPHY_DELAY, self._show_trophy)
+            else:
+                self._timeline.at(time_at + BLITZ_TIP_DELAY, self._show_tip)
 
 
 def _tally_seconds(result: ev.GameOver) -> float:

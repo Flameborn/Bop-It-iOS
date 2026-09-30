@@ -260,10 +260,32 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - Sequence: SFX_BonusScore as Moves and Points (moves plus bonus score) appear. 1 second later, in Basic and Extreme, SFX_BonusScore again as Bonus (end bonus) appears, then 0.5 seconds later SFX_ScoreAnimation while Points counts up to the total, adding 5 percent of the difference (rounded up) every 1/60 second. If the total is 0 it plays SFX_BonusScore instead of counting. 1 second after the count finishes comes the feedback. Classic leaves Bonus blank and gives the feedback 2 seconds after the scores appear.
 - Feedback: if the total beats the previous top score, SFX_HighScore. Otherwise a random gameplay tip is shown.
 
-### Trophies and unlock messages
+### Trophies
 
-- The first time a command is ever unlocked, its "BopJect unlocked" trophy is completed and saved, and a message is shown, such as "Spin to Win! Spin Unlocked" (TrophyManager::unlockBopject; the messages are in Localizable.strings). It is only shown once.
-- Other trophies, the gameplay tips and the Trophies screen are still to be read.
+Source: TrophyManager and the trophy classes.
+
+- The list, in order (TrophyManager::loadTrophies and setUpBopjectUnlockedTrophies), 43 in all with Shout It on:
+  - The nine BopJect unlocks, named by their unlock messages: Spin, Flick, Shout (bronze); Squeeze, Crank, Shake (silver); Nail, Brush, Poke (gold).
+  - "Got to 50!" (bronze), "Got to 100!" (silver), "Got to 200!" (gold): moves in one game.
+  - "Did 10 X-Moves" (bronze), "Did 25 X-Moves!" (silver), "Did 50 X-Moves!!" (silver), "Did 100 X-Moves!!!" (gold): X-Moves in one game.
+  - For each command in the master list: "100 Bops" (silver) and "500 Bops!!" (gold), using each command's plural name. They are built from the command list, so Shout's disappear while Shout It is off.
+  - "Blitzed It under 25s" (gold), "under 30s" (silver), "under 35s" (bronze).
+- Checks (checkForTrophySuccess): after every success in Classic, Basic and Extreme, and once when Blitz finishes. Moves and X-Moves are per game. Lifetime counts are per command, counted on successes in Classic, Basic and Extreme only (their winTurn), and saved when a game ends or returns to the menu (saveMoveHistory). Blitz trophies need a finished Blitz with a nonzero time. Unlock trophies are earned when the command first unlocks.
+- A newly earned trophy flashes a "new trophy" image during play (GameViewController::displayNewTrophy). Unlock trophies show their message instead.
+- End screen: if a trophy was earned this game, the trophy appears 2.5 seconds (1.5 delay plus 1 second animation) after the scores when there is no new best, or 2.5 seconds after the high score otherwise, with SFX_HighScore and a button to the Trophies page.
+- Trophies page: every trophy in order; earned ones show their medal, the rest are drawn locked. Back plays SFX_Back.
+
+### Scores page
+
+- Mode tabs Classic, Basic, Extreme, Blitz (Classic first, no sound). Local, Friends and Global tabs and Weekly and All Time tabs (the last four online).
+- The local list shows each entry with a nonzero score: "Me", moves and points (grouped), or for Blitz "Me" and the time to 3 places.
+- Reset asks "Whoa!" / "Are you sure you want to reset your local scores?" with Cancel and OK; OK clears all four solo lists.
+
+### Tips
+
+- When the end screen has no new best and no trophy, a tip may be shown (SoloEndGame::showFeedback; Blitz: SoloBlitzEndGame::doShowScores, 0.5 seconds after the time).
+- A tip is shown only 26 percent of the time (TextTipDisplayer::canDisplayTipNow: random 0 to 99 under 26). Tips do not repeat until all have been shown.
+- There are 12 tips, all starting "Bop Tip:"; the full text is in bopit/tips.py.
 
 ## Help screen overview text
 

@@ -1,7 +1,11 @@
+import tempfile
 import unittest
+from pathlib import Path
 
 from bopit import screens
 from bopit.config import Settings
+from bopit.progress import Progress
+from bopit.scores import Scores
 from bopit.menu import Menu, Nav
 from bopit.themes import themed
 from tests.test_menu import RecordingSpeaker
@@ -10,6 +14,9 @@ from tests.test_menu import RecordingSpeaker
 class FakeNavigator:
     def __init__(self) -> None:
         self.settings = Settings()
+        self._tmp = tempfile.TemporaryDirectory()
+        self.scores = Scores(Path(self._tmp.name) / "scores.json")
+        self.progress = Progress(Path(self._tmp.name) / "progress.json")
         self.stack: list[Menu] = []
         self.not_built_calls: list[str] = []
         self.changes = 0
@@ -220,6 +227,40 @@ class ScreenTests(unittest.TestCase):
         self.assertEqual(closed.title, "Solo")
         self.go(Nav.BACK, Nav.SELECT)
         self.assertEqual(self.nav.stack[-1].title, "Solo")
+
+    def open_scores(self) -> Menu:
+        return self.go(Nav.DOWN, Nav.SELECT, Nav.LAST, Nav.SELECT)
+
+    def test_scores_rows(self) -> None:
+        self.nav.scores.add("Classic", 2222, 22)
+        self.nav.scores.add("Classic", 505, 5)
+        self.nav.scores.add_time("Blitz", 23.31)
+        scores = self.open_scores()
+        self.assertEqual(labels(scores), ["Mode", "Me, 22 moves, 2,222 points", "Me, 5 moves, 505 points", "Reset"])
+        self.go(Nav.LEFT)  # wraps from Classic to Blitz
+        self.assertEqual(labels(scores), ["Mode", "Me, 23.310 seconds", "Reset"])
+        self.go(Nav.LEFT)
+        self.assertEqual(labels(scores), ["Mode", "No scores", "Reset"])
+
+    def test_scores_reset_cancel_and_ok(self) -> None:
+        self.nav.scores.add("Classic", 2222, 22)
+        self.open_scores()
+        question = self.go(Nav.LAST, Nav.SELECT)
+        self.assertTrue(question.title.startswith("Whoa!"))
+        self.go(Nav.SELECT)  # Cancel
+        self.assertEqual(self.nav.scores.best("Classic").score, 2222)
+        self.go(Nav.LAST, Nav.SELECT, Nav.DOWN, Nav.SELECT)  # OK
+        self.assertEqual(self.nav.stack[-1].title, "Scores")
+        self.assertEqual(labels(self.nav.stack[-1]), ["Mode", "No scores", "Reset"])
+
+    def test_trophies_page(self) -> None:
+        self.nav.progress.unlock("Spin")
+        self.nav.progress.earn(["Got to 50!"])
+        trophies = self.go(Nav.DOWN, Nav.SELECT, Nav.DOWN, Nav.DOWN, Nav.SELECT)
+        self.assertEqual(trophies.title, "Trophies")
+        self.assertEqual(trophies.describe(0), "Spin to Win! Spin Unlocked, bronze trophy, 1 of 43")
+        self.assertEqual(trophies.describe(1), "Boiiinng! Flick Unlocked, locked, 2 of 43")
+        self.assertEqual(trophies.describe(9), "Got to 50!, bronze trophy, 10 of 43")
 
     def test_play_reads_resume_game_with_a_save(self) -> None:
         self.nav.saved = True

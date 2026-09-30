@@ -78,6 +78,12 @@ class Scores:
             self._save()
         return compared
 
+    def reset(self, modes: tuple[str, ...]) -> None:
+        """Scores::alertView:clickedButtonAtIndex: clears the four solo lists."""
+        for mode in modes:
+            self._modes.pop(mode, None)
+        self._save()
+
     def _save(self) -> None:
         raw = {mode: [asdict(e) for e in entries] for mode, entries in self._modes.items()}
         try:

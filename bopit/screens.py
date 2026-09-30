@@ -8,10 +8,12 @@ for Play and game modes, SFX_Back for back, SFX_SettingsSelect for Banter and Sh
 from collections.abc import Callable, Sequence
 from typing import Protocol
 
-from bopit import texts
+from bopit import port_texts, texts
 from bopit.config import SELECTABLE_COMMAND_MODES, Settings
 from bopit.menu import Button, Choice, Menu, Slider
-from bopit.scores import Entry
+from bopit.progress import Progress
+from bopit.scores import Entry, Scores
+from bopit.trophies import all_trophies
 from bopit.themes import THEMES
 
 ON_OFF = ("On", "Off")
@@ -23,6 +25,8 @@ SETTINGS_SELECT = "SFX_SettingsSelect"
 
 class Navigator(Protocol):
     settings: Settings
+    scores: Scores
+    progress: Progress
 
     def push(self, menu: Menu) -> None: ...
 
@@ -90,8 +94,8 @@ def games_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Games", [
         Button("Solo", lambda: open_solo(nav), SELECT),
         Button("Multiplayer", lambda: nav.push(multiplayer_menu(nav)), SELECT),
-        Button("Trophies", lambda: nav.not_built("Trophies"), SELECT),
-        Button("Scores", lambda: nav.not_built("Scores"), SELECT),
+        Button("Trophies", lambda: nav.push(trophies_menu(nav)), SELECT),
+        Button("Scores", lambda: nav.push(scores_menu(nav)), SELECT),
     ])
 
 
@@ -172,6 +176,71 @@ def multiplayer_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Multiplayer", _modes(nav, names))
 
 
+SOLO_MODES = ("Classic", "Basic", "Extreme", "Blitz")
+RESET_QUESTION = "Whoa! Are you sure you want to reset your local scores?"
+
+
+def score_rows(mode: str, entries: Sequence[Entry]) -> list[Button | Choice | Slider]:
+    """Scores::localTableView: one row per entry with a nonzero score. The name column
+    always read "Me"."""
+    rows: list[Button | Choice | Slider] = []
+    for entry in entries:
+        if int(entry.score) == 0:
+            continue
+        if mode == "Blitz":
+            text = f"Me, {entry.score:.3f} seconds"
+        else:
+            text = f"Me, {entry.moves} moves, {int(entry.score):,} points"
+        rows.append(Button(text, lambda: None))
+    if not rows:
+        # The original showed an empty table; see docs/DEVIATIONS.md.
+        rows.append(Button("No scores", lambda: None))
+    return rows
+
+
+def scores_menu(nav: Navigator) -> Menu:
+    """Scores, top to bottom: mode tabs (Classic first), the local list, Reset. The mode
+    tabs and Reset made no sound; the online Local, Friends and Global tabs are left out."""
+    mode = [0]
+
+    def rebuild() -> None:
+        name = SOLO_MODES[mode[0]]
+        menu.items = [tabs] + score_rows(name, nav.scores.entries(name)) + [reset]
+
+    def set_mode(index: int) -> None:
+        mode[0] = index
+        rebuild()
+
+    def confirm_reset() -> None:
+        def ok() -> None:
+            nav.scores.reset(SOLO_MODES)
+            nav.pop()
+            rebuild()
+        # A UIAlertView with Cancel and OK, in that order.
+        nav.push(Menu(RESET_QUESTION, [Button("Cancel", nav.pop), Button("OK", ok)],
+                      on_back=nav.pop))
+
+    tabs = Choice("Mode", SOLO_MODES, lambda: mode[0], set_mode)
+    reset = Button("Reset", confirm_reset)
+    menu = submenu(nav, "Scores", [])
+    rebuild()
+    return menu
+
+
+def trophies_menu(nav: Navigator) -> Menu:
+    """TrophiesPage: every trophy in the original's order. Earned ones showed their medal;
+    the others were drawn locked."""
+    earned = nav.progress.trophies
+
+    def row(title: str, medal: str) -> Button:
+        state = f"{medal} trophy" if title in earned else "locked"
+        return Button(title, lambda: None, get_state=lambda: state)
+
+    items: list[Button | Choice | Slider] = [
+        row(t.title, t.medal) for t in all_trophies(nav.settings.shout_it)]
+    return submenu(nav, "Trophies", items)
+
+
 def options_menu(nav: Navigator) -> Menu:
     return submenu(nav, "Options", [
         Button("Help", lambda: nav.push(help_menu(nav)), SELECT),
@@ -184,7 +253,7 @@ def options_menu(nav: Navigator) -> Menu:
 def help_menu(nav: Navigator) -> Menu:
     # The original's Overview and Tutorials tabs played no sound.
     return submenu(nav, "Help", [
-        Button("Overview", lambda: nav.push(text_screen(nav, "Overview", texts.HELP_OVERVIEW))),
+        Button("Overview", lambda: nav.push(text_screen(nav, "Overview", port_texts.HELP_OVERVIEW))),
         Button("Tutorials", lambda: nav.not_built("Tutorials")),
     ])
 
