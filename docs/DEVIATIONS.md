@@ -32,7 +32,19 @@ When a command called 2 times or fewer is failed, the original paused on a help 
 
 ## A key speaks the score during play
 
-The original showed moves and points on screen during a game. Here a key (currently S) speaks them on demand instead of after every move, which would talk over the callouts. It never counts as a move. Reason: accessibility. Approved 2026-09-29.
+The original showed moves and points on screen during a game. Here a key (currently S) speaks them on demand instead of after every move, which would talk over the callouts. It never counts as a move. Points are moves plus bonus score, as the original showed them during play. Reason: accessibility. Approved 2026-09-29.
+
+## Rhythm grades are spoken on request
+
+In Basic and Extreme the original showed PERFECT, GOOD or OK after every move. Here the score key also says the last move's grade, for example "Last move Perfect." Speaking each grade automatically would land on top of the next callout. A later option could speak grades automatically, interrupting other speech. Reason: accessibility. Approved 2026-09-29.
+
+## Streak banners are spoken
+
+The original showed a "25 PERFECT streak" or "25 GOOD streak" banner. Here it is spoken, for example "25 Perfect streak." Reason: accessibility. Approved 2026-09-29.
+
+## New commands are announced
+
+In Basic and Extreme a new BopJect appeared on screen when a command entered play. Here its entrance is spoken, for example "Spin added." The first time a command is ever unlocked, the original's unlock message is spoken instead, for example "Spin to Win! Spin Unlocked", and remembered in progress.json so it is only heard once, as in the original. Reason: accessibility. Approved 2026-09-29.
 
 ## Tutorial popup left out for now
 

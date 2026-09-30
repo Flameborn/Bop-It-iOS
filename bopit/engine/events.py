@@ -87,6 +87,31 @@ class SpeedUp:
 
 
 @dataclass(frozen=True)
+class RhythmGraded:
+    """Basic and Extreme: Perfect, Good or OK. The original showed it on screen."""
+    grade: str
+
+
+@dataclass(frozen=True)
+class StreakEarned:
+    """A 25 move Perfect or Good streak. The original showed it on screen."""
+    kind: str
+
+
+@dataclass(frozen=True)
+class CommandUnlocked:
+    """A regular unlock (GameController::unlockNextCommand), which in the original also
+    completed that command's first-unlock trophy."""
+    command: str
+
+
+@dataclass(frozen=True)
+class CommandIntroduced:
+    """A command not in play is called and enters play. The original showed it appearing."""
+    command: str
+
+
+@dataclass(frozen=True)
 class HelpNeeded:
     """The original's help popup after failing a command called 2 times or fewer.
     The game waits for Game.dismiss_help."""
@@ -103,4 +128,5 @@ class GameOver:
 
 Event = (PlaySound | MusicStart | MusicSegment | MusicSeek | MusicPitch | MusicStop
          | WaitingToStart | GameStarted | CommandCalled | TurnOpened | MoveMade
-         | TurnTimedOut | ScoreChanged | SpeedUp | HelpNeeded | GameOver)
+         | TurnTimedOut | ScoreChanged | SpeedUp | RhythmGraded | StreakEarned
+         | CommandUnlocked | CommandIntroduced | HelpNeeded | GameOver)

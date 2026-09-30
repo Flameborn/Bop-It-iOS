@@ -1,7 +1,9 @@
 """The in-game screen and the solo end screen. They connect the engine to audio and speech."""
 
 import logging
+import math
 import random
+from collections.abc import Callable
 from typing import Protocol
 
 import pygame
@@ -12,13 +14,21 @@ from bopit.engine import events as ev
 from bopit.engine.game import Game, ModeRules, Options
 from bopit.input_map import GAME_SCORE_KEY, game_command_for, key_name_for, menu_nav_for
 from bopit.menu import Button, Menu
+from bopit.progress import Progress
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
 
 log = logging.getLogger(__name__)
 
-END_HIGH_SCORE_DELAY = 1.0  # SoloEndGame: the high score check comes a second after the scores.
+# SoloEndGame timing. The screen animates in (0.5 delay plus UIKit's default 0.2 second
+# animation), then waits 0.5 before showing scores.
+END_SHOW_DELAY = 1.2
+END_BONUS_DELAY = 1.0       # Scores to bonus (or, in Classic, to the feedback wait).
+END_TOTAL_DELAY = 0.5       # Bonus to the total's count up.
+END_FEEDBACK_DELAY = 1.0    # Count up finished to the high score check.
+TALLY_INTERVAL = 1 / 60
+TALLY_FRACTION = 0.05
 
 
 class Host(Protocol):
@@ -26,6 +36,8 @@ class Host(Protocol):
     audio: Audio
     settings: Settings
     scores: Scores
+    times_called: dict[str, int]
+    progress: Progress
 
     def replace(self, screen: object) -> None: ...
 
@@ -41,8 +53,11 @@ class GameScreen:
         self._host = host
         self._rules = rules
         s = host.settings
-        self._game = Game(rules, Options(s.commands, s.banter, s.theme), random.Random(seed))
+        self._game = Game(rules, Options(s.commands, s.banter, s.theme, s.shout_it),
+                          random.Random(seed), host.times_called)
         self._music: Voice | None = None
+        self._last_grade: str | None = None
+        self._unlock_message: str | None = None
         self._start_now = start_now
 
     def enter(self, now: float) -> None:
@@ -60,8 +75,12 @@ class GameScreen:
             return
         if key == GAME_SCORE_KEY:
             # The original showed the score on screen during play.
+            # Points as the original showed them in play: moves plus bonus score.
             g = self._game
-            self._host.speech.speak(f"Moves {g.moves}. Points {_grouped(g.total)}.", interrupt=True)
+            text = f"Moves {g.moves}. Points {_grouped(g.moves + g.bonus)}."
+            if self._last_grade is not None:
+                text += f" Last move {self._last_grade}."
+            self._host.speech.speak(text, interrupt=True)
             return
         if self._game.state.name == "HELP":
             if key in (pygame.K_RETURN, pygame.K_KP_ENTER):
@@ -107,6 +126,18 @@ class GameScreen:
             case ev.WaitingToStart():
                 # The original showed "Bop It to start" on screen.
                 speech.speak("Bop it to start.", interrupt=True)
+            case ev.RhythmGraded(grade):
+                # Shown on screen in the original; spoken on request (score key).
+                self._last_grade = grade
+            case ev.StreakEarned(kind):
+                speech.speak(f"25 {kind} streak.")
+            case ev.CommandUnlocked(command):
+                # Comes just before the same command's introduction.
+                self._unlock_message = self._host.progress.unlock(command)
+            case ev.CommandIntroduced(command):
+                # A first ever unlock gets the original's message instead.
+                speech.speak(self._unlock_message or f"{command} added.")
+                self._unlock_message = None
             case ev.HelpNeeded(command):
                 # Replaces the original's touch instructions (see docs/DEVIATIONS.md).
                 key = key_name_for(command) or "no key"
@@ -127,8 +158,9 @@ def _grouped(number: int) -> str:
 
 
 class EndScreen:
-    """SoloEndGame for Classic: scores appear with SFX_BonusScore, then a second later
-    SFX_HighScore if the previous best was beaten. Then Play Again or Menu."""
+    """SoloEndGame. The screen slides in, then the scores appear with sounds on the
+    original's schedule (SoloEndGame::doShowScores, showBonusPoints, showTotalScore,
+    tallyTotalScore, showFeedback). Each value is spoken as it appears."""
 
     def __init__(self, host: Host, rules: ModeRules, result: ev.GameOver) -> None:
         self.title = "Game over"
@@ -136,7 +168,7 @@ class EndScreen:
         self._rules = rules
         self._result = result
         self._previous_best = host.scores.add(rules.name, result.total, result.moves)
-        self._high_score_due: float | None = None
+        self._timeline: list[tuple[float, Callable[[], None]]] = []
         self._menu = Menu("Game over", [
             Button("Play again", self._play_again, "SFX_Select"),
             Button("Menu", host.return_to_menu, "SFX_Select"),
@@ -144,12 +176,39 @@ class EndScreen:
 
     def enter(self, now: float) -> None:
         r = self._result
-        self._host.audio.play("SFX_BonusScore")
-        # Classic shows moves and points; its bonus line is blank.
-        self._host.speech.speak(
-            f"Game over. Moves {r.moves}. Points {_grouped(r.total)}. {self._menu.describe()}",
-            interrupt=True, protect=True)
-        self._high_score_due = now + END_HIGH_SCORE_DELAY
+        speech = self._host.speech
+        play = self._host.audio.play
+        speech.speak("Game over.", interrupt=True, protect=True)
+        t = now + END_SHOW_DELAY
+
+        def scores() -> None:
+            play("SFX_BonusScore")
+            speech.speak(f"Moves {r.moves}. Points {_grouped(r.moves + r.bonus)}.", protect=True)
+
+        steps: list[tuple[float, Callable[[], None]]] = [(t, scores)]
+        if self._rules.rhythm_graded:
+            def bonus() -> None:
+                play("SFX_BonusScore")
+                speech.speak(f"Bonus {_grouped(r.end_bonus)}.", protect=True)
+
+            def total() -> None:
+                if r.total == 0:
+                    play("SFX_BonusScore")
+                else:
+                    play("SFX_ScoreAnimation")
+
+            def tallied() -> None:
+                speech.speak(f"Points {_grouped(r.total)}.", protect=True)
+
+            tally_at = t + END_BONUS_DELAY + END_TOTAL_DELAY
+            tally_end = tally_at + _tally_seconds(r)
+            steps += [(t + END_BONUS_DELAY, bonus), (tally_at, total), (tally_end, tallied)]
+            feedback_at = tally_end + END_FEEDBACK_DELAY
+        else:
+            # Classic leaves Bonus blank and goes straight to the feedback.
+            feedback_at = t + END_BONUS_DELAY + END_FEEDBACK_DELAY
+        steps.append((feedback_at, self._feedback))
+        self._timeline = steps
 
     def key(self, key: int, now: float) -> None:
         nav = menu_nav_for(key)
@@ -157,11 +216,24 @@ class EndScreen:
             self._menu.handle(nav, self._host.speech, self._host.play_themed)
 
     def update(self, now: float) -> None:
-        if self._high_score_due is not None and now >= self._high_score_due:
-            self._high_score_due = None
-            if self._result.total > self._previous_best:
-                self._host.audio.play("SFX_HighScore")
-                self._host.speech.speak("New high score.", protect=True)
+        while self._timeline and self._timeline[0][0] <= now:
+            _, step = self._timeline.pop(0)
+            step()
+
+    def _feedback(self) -> None:
+        if self._result.total > self._previous_best:
+            self._host.audio.play("SFX_HighScore")
+            self._host.speech.speak("New high score.", protect=True)
+        self._host.speech.speak(self._menu.describe(), protect=True)
 
     def _play_again(self) -> None:
         self._host.replace(GameScreen(self._host, self._rules, start_now=True))
+
+
+def _tally_seconds(result: ev.GameOver) -> float:
+    """tallyTotalScore adds ceil(5 percent of the remainder) every 1/60 second."""
+    remaining = result.moves + result.end_bonus
+    if remaining <= 0:
+        return 0.0
+    step = math.ceil(remaining * TALLY_FRACTION)
+    return math.ceil(remaining / step) * TALLY_INTERVAL

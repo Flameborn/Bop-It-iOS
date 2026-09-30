@@ -134,7 +134,7 @@ class ClassicTests(unittest.TestCase):
         self.start()
         self.win_moves(20)
         now = self.open_turn()
-        self.assertGreater(self.game._times_called[self.game.current or ""], 2)
+        self.assertGreater(self.game.times_called[self.game.current or ""], 2)
         self.run_until(now + 1.1 / self.game.pitch)
         fail_time = now + 1.1 / self.game.pitch
         self.assertEqual(of(self.events, ev.HelpNeeded), [])

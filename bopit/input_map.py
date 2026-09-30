@@ -26,11 +26,20 @@ def menu_nav_for(key: int) -> Nav | None:
     return MENU_KEYS.get(key)
 
 
-# Temporary game keys for testing Classic. The real scheme is proposed at stage 6.
+# Temporary game keys for testing. The real scheme is proposed at stage 6.
 GAME_KEYS: dict[int, str] = {
     pygame.K_SPACE: "Bop",
     pygame.K_LEFT: "Twist",
     pygame.K_DOWN: "Pull",
+    pygame.K_RIGHT: "Spin",
+    pygame.K_UP: "Flick",
+    pygame.K_y: "Shout",
+    pygame.K_q: "Squeeze",
+    pygame.K_c: "Crank",
+    pygame.K_k: "Shake",
+    pygame.K_n: "Nail",
+    pygame.K_b: "Brush",
+    pygame.K_p: "Poke",
 }
 
 

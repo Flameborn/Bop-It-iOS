@@ -9,10 +9,11 @@ import pygame
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
-from bopit.engine.game import CLASSIC, ModeRules
+from bopit.engine.game import BASIC, CLASSIC, EXTREME, ModeRules
 from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
+from bopit.progress import Progress
 from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
@@ -21,7 +22,7 @@ log = logging.getLogger(__name__)
 
 # Keys are timestamped when the loop sees them, so a faster loop means fairer timing.
 FRAMES_PER_SECOND = 120
-MODES: dict[str, ModeRules] = {"Classic": CLASSIC}
+MODES: dict[str, ModeRules] = {"Classic": CLASSIC, "Basic": BASIC, "Extreme": EXTREME}
 
 
 class Screen(Protocol):
@@ -60,9 +61,14 @@ class App:
         self.audio = audio
         self.settings = settings
         self.scores = Scores()
+        self.progress = Progress()
         self._stack: list[Screen] = []
         self._running = False
         self._menu_music: Voice | None = None
+        # How often each command has been called. The original kept this on its Command
+        # objects, which lived across games until the command list was rebuilt.
+        self.times_called: dict[str, int] = {}
+        self._commands_key = (settings.theme, settings.shout_it)
 
     # Navigation
 
@@ -107,6 +113,12 @@ class App:
 
     def settings_changed(self) -> None:
         self.audio.set_mix(self.settings.sfx_volume / 100, self.settings.music_volume / 100)
+        # The original rebuilt its commands (GameSettings::createCommands) on a theme or
+        # Shout It change, which reset their call counts.
+        key = (self.settings.theme, self.settings.shout_it)
+        if key != self._commands_key:
+            self._commands_key = key
+            self.times_called.clear()
         save_settings(self.settings)
 
     def play(self, name: str) -> None:

@@ -1,4 +1,4 @@
-"""One game of Bop It, following the original's GameController.
+"""One game of Bop It, following the original's GameController and solo mode classes.
 
 Time is passed in explicitly, in seconds. Scheduled steps run at their exact due time, not
 at whenever update() happens to be called, so runs are reproducible. Every "per pitch"
@@ -15,7 +15,8 @@ from enum import Enum, auto
 
 from bopit.engine import events as ev
 from bopit.engine.banter import Banter
-from bopit.engine.commands import callout_sound, response_sound
+from bopit.engine.commands import all_commands, callout_sound, response_sound
+from bopit.engine.rhythm import Grade, RhythmState
 from bopit.themes import themed
 
 BEAT = 0.81                 # Callout to turn start, and success to next turn (per pitch).
@@ -28,19 +29,45 @@ HELP_CALL_LIMIT = 2         # Failing a command called this many times or fewer 
 SPEED_UPS_PER_TRACK = 3
 MUSIC_TRACKS = ("MUSIC_GameLoop_01a", "MUSIC_GameLoop_01b", "MUSIC_GameLoop_02a",
                 "MUSIC_GameLoop_02b", "MUSIC_GameLoop_03a", "MUSIC_GameLoop_03b")
+# Exact lengths of the looping "a" parts, in seconds, measured from the files (frames / 22050).
+LOOP_LENGTHS = {
+    "MUSIC_GameLoop_01a": 53740 / 22050, "MUSIC_GameLoop_01a_HLWN": 53740 / 22050,
+    "MUSIC_GameLoop_01a_XMAS": 53748 / 22050, "MUSIC_GameLoop_02a": 53745 / 22050,
+    "MUSIC_GameLoop_03a": 53742 / 22050,
+}
 DIE_LINES = ("VO_Die_01", "VO_Die_02", "VO_Die_03", "VO_Die_04")
+# Commands with a fixed screen position (Command_Bop::init, Command_Poke::init).
+FIXED_LOCATIONS = {"Bop": 4, "Poke": 5}
+# Where a newly unlocked command goes, by how many are active (GameController::unlockNextCommand).
+UNLOCK_LOCATIONS = {4: 1, 3: 2, 2: 3}
+MAX_INDEX_TO_UNLOCK = 10    # GameController::init
+FREQUENCY_STEP = 8          # GameController::increaseFrequencyUnlock
 
 
 @dataclass(frozen=True)
 class ModeRules:
     name: str
-    # Active commands at the start, Bop first, in the order the original activated them.
-    commands: tuple[str, ...]
+    # Commands activated at the start as (command, screen position), in the original's order.
+    commands: tuple[tuple[str, int], ...]
     pitch_shift_amount: float
     pitch_shift_frequency: int = 12
+    # Successes before the first unlock. None means commands never unlock.
+    first_unlock: int | None = None
+    # Basic and Extreme bring in Twist and Pull by script (their winTurn).
+    scripted_intro: bool = False
+    # Basic set some commands' call counts to 1 where Extreme set 0; this affects help.
+    intro_call_count: int = 0
+    rhythm_graded: bool = False
+    # Classic throws the end bonus away when the game ends (SoloClassicMode::failDone).
+    keeps_end_bonus: bool = True
 
 
-CLASSIC = ModeRules("Classic", ("Bop", "Twist", "Pull"), pitch_shift_amount=0.03)
+CLASSIC = ModeRules("Classic", (("Bop", 4), ("Twist", 0), ("Pull", 3)), pitch_shift_amount=0.03,
+                    keeps_end_bonus=False)
+BASIC = ModeRules("Basic", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=12,
+                  scripted_intro=True, intro_call_count=1, rhythm_graded=True)
+EXTREME = ModeRules("Extreme", (("Bop", 4),), pitch_shift_amount=0.02, first_unlock=8,
+                    scripted_intro=True, intro_call_count=0, rhythm_graded=True)
 
 
 @dataclass(frozen=True)
@@ -49,6 +76,7 @@ class Options:
     commands_mode: str = "VOX"
     banter: bool = True
     theme: int = 0
+    shout_it: bool = True
 
 
 class State(Enum):
@@ -60,28 +88,65 @@ class State(Enum):
     OVER = auto()
 
 
+class MusicClock:
+    """Where the game music loop is, worked out from the engine's own commands to it.
+    The original asked the audio engine; this is exact and reproducible."""
+
+    def __init__(self) -> None:
+        self._length = 1.0
+        self._anchor_time = 0.0
+        self._anchor_position = 0.0
+        self._pitch = 1.0
+
+    def start(self, name: str, position: float, pitch: float, now: float) -> None:
+        self._length = LOOP_LENGTHS.get(name, 1.0)
+        self.seek(position, now)
+        self._pitch = pitch
+
+    def seek(self, position: float, now: float) -> None:
+        self._anchor_time = now
+        self._anchor_position = position
+
+    def set_pitch(self, pitch: float, now: float) -> None:
+        self.seek(self.position(now), now)
+        self._pitch = pitch
+
+    def position(self, now: float) -> float:
+        elapsed = (now - self._anchor_time) * self._pitch
+        return (self._anchor_position + elapsed) % self._length
+
+
 class Game:
-    def __init__(self, rules: ModeRules, options: Options, rng: random.Random) -> None:
+    def __init__(self, rules: ModeRules, options: Options, rng: random.Random,
+                 times_called: dict[str, int] | None = None) -> None:
+        """times_called persists between games, as the original's Command objects did."""
         self.rules = rules
         self.options = options
         self._rng = rng
         self._banter = Banter(rng)
+        self._master = all_commands(options.shout_it)
         self._timers: list[tuple[float, int, Callable[[float], None]]] = []
         self._sequence = itertools.count()
         self._events: list[ev.Event] = []
+        self._music = MusicClock()
         self.state = State.OVER
         self.active: list[str] = []
+        self.locations: dict[str, int] = {}
+        self.times_called = times_called if times_called is not None else {}
         self.current: str | None = None
         self._next: str | None = None
+        self._forced: str | None = None
         self._turn_opened_at = 0.0
-        self._times_called: dict[str, int] = {}
+        self.rhythm = RhythmState()
         self.pitch = 1.0
         self.moves = 0
         self.bonus = 0
-        self.end_bonus = 0
         self._base_bonus = BASE_BONUS_START
         self._speed_ups = 0
         self._music_index = 0
+        self._next_unlock_index = 3
+        self._num_to_next_unlock = 0
+        self._unlock_counter = 0
 
     # Public interface
 
@@ -120,6 +185,10 @@ class Game:
         return events
 
     @property
+    def end_bonus(self) -> int:
+        return self.rhythm.end_bonus
+
+    @property
     def total(self) -> int:
         return self.moves + self.bonus + self.end_bonus
 
@@ -129,22 +198,38 @@ class Game:
         self.pitch = 1.0
         self.moves = 0
         self.bonus = 0
-        self.end_bonus = 0
+        self.rhythm = RhythmState()
         self._base_bonus = BASE_BONUS_START
         self._speed_ups = 0
         self._music_index = 0
-        self.active = list(self.rules.commands)
-        self._times_called = {c: 0 for c in self.active}
+        self._unlock_counter = 0
+        self.active = []
+        for command, location in self.rules.commands:
+            self._activate(command, location)
+        for command in self.active:
+            self.times_called[command] = 0
         self._emit(ev.GameStarted(self.rules.name))
-        self._emit(ev.MusicStart(self._music_name(self._music_index), self.pitch, LOOP_OFFSET))
+        self._start_music(self._music_name(self._music_index), LOOP_OFFSET, now)
         self._next = self._rng.choice(self.active)
+        self.times_called[self._next] = 0
         self._call(self._next)
+        if self.rules.scripted_intro:
+            # SoloSingleObject and SoloMultipleMode startGame: Bop first, then unlocks.
+            self._forced = self.active[0]
+            self.times_called[self._forced] = 1
+        self._next_unlock_index = 3
+        self._num_to_next_unlock = (self.rules.first_unlock if self.rules.first_unlock is not None
+                                    else 2**31 - 1)
         self.state = State.BETWEEN_TURNS
         self._schedule(now + BEAT / self.pitch, self._start_turn)
 
     def _start_turn(self, now: float) -> None:
-        self.current = self._next
-        self._times_called[self.current] += 1
+        if self._forced is not None:
+            self.current = self._forced
+            self._forced = None
+        else:
+            self.current = self._next
+        self.times_called[self.current] = self.times_called.get(self.current, 0) + 1
         self._turn_opened_at = now
         self.state = State.IN_TURN
         deadline = now + TURN_TIMEOUT / self.pitch
@@ -159,31 +244,109 @@ class Game:
 
     def _win_turn(self, now: float) -> None:
         self._cancel_timers()
+        if self.rules.rhythm_graded:
+            self._grade(now)
+        if self.rules.scripted_intro:
+            self._scripted_unlocks()
         command = self.current or ""
         self._emit(ev.PlaySound(response_sound(command, self.options.theme), self.pitch))
         self._emit(ev.MusicSegment(self._music_name(self._music_index + 1), self.pitch))
-        self._emit(ev.MusicSeek(LOOP_OFFSET))
+        self._seek_music(LOOP_OFFSET, now)
         self.bonus += self._base_bonus
         self.moves += 1
         self._emit(ev.ScoreChanged(self.moves, self.bonus))
-        self._next = self._rng.choice(self.active)
-        self._call(self._next)
+        self._num_to_next_unlock -= 1
+        if self._num_to_next_unlock < 1:
+            self._unlock_next_command()
+            self._increase_frequency_unlock()
+        # queueNewCommandAndPlay: the forced command if any, otherwise a random active one.
+        if self._forced is None:
+            self._next = self._rng.choice(self.active)
+            self._call(self._next)
+        else:
+            if self._forced not in self.active:
+                self._emit(ev.CommandIntroduced(self._forced))
+            self._call(self._forced)
         self.state = State.BETWEEN_TURNS
         self._schedule(now + BEAT / self.pitch, self._success_done)
 
+    def _grade(self, now: float) -> None:
+        grade = self.rhythm.grade(self._music.position(now))
+        if grade != Grade.MISSED:
+            self._emit(ev.RhythmGraded(grade.value))
+        streak = self.rhythm.post_process()
+        if streak is not None:
+            self._emit(ev.StreakEarned(streak.name.capitalize()))
+
+    def _scripted_unlocks(self) -> None:
+        """SoloSingleObject::winTurn and SoloMultipleMode::winTurn, before the base winTurn."""
+        count = self.rules.intro_call_count
+        if self.moves == 6:
+            self._forced = self._master[2]
+            self.locations[self._forced] = 3
+            self._num_to_next_unlock = 9
+            self.times_called[self._forced] = 0
+        elif self.moves == 1:
+            self._forced = self._master[1]
+            self.locations[self._forced] = 0
+            if count == 0:
+                self.times_called[self._forced] = 0
+        elif self.moves == 0:
+            self._forced = self.active[0]
+            self.times_called[self._forced] = count
+
+    def _unlock_next_command(self) -> None:
+        """GameController::unlockNextCommand."""
+        if self._next_unlock_index < len(self._master):
+            command = self._master[self._next_unlock_index]
+            self._base_bonus += BASE_BONUS_STEP
+            count = len(self.active)
+            if count >= 5:
+                location = 5 if command == "Poke" else self.locations[self.active[1]]
+            else:
+                location = UNLOCK_LOCATIONS.get(count, 0)
+            self._emit(ev.CommandUnlocked(command))
+        else:
+            command = self._random_unlockable()
+            tries = 0
+            while command in self.active:
+                tries += 1
+                command = self._random_unlockable()
+                if tries > 5:
+                    return
+            location = 4
+            while location in (4, 5):
+                location = self._rng.getrandbits(32) % 6
+        self._forced = command
+        self.locations[command] = location
+        self._next_unlock_index += 1
+        self._unlock_counter += 1
+
+    def _random_unlockable(self) -> str:
+        return self._master[self._rng.randrange(MAX_INDEX_TO_UNLOCK) + 1]
+
+    def _increase_frequency_unlock(self) -> None:
+        if self._next_unlock_index < len(self._master):
+            self._num_to_next_unlock = self._unlock_counter + FREQUENCY_STEP
+        else:
+            self._num_to_next_unlock = FREQUENCY_STEP
+
     def _success_done(self, now: float) -> None:
+        if self._forced is not None:
+            self._activate(self._forced, self.locations.get(self._forced, 0))
         if self.moves != 0 and self.moves % self.rules.pitch_shift_frequency == 0:
             self.pitch += self.rules.pitch_shift_amount
+            self._music.set_pitch(self.pitch, now)
             self._emit(ev.MusicPitch(self.pitch))
             self._emit(ev.SpeedUp(self.pitch))
             self._base_bonus += BASE_BONUS_STEP
             self._speed_ups += 1
             if self._speed_ups == SPEED_UPS_PER_TRACK:
                 self._speed_ups = 0
-                self._change_track()
+                self._change_track(now)
         self._start_turn(now)
 
-    def _change_track(self) -> None:
+    def _change_track(self, now: float) -> None:
         # Only the Original theme has more than one track: 01, then 02, then 03, then 01.
         if self.options.theme == 0:
             if self._music_index < 2:
@@ -193,7 +356,7 @@ class Game:
             else:
                 self._music_index = 0
         self._emit(ev.MusicStop())
-        self._emit(ev.MusicStart(self._music_name(self._music_index), self.pitch, 0.0))
+        self._start_music(self._music_name(self._music_index), 0.0, now)
 
     def _fail_turn(self, now: float) -> None:
         self._cancel_timers()
@@ -202,7 +365,7 @@ class Game:
         die = self._rng.choice(DIE_LINES)
         self._emit(ev.PlaySound(themed(die, self.options.theme)))
         command = self.current or ""
-        if self._times_called.get(command, 0) <= HELP_CALL_LIMIT:
+        if self.times_called.get(command, 0) <= HELP_CALL_LIMIT:
             self.state = State.HELP
             self._emit(ev.HelpNeeded(command))
         else:
@@ -216,16 +379,35 @@ class Game:
 
     def _fail_done(self, now: float) -> None:
         self.state = State.OVER
-        # Classic has no end bonus (SoloClassicMode::failDone).
-        self.end_bonus = 0
+        if not self.rules.keeps_end_bonus:
+            self.rhythm.end_bonus = 0
         self._emit(ev.GameOver(self.moves, self.bonus, self.end_bonus, self.total))
 
     # Helpers
+
+    def _activate(self, command: str, location: int) -> None:
+        """GameController::activateCommand:forLoc: the command takes the position and
+        replaces whatever was there."""
+        location = FIXED_LOCATIONS.get(command, location)
+        for other in self.active:
+            if self.locations.get(other) == location:
+                self.active.remove(other)
+                break
+        self.locations[command] = location
+        self.active.append(command)
 
     def _call(self, command: str) -> None:
         self._emit(ev.CommandCalled(command))
         self._emit(ev.PlaySound(
             callout_sound(command, self.options.commands_mode, self.options.theme), self.pitch))
+
+    def _start_music(self, name: str, position: float, now: float) -> None:
+        self._music.start(name, position, self.pitch, now)
+        self._emit(ev.MusicStart(name, self.pitch, position))
+
+    def _seek_music(self, position: float, now: float) -> None:
+        self._music.seek(position, now)
+        self._emit(ev.MusicSeek(position))
 
     def _music_name(self, index: int) -> str:
         name = MUSIC_TRACKS[index]

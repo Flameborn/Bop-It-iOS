@@ -148,6 +148,11 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 - The game has a hidden cheat flag (GameSettings amCheating) that makes every finished touch a win.
 - A correct X-Move wins the turn, adds 25 to the end bonus and counts an X-Move.
 
+### Shout It X-Move (microphone)
+
+- During a Shout turn the original turned on the microphone (InputController startTurn:andNeedsMicrophone), starting only after the callout had played (startAudio is delayed by the callout length). A loud enough peak won the turn as an X-Move (GameController::gotAudio:peakPower), with the X-Move bonus of 25 and an X-Move count. The exact threshold is still to be read from Command_Shout.
+- Planned for this port, agreed with the developer: the key still works as the plain move; during Shout turns the microphone is opened and only its level is measured; the input is never played back; a setting turns this on or off, defaulting to on.
+
 ### Speed
 
 - Every 12 successful moves (pitchShiftFrequency), the pitch rises by the mode's pitch shift amount and the base bonus rises by 5 (GameController::successDone).
@@ -191,8 +196,19 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 ### Modes
 
 - Classic (SoloClassicMode): Bop, Twist and Pull. No unlocking. Speeds up 3 percent every 12 moves.
-- Basic (SoloSingleObject): the first new command unlocks after 12 moves. After the Nth unlock the next one comes N + 8 moves later, so the gaps are 12, 9, 10, 11 and so on (GameController::increaseFrequencyUnlock). Speeds up 2 percent every 12 moves. Rhythm graded.
-- Extreme (SoloMultipleMode): the same, but the first unlock comes after 8 moves, so the gaps are 8, 9, 10, 11 and so on. Speeds up 2 percent every 12 moves. Rhythm graded.
+- Basic (SoloSingleObject) and Extreme (SoloMultipleMode) play the same way. The differences are visual (Basic shows one BopJect at a time full screen, Extreme shows them all), a first unlock count that is overwritten before it matters (12 and 8), and which call counts are set to 0 or 1, which affects the help popup. Both speed up 2 percent every 12 moves and are rhythm graded.
+- Basic and Extreme, command by command (their winTurn, which runs before the base winTurn):
+  - The game starts with only Bop active, and Bop is the first command.
+  - On the 1st success, Bop is called again.
+  - On the 2nd success, Twist is introduced (position 0).
+  - On the 7th success, Pull is introduced (position 3), and 9 more successes are needed for the next unlock (the same win then counts one of them, so 8 more).
+  - From then on, commands unlock in master list order after 8, then 9, 10, 11 more successes and so on (after the Nth regular unlock, the next needs N + 8). In practice Spin unlocks on success 15, Flick on 24, the next on 34, the next on 45.
+- Screen positions decide which commands stay active (GameController::activateCommand:forLoc). There are 6 positions, 0 to 5. Activating a command at a position removes whatever command was there. Bop is always at position 4 and Poke always at 5; the others take the position given.
+- A newly unlocked command goes to position 2 when 3 commands are active, 1 when 4 are active, 3 when 2 are active, otherwise 0. When 5 or more are active it replaces the second command in the active list (the oldest after Bop), except Poke, which takes position 5. So at most 6 are active at once.
+- A newly unlocked or introduced command is called at once as the next command, and becomes active when that turn starts.
+- Each unlock also raises the base bonus by 5.
+- Once every command has been unlocked, each further unlock picks a random command from master list entries 1 to 10 that is not active (up to 6 tries, otherwise nothing changes), at a random position from 0 to 3.
+- Command call counts (used for the help popup) are stored on the command objects, which live until the command list is rebuilt (theme change or Shout It change). A new game resets only the counts of the commands active at its start.
 - Blitz (SoloSpeedMode): Bop, Twist, Pull, Spin and Flick. Never speeds up. Timed. Details not read yet.
 - Unlocked commands come in master list order. Once all are unlocked, a random command is forced instead (GameController::unlockNextCommand).
 - The very first game ever shows the tutorial popup instead of the mode intro (hasShownTutorialPopup).
@@ -218,7 +234,14 @@ Source: the decompiled GameController, Command and mode classes, unless noted. T
 ### End screen (solo)
 
 - Total score = moves + bonus score + end bonus (SoloEndGame::calcTotalScore). High scores are saved per mode as total score and moves.
-- Sequence: SFX_BonusScore as Moves and Points (moves plus bonus score) appear. 1 second later, in rhythm modes, SFX_BonusScore again as Bonus (end bonus) appears, then 0.5 seconds later SFX_ScoreAnimation while Points counts up to the total. Classic leaves Bonus blank. Finally, if the total beats the saved high score, SFX_HighScore plays.
+- The end screen animates in (0.5 second delay plus UIKit's default 0.2 second animation) and then waits 0.5 seconds, so the scores appear about 1.2 seconds after the game ends.
+- Sequence: SFX_BonusScore as Moves and Points (moves plus bonus score) appear. 1 second later, in Basic and Extreme, SFX_BonusScore again as Bonus (end bonus) appears, then 0.5 seconds later SFX_ScoreAnimation while Points counts up to the total, adding 5 percent of the difference (rounded up) every 1/60 second. If the total is 0 it plays SFX_BonusScore instead of counting. 1 second after the count finishes comes the feedback. Classic leaves Bonus blank and gives the feedback 2 seconds after the scores appear.
+- Feedback: if the total beats the previous top score, SFX_HighScore. Otherwise a random gameplay tip is shown.
+
+### Trophies and unlock messages
+
+- The first time a command is ever unlocked, its "BopJect unlocked" trophy is completed and saved, and a message is shown, such as "Spin to Win! Spin Unlocked" (TrophyManager::unlockBopject; the messages are in Localizable.strings). It is only shown once.
+- Other trophies, the gameplay tips and the Trophies screen are still to be read.
 
 ## Help screen overview text
 
