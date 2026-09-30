@@ -121,6 +121,105 @@ Source: SkinsManager and LandingPage in the decompile.
 - Changing skin stops and restarts the menu music (in the new skin), and rebuilds the command list (GameSettings::createCommands). How commands differ by skin is not yet known.
 - SkinsManager::GetSkinFilename inserts "_HLWN" or "_XMAS" before ".wav". The original only routes some sounds through it: menu button sounds, menu music, and some in-game sounds. Settings previews do not go through it.
 
+## Game engine
+
+Source: the decompiled GameController, Command and mode classes, unless noted. Times are in seconds at normal speed (pitch 1.0). Every timer marked "per pitch" is divided by the current pitch, so the game speeds up by raising the pitch.
+
+### Commands
+
+- The master command list, in order (GameSettings::createCommands): Bop, Twist, Pull, Spin, Flick, Shout, Squeeze, Crank, Shake, Nail, Brush, Poke. Shout is left out entirely when the Shout It setting is off.
+- Each command has a callout sound and a response sound. Callout: VO_<Name> in VOX mode, SFX_<Name>_C otherwise. Response: SFX_<Name>_R (Command_Bop::init shown; the others follow the same pattern, still to be checked one by one).
+- In Silent mode the command sounds are not preloaded (GameSettings::preloadSounds), so no callout plays; the original showed the command as a picture (silentCallOutImage).
+- Callouts and responses play at the SFX volume and at the current pitch.
+
+### A game
+
+1. The game waits on "Bop It to start": only Bop is active, and a touch starts the game (GameController::prepBopItToStart, gotOutOfTurnTouchEnded).
+2. startGame: pitch 1.0, score 0, bonus 0, base bonus 100. The mode's active commands are set up. The first game music loop starts at the current pitch. The first command is chosen at random from the active commands and its callout plays immediately.
+3. 0.81 per pitch later the first turn starts (startTurn).
+4. A turn: input is accepted. A timeout is set for 1.1 per pitch. Beat animations run every 0.21 per pitch, up to 4 beats.
+5. On a correct move (winTurn): the response sound plays at the current pitch, the music plays its "b" segment, score goes up by 1, bonus score goes up by the base bonus. The next command is chosen at random from the active commands and its callout plays right away. 0.81 per pitch later the next turn starts.
+6. On a wrong move, or on timeout (commandTimeout), the turn fails. At timeout a command that registered a motion (X-Move) during the turn wins instead, except Bop, which can never be won by timeout.
+
+### Wrong moves
+
+- Wrong moves fail. Confirmed by the developer, and in the code: when a touch ends, the current command checks the finished gesture, and if it does not match, the turn fails at once (GameController::gotTouchEnded). When a touch begins, a gesture that does not match yet is simply waited on (gotTouchBegan), since it may still become the right move.
+- A clearly wrong phone motion also fails the turn at once (forceLose, set in the X-Move commands' gotAccelerometer).
+- The game has a hidden cheat flag (GameSettings amCheating) that makes every finished touch a win.
+- A correct X-Move wins the turn, adds 25 to the end bonus and counts an X-Move.
+
+### Speed
+
+- Every 12 successful moves (pitchShiftFrequency), the pitch rises by the mode's pitch shift amount and the base bonus rises by 5 (GameController::successDone).
+- Pitch shift amount: Classic 0.03, Basic 0.02, Extreme 0.02 (read from the machine code of each mode's startGame). Blitz never speeds up (frequency 50,000,000).
+- Every 3rd speed up, the music moves to the next loop. With the Original theme the loops go 01, 02, 03, then back to 01.
+
+### Music and the beat
+
+- Game music is three loops, each an "a" part and a "b" part: MUSIC_GameLoop_01a and 01b, 02a and 02b, 03a and 03b, through the theme filter.
+- The "a" parts are 2.437 seconds long, exactly 3 beats of 0.8125 seconds. The "b" parts are exactly 1 beat. The 0.81 second constants in the engine are one beat. (Measured from the files.)
+- startGame starts the "a" loop looping at the current pitch, at volume 0, and then sets it to the music volume.
+- The "a" loop is jumped to loopOffset, 1.62 seconds, which is the start of its third beat: once at game start and again on every success (playBeatForTurn). loopOffset is 1.66 on an iPhone 3G, presumably to cover that device's slower audio; this port uses 1.62. (GameController::init, read with the soft float decompile.)
+- On every success the "b" part plays once on top, at the current pitch and music volume.
+- So after each success the loop wraps back to its start exactly when the next turn opens, one beat later. A PERFECT move lands one beat after the turn opens.
+- Pitch changes are applied to the playing loop at once (setPitchForSoundWithName).
+- The music stops when the game fails or ends.
+
+### Input between turns
+
+- Input is only taken during a turn, from startTurn until the turn is won or failed (InputController inTurn). A touch between turns, for example during the callout, is ignored, except that on the "Bop It to start" screen it starts the game (gotOutOfTurnTouchEnded).
+
+### Failing and game over
+
+1. The music stops and a random death line plays (VO_Die_01 to 04).
+2. If the failed command had been called 2 times or fewer in this game (Command::hasShownError, counted in Command::startTurn), the original showed a help popup for it: an animation and the command's how-to text, such as "Bop It: Tap on the Bop with 1 or 2 fingers" (GameViewController::displayError). The game then waited until the player pressed the popup's back button (errorBackPressed) before going on to step 3. Otherwise, 1 second later:
+3. If Banter is on, a banter line plays.
+4. 1 second later the game ends (failDone). Solo modes end on the first failure.
+
+### Banter
+
+- Pools (GameController::setUpBanterArray): general lines 01, 03, 04, 05, 09, 10, 11, 12, 13, 15, 16, 17, 18, 19, 24, 28, 30, 32, 36, 40, 41, 50, 57, 58. Low score lines 08, 14, 25, 27, 33, 35, 51, 52, 53, 55, 56. High score lines 02, 07, 20, 21, 26, 29, 31, 34, 37, 38, 39, 54, 59, 60. Lines 50 and up are only used when the device language is English.
+- On a failure with a score under 50, a line is drawn from the general and low score pools together; at 50 or more, from the general and high score pools. Lines are not repeated until a pool is used up (playRandomBanter).
+
+### Rhythm grading (Basic and Extreme only)
+
+- Only Basic and Extreme grade timing (they call checkInputTiming; Classic and Blitz do not).
+- The grade depends on the position of the game music in its "a" loop when the move is made. PERFECT: 0.78 to 0.84. GOOD: 0.75 to 0.78 or 0.84 to 0.87. OK: 0 to 0.75 or 0.87 to 1.91. Anything else is logged as "should have lost" but not punished.
+- End bonus per move: PERFECT 75 (100 during a perfect streak, 85 during a good streak). GOOD 50 (75 during a perfect streak, 60 during a good streak). OK resets streaks and counts.
+- Streaks after 25 graded moves: 25 perfects in a row starts a perfect streak (+100). Otherwise 25 perfects and goods start a good streak (+75). Details in GameController::postProcessInput.
+
+### Modes
+
+- Classic (SoloClassicMode): Bop, Twist and Pull. No unlocking. Speeds up 3 percent every 12 moves.
+- Basic (SoloSingleObject): the first new command unlocks after 12 moves. After the Nth unlock the next one comes N + 8 moves later, so the gaps are 12, 9, 10, 11 and so on (GameController::increaseFrequencyUnlock). Speeds up 2 percent every 12 moves. Rhythm graded.
+- Extreme (SoloMultipleMode): the same, but the first unlock comes after 8 moves, so the gaps are 8, 9, 10, 11 and so on. Speeds up 2 percent every 12 moves. Rhythm graded.
+- Blitz (SoloSpeedMode): Bop, Twist, Pull, Spin and Flick. Never speeds up. Timed. Details not read yet.
+- Unlocked commands come in master list order. Once all are unlocked, a random command is forced instead (GameController::unlockNextCommand).
+- The very first game ever shows the tutorial popup instead of the mode intro (hasShownTutorialPopup).
+
+### Command sound exceptions
+
+- Crank uses SFX_Turn_C and SFX_Turn_R. Brush uses SFX_Pet_C and SFX_Pet_R. (Command_Crank::init, Command_Brush::init.)
+- Only Shout's sound effects go through the theme filter. The death lines (VO_Die_01 to 04) also do. Banter does not. Of the game music, only the first loop (01a and 01b) has theme variants.
+
+### Around a game
+
+- Choosing a mode creates the game controller, which stops the menu music (GameController::init).
+- The mode intro's Start plays SFX_Select, then the "Bop It to start" screen appears. The intro's Back plays nothing.
+- The intro's Back and the end screen's Menu both return to the main menu, not the mode list, and restart the menu music (GameController::returnToMenu).
+- The end screen's Play Again goes straight into a new game without the "Bop It to start" screen (SoloEndGame::playAgainButtonPressed calls prepBopItToStart then startGame). On screen, Play Again is just above Menu and Submit Score.
+
+### High scores
+
+- Each mode keeps a top 10 list of entries with a score (the total) and moves, highest first. A new mode starts with one placeholder entry of 0 and 0. A new score is inserted above the first entry it ties or beats, and the list is cut to 10 (GameSettings::saveGameModeScore, getGameModeScore).
+- "High Score" on the intro screen is the top entry's moves and points (getHighScore, getHighMove).
+- The end screen plays SFX_HighScore when the total beats the previous top score.
+
+### End screen (solo)
+
+- Total score = moves + bonus score + end bonus (SoloEndGame::calcTotalScore). High scores are saved per mode as total score and moves.
+- Sequence: SFX_BonusScore as Moves and Points (moves plus bonus score) appear. 1 second later, in rhythm modes, SFX_BonusScore again as Bonus (end bonus) appears, then 0.5 seconds later SFX_ScoreAnimation while Points counts up to the total. Classic leaves Bonus blank. Finally, if the total beats the saved high score, SFX_HighScore plays.
+
 ## Help screen overview text
 
 Source: Help.nib. The full text is in `docs/original/nibs/Help.txt`. Facts it adds beyond the sections above:

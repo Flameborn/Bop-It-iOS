@@ -16,7 +16,10 @@ LOG_DIR = PROJECT_ROOT / "logs"
 SETTINGS_PATH = PROJECT_ROOT / "settings.json"
 
 
+# The original's three kinds of command. Silent showed commands as pictures only; it is
+# kept here for reference but not offered, see docs/DEVIATIONS.md.
 COMMAND_MODES = ("VOX", "SFX", "Silent")
+SELECTABLE_COMMAND_MODES = ("VOX", "SFX")
 
 
 @dataclass
@@ -46,7 +49,11 @@ def load_settings(path: Path = SETTINGS_PATH) -> Settings:
         log.error("Could not read settings from %s, using defaults: %s", path, exc)
         return Settings()
     known = {f.name for f in fields(Settings)}
-    return Settings(**{k: v for k, v in data.items() if k in known})
+    settings = Settings(**{k: v for k, v in data.items() if k in known})
+    if settings.commands not in SELECTABLE_COMMAND_MODES:
+        log.warning("Commands setting %r is not available, using VOX", settings.commands)
+        settings.commands = "VOX"
+    return settings
 
 
 def save_settings(settings: Settings, path: Path = SETTINGS_PATH) -> None:

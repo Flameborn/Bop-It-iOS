@@ -5,13 +5,16 @@ Reads research/decompiled/BopIt.c, made by tools/decompile.py. Hex constants tha
 addresses of string constants are shown with their text, like 0x1b3a48@"SFX_Select.wav".
 """
 
+import os
 import re
 import sys
 from pathlib import Path
 
 from macho import MachO
 
-SOURCE = Path(__file__).resolve().parent.parent / "research" / "decompiled" / "BopIt.c"
+SOURCE = Path(os.environ.get(
+    "BOPIT_DECOMPILED",
+    Path(__file__).resolve().parent.parent / "research" / "decompiled" / "BopIt.c"))
 MARKER = "// FUNCTION "
 HEX = re.compile(r"0x[0-9a-f]{5,8}\b")
 

@@ -24,3 +24,27 @@ MENU_KEYS: dict[int, Nav] = {
 
 def menu_nav_for(key: int) -> Nav | None:
     return MENU_KEYS.get(key)
+
+
+# Temporary game keys for testing Classic. The real scheme is proposed at stage 6.
+GAME_KEYS: dict[int, str] = {
+    pygame.K_SPACE: "Bop",
+    pygame.K_LEFT: "Twist",
+    pygame.K_DOWN: "Pull",
+}
+
+
+# Speaks the current score during a game. Never counts as a move.
+GAME_SCORE_KEY = pygame.K_s
+
+
+def game_command_for(key: int) -> str | None:
+    return GAME_KEYS.get(key)
+
+
+def key_name_for(command: str) -> str | None:
+    """The key currently bound to a command, as a spoken name."""
+    for key, bound in GAME_KEYS.items():
+        if bound == command:
+            return pygame.key.name(key)
+    return None

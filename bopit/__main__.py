@@ -2,7 +2,11 @@
 
 import argparse
 import logging
+import os
 import time
+
+# Keep pygame's startup banner out of the console, which a screen reader would read.
+os.environ.setdefault("PYGAME_HIDE_SUPPORT_PROMPT", "1")
 
 from bopit.app import App
 from bopit.audio import Audio

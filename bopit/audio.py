@@ -49,6 +49,20 @@ class Voice:
         if self._valid():
             self._source.stop()
 
+    def seek(self, seconds: float) -> None:
+        """Jump to a position in the sound, in seconds of the file."""
+        if self._valid():
+            self._source.set("sec_offset", float(seconds))
+
+    def set_pitch(self, pitch: float) -> None:
+        if self._valid():
+            self._source.pitch = pitch
+
+    @property
+    def position(self) -> float:
+        """Current position in seconds of the file, or 0 if no longer playing."""
+        return self._source.get_float("sec_offset") if self._valid() else 0.0
+
     @property
     def playing(self) -> bool:
         return self._valid() and self._audio._is_playing(self._source)

@@ -1,20 +1,57 @@
 """The pygame window, event loop and screen stack."""
 
 import logging
+import time
+from typing import Protocol
 
 import pygame
 
 from bopit import screens
 from bopit.audio import Audio, Voice
 from bopit.config import Settings, save_settings
+from bopit.engine.game import CLASSIC, ModeRules
+from bopit.game_screen import GameScreen
 from bopit.input_map import menu_nav_for
 from bopit.menu import Menu
+from bopit.scores import Scores
 from bopit.speech import Speech
 from bopit.themes import themed
 
 log = logging.getLogger(__name__)
 
-FRAMES_PER_SECOND = 60
+# Keys are timestamped when the loop sees them, so a faster loop means fairer timing.
+FRAMES_PER_SECOND = 120
+MODES: dict[str, ModeRules] = {"Classic": CLASSIC}
+
+
+class Screen(Protocol):
+    title: str
+
+    def enter(self, now: float) -> None: ...
+
+    def key(self, key: int, now: float) -> None: ...
+
+    def update(self, now: float) -> None: ...
+
+
+class MenuScreen:
+    """Runs a speech menu as a screen."""
+
+    def __init__(self, app: "App", menu: Menu) -> None:
+        self.title = menu.title
+        self._app = app
+        self._menu = menu
+
+    def enter(self, now: float) -> None:
+        self._menu.enter(self._app.speech)
+
+    def key(self, key: int, now: float) -> None:
+        nav = menu_nav_for(key)
+        if nav is not None:
+            self._menu.handle(nav, self._app.speech, self._app.play_themed)
+
+    def update(self, now: float) -> None:
+        pass
 
 
 class App:
@@ -22,24 +59,32 @@ class App:
         self.speech = speech
         self.audio = audio
         self.settings = settings
-        self._stack: list[Menu] = []
+        self.scores = Scores()
+        self._stack: list[Screen] = []
         self._running = False
         self._menu_music: Voice | None = None
 
-    # Navigator
+    # Navigation
 
-    def push(self, menu: Menu) -> None:
-        self._stack.append(menu)
-        log.info("Screen: %s", menu.title)
-        menu.enter(self.speech)
+    def push(self, screen: Menu | Screen) -> None:
+        self._stack.append(self._as_screen(screen))
+        self._enter_top()
+
+    def replace(self, screen: Menu | Screen) -> None:
+        self._stack[-1] = self._as_screen(screen)
+        self._enter_top()
 
     def pop(self) -> None:
         if len(self._stack) <= 1:
             return
         self._stack.pop()
-        menu = self._stack[-1]
-        log.info("Screen: %s", menu.title)
-        menu.enter(self.speech)
+        self._enter_top()
+
+    def return_to_menu(self) -> None:
+        """GameController::returnToMenu: back to the main menu with the menu music."""
+        del self._stack[1:]
+        self.start_menu_music()
+        self._enter_top()
 
     def quit(self) -> None:
         log.info("Quit from main menu")
@@ -47,6 +92,18 @@ class App:
 
     def not_built(self, what: str) -> None:
         self.speech.speak(f"{what} is not built yet.", interrupt=True)
+
+    def start_mode(self, name: str) -> None:
+        rules = MODES.get(name)
+        if rules is None:
+            self.not_built(name)
+            return
+        # Choosing a mode stops the menu music (GameController::init).
+        self.stop_menu_music()
+        self.push(screens.intro_menu(self, rules.name, self.scores.best(rules.name),
+                                     lambda: self.replace(GameScreen(self, rules))))
+
+    # Settings and sound
 
     def settings_changed(self) -> None:
         self.audio.set_mix(self.settings.sfx_volume / 100, self.settings.music_volume / 100)
@@ -87,15 +144,22 @@ class App:
                 if event.type == pygame.QUIT:
                     self._running = False
                 elif event.type == pygame.KEYDOWN:
-                    self._key_down(event)
+                    self._key_down(event, time.perf_counter())
+            self._stack[-1].update(time.perf_counter())
             self.audio.update()
             clock.tick(FRAMES_PER_SECOND)
         pygame.quit()
 
-    def _key_down(self, event: pygame.event.Event) -> None:
+    def _key_down(self, event: pygame.event.Event, now: float) -> None:
         if event.key == pygame.K_F4 and event.mod & pygame.KMOD_ALT:
             self._running = False
             return
-        nav = menu_nav_for(event.key)
-        if nav is not None:
-            self._stack[-1].handle(nav, self.speech, self.play_themed)
+        self._stack[-1].key(event.key, now)
+
+    def _as_screen(self, screen: Menu | Screen) -> Screen:
+        return MenuScreen(self, screen) if isinstance(screen, Menu) else screen
+
+    def _enter_top(self) -> None:
+        screen = self._stack[-1]
+        log.info("Screen: %s", screen.title)
+        screen.enter(time.perf_counter())

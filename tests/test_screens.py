@@ -26,6 +26,12 @@ class FakeNavigator:
     def quit(self) -> None:
         self.quit_called = True
 
+    def start_mode(self, name: str) -> None:
+        self.not_built_calls.append(name)
+
+    def return_to_menu(self) -> None:
+        del self.stack[1:]
+
     def not_built(self, what: str) -> None:
         self.not_built_calls.append(what)
 
@@ -114,10 +120,9 @@ class ScreenTests(unittest.TestCase):
         self.nav.music.clear()
         self.go(Nav.SELECT)  # VOX to SFX
         self.assertEqual((self.nav.played, self.nav.music), (["SFX_Bop_R"], ["start"]))
-        self.go(Nav.SELECT)  # SFX to Silent
-        self.assertEqual(self.nav.music, ["start", "stop"])
-        self.go(Nav.SELECT)  # Silent to VOX
+        self.go(Nav.SELECT)  # SFX back to VOX, as Silent is not offered
         self.assertEqual(self.nav.played, ["SFX_Bop_R", "VO_Bop"])
+        self.assertEqual(self.nav.settings.commands, "VOX")
 
     def test_banter_and_shout_it_play_settings_select(self) -> None:
         self.open_settings()

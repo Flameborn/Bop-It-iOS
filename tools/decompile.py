@@ -45,6 +45,9 @@ def main() -> None:
     subprocess.run([
         str(launcher), str(RESEARCH / "ghidra_project"), "BopIt",
         "-import", str(thin), "-overwrite",
+        # iOS armv7 code of this era passes floats in core registers. The default spec
+        # expects them in VFP registers and loses every float argument.
+        "-processor", "ARM:LE:32:v7", "-cspec", "apcs",
         "-scriptPath", str(ROOT / "tools" / "ghidra"),
         "-postScript", "DumpDecompiled.java", str(RESEARCH / "decompiled" / "BopIt.c"),
     ], check=True)
